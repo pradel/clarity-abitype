@@ -2,6 +2,7 @@ import { assertType, test } from 'vitest';
 import type {
   ClarityAbiAccess,
   ClarityAbiArg,
+  ClarityAbiFunction,
   ClarityAbiOutput,
   ClarityBool,
   ClarityBuffer,
@@ -15,6 +16,7 @@ import type {
   ClarityStringUtf8,
   ClarityTuple,
   ClarityUInt,
+  ClarityVariableAccess,
 } from './abi';
 
 test('Clarity Primitive Types', () => {
@@ -231,4 +233,47 @@ test('ClarityAbiAccess', () => {
   assertType<ClarityAbiAccess>('read_only');
   // @ts-expect-error invalid access modifier
   assertType<ClarityAbiAccess>('invalid');
+});
+
+test('ClarityAbiFunction', () => {
+  assertType<ClarityAbiFunction>({
+    name: 'transfer',
+    access: 'public',
+    args: [
+      { name: 'amount', type: 'uint128' },
+      { name: 'sender', type: 'principal' },
+      { name: 'recipient', type: 'principal' },
+    ],
+    outputs: {
+      type: {
+        response: {
+          ok: 'bool',
+          error: 'uint128',
+        },
+      },
+    },
+  });
+
+  assertType<ClarityAbiFunction>({
+    name: 'get-balance',
+    access: 'read_only',
+    args: [{ name: 'account', type: 'principal' }],
+    outputs: {
+      type: 'uint128',
+    },
+  });
+
+  assertType<ClarityAbiFunction>({
+    name: 'pow-decimals',
+    access: 'private',
+    args: [],
+    outputs: {
+      type: 'uint128',
+    },
+  });
+});
+
+test('ClarityVariableAccess', () => {
+  assertType<ClarityVariableAccess>('constant');
+  assertType<ClarityVariableAccess>('variable');
 });

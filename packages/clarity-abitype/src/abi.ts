@@ -119,3 +119,18 @@ export type ClarityAbiOutput = {
  * Clarity function access modifiers
  */
 export type ClarityAbiAccess = 'public' | 'private' | 'read_only';
+
+/**
+ * Clarity ABI function definition
+ */
+export type ClarityAbiFunction = {
+  name: string;
+  access: ClarityAbiAccess;
+  args: readonly ClarityAbiArg[];
+  outputs: ClarityAbiOutput;
+};
+
+/**
+ * Clarity variable access modifiers
+ */
+export type ClarityVariableAccess = 'constant' | 'variable';
