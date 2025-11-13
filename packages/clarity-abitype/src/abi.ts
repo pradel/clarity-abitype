@@ -160,3 +160,37 @@ export type ClarityAbiMap = {
   key: readonly ClarityAbiMapEntry[];
   value: readonly ClarityAbiMapEntry[];
 };
+
+/**
+ * Clarity fungible token definition
+ */
+export type ClarityAbiFungibleToken = {
+  name: string;
+};
+
+/**
+ * Clarity non-fungible token definition
+ */
+export type ClarityAbiNonFungibleToken = {
+  name: string;
+  type: ResolvedClarityType;
+};
+
+/**
+ * Clarity epoch versions
+ */
+export type ClarityEpoch =
+  | 'Epoch10'
+  | 'Epoch20'
+  | 'Epoch21'
+  | 'Epoch22'
+  | 'Epoch23'
+  | 'Epoch24'
+  | 'Epoch25'
+  | 'Epoch30'
+  | 'Epoch31';
+
+/**
+ * Clarity version
+ */
+export type ClarityVersion = 'Clarity1' | 'Clarity2' | 'Clarity3' | 'Clarity4';

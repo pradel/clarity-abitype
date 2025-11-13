@@ -3,11 +3,14 @@ import type {
   ClarityAbiAccess,
   ClarityAbiArg,
   ClarityAbiFunction,
+  ClarityAbiFungibleToken,
   ClarityAbiMap,
+  ClarityAbiNonFungibleToken,
   ClarityAbiOutput,
   ClarityAbiVariable,
   ClarityBool,
   ClarityBuffer,
+  ClarityEpoch,
   ClarityInt,
   ClarityList,
   ClarityNone,
@@ -19,6 +22,7 @@ import type {
   ClarityTuple,
   ClarityUInt,
   ClarityVariableAccess,
+  ClarityVersion,
 } from './abi';
 
 test('Clarity Primitive Types', () => {
@@ -322,4 +326,38 @@ test('ClarityAbiMap', () => {
     ],
     value: [{ name: 'amount', type: 'uint128' }],
   });
+});
+
+test('ClarityAbiFungibleToken', () => {
+  assertType<ClarityAbiFungibleToken>({
+    name: 'wrapped-bitcoin',
+  });
+});
+
+test('ClarityAbiNonFungibleToken', () => {
+  assertType<ClarityAbiNonFungibleToken>({
+    name: 'my-nft',
+    type: 'uint128',
+  });
+});
+
+test('ClarityEpoch', () => {
+  assertType<ClarityEpoch>('Epoch20');
+  assertType<ClarityEpoch>('Epoch21');
+  assertType<ClarityEpoch>('Epoch22');
+  assertType<ClarityEpoch>('Epoch23');
+  assertType<ClarityEpoch>('Epoch24');
+  assertType<ClarityEpoch>('Epoch25');
+  assertType<ClarityEpoch>('Epoch30');
+  // @ts-expect-error Epoch40 does not exist
+  assertType<ClarityEpoch>('Epoch40');
+});
+
+test('ClarityVersion', () => {
+  assertType<ClarityVersion>('Clarity1');
+  assertType<ClarityVersion>('Clarity2');
+  assertType<ClarityVersion>('Clarity3');
+  assertType<ClarityVersion>('Clarity4');
+  // @ts-expect-error Clarity5 does not exist
+  assertType<ClarityVersion>('Clarity5');
 });
