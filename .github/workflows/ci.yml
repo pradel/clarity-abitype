@@ -48,3 +48,6 @@ jobs:
 
       - name: Build
         run: pnpm build
+
+      - name: Check types
+        run: pnpm check-types
