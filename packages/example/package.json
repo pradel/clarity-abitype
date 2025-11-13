@@ -8,6 +8,6 @@
   "scripts": {
     "build": "echo 'Build complete'",
     "dev": "echo 'Dev mode'",
-    "lint": "echo 'Lint complete'"
+    "lint": "oxlint ."
   }
 }

@@ -19,9 +19,10 @@
     "release": "turbo run build && changeset publish"
   },
   "devDependencies": {
-    "@changesets/cli": "^2.27.1",
-    "lefthook": "^1.6.0",
-    "prettier": "^3.2.5",
-    "turbo": "^1.12.5"
+    "@changesets/cli": "2.29.7",
+    "lefthook": "1.13.6",
+    "oxlint": "1.28.0",
+    "prettier": "3.6.2",
+    "turbo": "1.13.4"
   }
 }
