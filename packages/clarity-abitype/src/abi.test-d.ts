@@ -6,6 +6,7 @@ import type {
   ClarityNone,
   ClarityPrincipal,
   ClarityStringAscii,
+  ClarityStringUtf8,
   ClarityUInt,
 } from './abi';
 
@@ -41,6 +42,20 @@ test('ClarityStringAscii', () => {
   assertType<ClarityStringAscii>({
     'string-ascii': {
       length: 256,
+    },
+  });
+});
+
+test('ClarityStringUtf8', () => {
+  assertType<ClarityStringUtf8>({
+    'string-utf8': {
+      length: 256,
+    },
+  });
+
+  assertType<ClarityStringUtf8>({
+    'string-utf8': {
+      length: 1024,
     },
   });
 });

@@ -25,3 +25,12 @@ export type ClarityStringAscii = {
     length: number;
   };
 };
+
+/**
+ * Clarity string-utf8 type with maximum length
+ */
+export type ClarityStringUtf8 = {
+  'string-utf8': {
+    length: number;
+  };
+};
