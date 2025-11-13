@@ -16,3 +16,12 @@ export type ClarityBuffer = {
     length: number;
   };
 };
+
+/**
+ * Clarity string-ascii type with maximum length
+ */
+export type ClarityStringAscii = {
+  'string-ascii': {
+    length: number;
+  };
+};

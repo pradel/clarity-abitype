@@ -29,3 +29,17 @@ test('ClarityBuffer', () => {
     },
   });
 });
+
+test('ClarityStringAscii', () => {
+  assertType<ClarityStringAscii>({
+    'string-ascii': {
+      length: 10,
+    },
+  });
+
+  assertType<ClarityStringAscii>({
+    'string-ascii': {
+      length: 256,
+    },
+  });
+});
