@@ -134,3 +134,29 @@ export type ClarityAbiFunction = {
  * Clarity variable access modifiers
  */
 export type ClarityVariableAccess = 'constant' | 'variable';
+
+/**
+ * Clarity ABI variable definition
+ */
+export type ClarityAbiVariable = {
+  name: string;
+  type: ResolvedClarityType;
+  access: ClarityVariableAccess;
+};
+
+/**
+ * Clarity ABI map key-value definition
+ */
+export type ClarityAbiMapEntry = {
+  name: string;
+  type: ResolvedClarityType;
+};
+
+/**
+ * Clarity ABI map definition
+ */
+export type ClarityAbiMap = {
+  name: string;
+  key: readonly ClarityAbiMapEntry[];
+  value: readonly ClarityAbiMapEntry[];
+};

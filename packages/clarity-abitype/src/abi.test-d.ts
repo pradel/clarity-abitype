@@ -3,7 +3,9 @@ import type {
   ClarityAbiAccess,
   ClarityAbiArg,
   ClarityAbiFunction,
+  ClarityAbiMap,
   ClarityAbiOutput,
+  ClarityAbiVariable,
   ClarityBool,
   ClarityBuffer,
   ClarityInt,
@@ -276,4 +278,48 @@ test('ClarityAbiFunction', () => {
 test('ClarityVariableAccess', () => {
   assertType<ClarityVariableAccess>('constant');
   assertType<ClarityVariableAccess>('variable');
+});
+
+test('ClarityAbiVariable', () => {
+  assertType<ClarityAbiVariable>({
+    name: 'token-name',
+    type: {
+      'string-ascii': { length: 32 },
+    },
+    access: 'variable',
+  });
+
+  assertType<ClarityAbiVariable>({
+    name: 'ERR-NOT-AUTHORIZED',
+    type: {
+      response: {
+        ok: 'bool',
+        error: 'uint128',
+      },
+    },
+    access: 'constant',
+  });
+
+  assertType<ClarityAbiVariable>({
+    name: 'contract-owner',
+    type: 'principal',
+    access: 'constant',
+  });
+});
+
+test('ClarityAbiMap', () => {
+  assertType<ClarityAbiMap>({
+    name: 'balances',
+    key: [{ name: 'account', type: 'principal' }],
+    value: [{ name: 'balance', type: 'uint128' }],
+  });
+
+  assertType<ClarityAbiMap>({
+    name: 'allowances',
+    key: [
+      { name: 'owner', type: 'principal' },
+      { name: 'spender', type: 'principal' },
+    ],
+    value: [{ name: 'amount', type: 'uint128' }],
+  });
 });
