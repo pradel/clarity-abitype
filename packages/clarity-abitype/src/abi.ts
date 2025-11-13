@@ -34,3 +34,59 @@ export type ClarityStringUtf8 = {
     length: number;
   };
 };
+
+/**
+ * Clarity list type
+ */
+export type ClarityList = {
+  list: {
+    type: ClarityType;
+    length: number;
+  };
+};
+
+/**
+ * Clarity tuple type
+ */
+export type ClarityTuple = {
+  tuple: readonly ClarityTupleEntry[];
+};
+
+export type ClarityTupleEntry = {
+  name: string;
+  type: ClarityType;
+};
+
+/**
+ * Clarity optional type
+ */
+export type ClarityOptional = {
+  optional: ClarityType;
+};
+
+/**
+ * Clarity response type
+ */
+export type ClarityResponse = {
+  response: {
+    ok: ClarityType;
+    error: ClarityType;
+  };
+};
+
+/**
+ * Union of all Clarity types
+ */
+export type ClarityType =
+  | ClarityPrincipal
+  | ClarityBool
+  | ClarityInt
+  | ClarityUInt
+  | ClarityNone
+  | ClarityBuffer
+  | ClarityStringAscii
+  | ClarityStringUtf8
+  | ClarityTuple
+  | ClarityList
+  | ClarityOptional
+  | ClarityResponse;
