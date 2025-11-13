@@ -1,0 +1,13 @@
+{
+  "name": "@clarity-abitype/example",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Example package",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "echo 'Build complete'",
+    "dev": "echo 'Dev mode'",
+    "lint": "echo 'Lint complete'"
+  }
+}
