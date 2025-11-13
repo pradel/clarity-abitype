@@ -1,0 +1,21 @@
+{
+  "name": "clarity-abitype",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Example package",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsdown",
+    "check-types": "tsc --noEmit",
+    "dev": "tsdown --watch",
+    "lint": "oxlint ."
+  },
+  "devDependencies": {
+    "@tsconfig/node22": "22.0.3",
+    "@tsconfig/recommended": "1.0.13",
+    "tsdown": "0.16.4",
+    "typescript": "5.9.3"
+  }
+}

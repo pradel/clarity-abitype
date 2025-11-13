@@ -1,0 +1,5 @@
+onlyBuiltDependencies:
+  - lefthook
+
+packages:
+  - packages/*

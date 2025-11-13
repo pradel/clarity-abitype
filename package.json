@@ -1,0 +1,25 @@
+{
+  "name": "clarity-abitype",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Monorepo for clarity-abitype",
+  "packageManager": "pnpm@10.22.0",
+  "scripts": {
+    "build": "turbo run build",
+    "check-types": "turbo run check-types",
+    "dev": "turbo run dev",
+    "lint": "turbo run lint",
+    "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md}\"",
+    "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,md}\"",
+    "changeset": "changeset",
+    "version-packages": "changeset version",
+    "release": "turbo run build && changeset publish"
+  },
+  "devDependencies": {
+    "@changesets/cli": "2.29.7",
+    "lefthook": "2.0.4",
+    "oxlint": "1.28.0",
+    "prettier": "3.6.2",
+    "turbo": "2.6.1"
+  }
+}
