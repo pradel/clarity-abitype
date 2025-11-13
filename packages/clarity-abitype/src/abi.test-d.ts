@@ -1,5 +1,8 @@
 import { assertType, test } from 'vitest';
 import type {
+  ClarityAbiAccess,
+  ClarityAbiArg,
+  ClarityAbiOutput,
   ClarityBool,
   ClarityBuffer,
   ClarityInt,
@@ -174,4 +177,58 @@ test('ClarityResponse', () => {
       error: 'uint128',
     },
   });
+});
+
+test('ClarityAbiArg', () => {
+  assertType<ClarityAbiArg>({
+    name: 'amount',
+    type: 'uint128',
+  });
+
+  assertType<ClarityAbiArg>({
+    name: 'recipient',
+    type: 'principal',
+  });
+
+  assertType<ClarityAbiArg>({
+    name: 'memo',
+    type: {
+      optional: {
+        buffer: { length: 34 },
+      },
+    },
+  });
+
+  assertType<ClarityAbiArg>({
+    name: 'data',
+    type: {
+      tuple: [
+        { name: 'amount', type: 'uint128' },
+        { name: 'sender', type: 'principal' },
+      ],
+    },
+  });
+});
+
+test('ClarityAbiOutput', () => {
+  assertType<ClarityAbiOutput>({
+    type: 'uint128',
+  });
+
+  assertType<ClarityAbiOutput>({
+    type: {
+      response: {
+        ok: 'bool',
+        error: 'uint128',
+      },
+    },
+  });
+});
+
+test('ClarityAbiAccess', () => {
+  assertType<ClarityAbiAccess>('public');
+  assertType<ClarityAbiAccess>('private');
+  assertType<ClarityAbiAccess>('read_only');
+  // @ts-expect-error invalid access modifier
+  assertType<ClarityAbiAccess>('invalid');
 });

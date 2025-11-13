@@ -1,7 +1,9 @@
-/**
- * Clarity primitive types
- * @see https://docs.stacks.co/reference/clarity/types
- */
+import type { ResolvedRegister } from './register';
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+// Clarity Types
+// @see https://docs.stacks.co/reference/clarity/types
+
 export type ClarityInt = 'int128';
 export type ClarityUInt = 'uint128';
 export type ClarityBool = 'bool';
@@ -90,3 +92,30 @@ export type ClarityType =
   | ClarityList
   | ClarityOptional
   | ClarityResponse;
+
+type ResolvedClarityType = ResolvedRegister['strictAbiType'] extends true
+  ? ClarityType
+  : ClarityType | string;
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+// Clarity ABI Types
+
+/**
+ * Clarity function parameter
+ */
+export type ClarityAbiArg = {
+  name: string;
+  type: ResolvedClarityType;
+};
+
+/**
+ * Clarity function output type
+ */
+export type ClarityAbiOutput = {
+  type: ResolvedClarityType;
+};
+
+/**
+ * Clarity function access modifiers
+ */
+export type ClarityAbiAccess = 'public' | 'private' | 'read_only';
