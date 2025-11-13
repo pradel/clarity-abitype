@@ -5,6 +5,7 @@ import type {
   ClarityInt,
   ClarityNone,
   ClarityPrincipal,
+  ClarityStringAscii,
   ClarityUInt,
 } from './abi';
 
