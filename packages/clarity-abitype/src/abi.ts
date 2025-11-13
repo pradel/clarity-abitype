@@ -7,3 +7,12 @@ export type ClarityUInt = 'uint128';
 export type ClarityBool = 'bool';
 export type ClarityPrincipal = 'principal';
 export type ClarityNone = 'none';
+
+/**
+ * Clarity buffer type with maximum length
+ */
+export type ClarityBuffer = {
+  buffer: {
+    length: number;
+  };
+};

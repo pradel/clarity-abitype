@@ -1,6 +1,7 @@
 import { assertType, test } from 'vitest';
 import type {
   ClarityBool,
+  ClarityBuffer,
   ClarityInt,
   ClarityNone,
   ClarityPrincipal,
@@ -13,4 +14,18 @@ test('Clarity Primitive Types', () => {
   assertType<ClarityBool>('bool');
   assertType<ClarityPrincipal>('principal');
   assertType<ClarityNone>('none');
+});
+
+test('ClarityBuffer', () => {
+  assertType<ClarityBuffer>({
+    buffer: {
+      length: 32,
+    },
+  });
+
+  assertType<ClarityBuffer>({
+    buffer: {
+      length: 1024,
+    },
+  });
 });
