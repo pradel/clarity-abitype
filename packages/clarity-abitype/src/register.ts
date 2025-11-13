@@ -7,14 +7,14 @@ export type ResolvedRegister = {
    */
   addressType: Register extends { addressType: infer type }
     ? type
-    : DefaultRegister['addressType'];
+    : DefaultRegister["addressType"];
   /**
    * TypeScript type to use for `int128` and `uint128` values
    * @default bigint
    */
   bigIntType: Register extends { bigIntType: infer type }
     ? type
-    : DefaultRegister['bigIntType'];
+    : DefaultRegister["bigIntType"];
   /**
    * TypeScript type to use for `buffer` values
    * @default { inputs: `0x${string}`; outputs: `0x${string}`; }
@@ -23,7 +23,7 @@ export type ResolvedRegister = {
     bytesType: infer type extends { inputs: unknown; outputs: unknown };
   }
     ? type
-    : DefaultRegister['bytesType'];
+    : DefaultRegister["bytesType"];
 
   /**
    * Lower bound for fixed list/buffer/string length
@@ -33,7 +33,7 @@ export type ResolvedRegister = {
     fixedArrayMinLength: infer type extends number;
   }
     ? type
-    : DefaultRegister['fixedArrayMinLength'];
+    : DefaultRegister["fixedArrayMinLength"];
   /**
    * Upper bound for fixed list/buffer/string length
    * @default 99
@@ -42,7 +42,7 @@ export type ResolvedRegister = {
     fixedArrayMaxLength: infer type extends number;
   }
     ? type
-    : DefaultRegister['fixedArrayMaxLength'];
+    : DefaultRegister["fixedArrayMaxLength"];
 
   /**
    * When set, validates {@link ClarityType} strictly
@@ -54,7 +54,7 @@ export type ResolvedRegister = {
    */
   strictAbiType: Register extends { strictAbiType: infer type extends boolean }
     ? type
-    : DefaultRegister['strictAbiType'];
+    : DefaultRegister["strictAbiType"];
 };
 
 export type DefaultRegister = {

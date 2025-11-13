@@ -1,14 +1,14 @@
-import type { ResolvedRegister } from './register';
+import type { ResolvedRegister } from "./register";
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // Clarity Types
 // @see https://docs.stacks.co/reference/clarity/types
 
-export type ClarityInt = 'int128';
-export type ClarityUInt = 'uint128';
-export type ClarityBool = 'bool';
-export type ClarityPrincipal = 'principal';
-export type ClarityNone = 'none';
+export type ClarityInt = "int128";
+export type ClarityUInt = "uint128";
+export type ClarityBool = "bool";
+export type ClarityPrincipal = "principal";
+export type ClarityNone = "none";
 
 /**
  * Clarity buffer type with maximum length
@@ -23,7 +23,7 @@ export type ClarityBuffer = {
  * Clarity string-ascii type with maximum length
  */
 export type ClarityStringAscii = {
-  'string-ascii': {
+  "string-ascii": {
     length: number;
   };
 };
@@ -32,7 +32,7 @@ export type ClarityStringAscii = {
  * Clarity string-utf8 type with maximum length
  */
 export type ClarityStringUtf8 = {
-  'string-utf8': {
+  "string-utf8": {
     length: number;
   };
 };
@@ -93,7 +93,7 @@ export type ClarityType =
   | ClarityOptional
   | ClarityResponse;
 
-type ResolvedClarityType = ResolvedRegister['strictAbiType'] extends true
+type ResolvedClarityType = ResolvedRegister["strictAbiType"] extends true
   ? ClarityType
   : ClarityType | string;
 
@@ -118,7 +118,7 @@ export type ClarityAbiOutput = {
 /**
  * Clarity function access modifiers
  */
-export type ClarityAbiAccess = 'public' | 'private' | 'read_only';
+export type ClarityAbiAccess = "public" | "private" | "read_only";
 
 /**
  * Clarity ABI function definition
@@ -133,7 +133,7 @@ export type ClarityAbiFunction = {
 /**
  * Clarity variable access modifiers
  */
-export type ClarityVariableAccess = 'constant' | 'variable';
+export type ClarityVariableAccess = "constant" | "variable";
 
 /**
  * Clarity ABI variable definition
@@ -180,17 +180,17 @@ export type ClarityAbiNonFungibleToken = {
  * Clarity epoch versions
  */
 export type ClarityEpoch =
-  | 'Epoch10'
-  | 'Epoch20'
-  | 'Epoch21'
-  | 'Epoch22'
-  | 'Epoch23'
-  | 'Epoch24'
-  | 'Epoch25'
-  | 'Epoch30'
-  | 'Epoch31';
+  | "Epoch10"
+  | "Epoch20"
+  | "Epoch21"
+  | "Epoch22"
+  | "Epoch23"
+  | "Epoch24"
+  | "Epoch25"
+  | "Epoch30"
+  | "Epoch31";
 
 /**
  * Clarity version
  */
-export type ClarityVersion = 'Clarity1' | 'Clarity2' | 'Clarity3' | 'Clarity4';
+export type ClarityVersion = "Clarity1" | "Clarity2" | "Clarity3" | "Clarity4";

@@ -1,25 +1,25 @@
-import { assertType, test } from 'vitest';
-import type { ResolvedRegister } from './register.js';
+import { assertType, test } from "vitest";
+import type { ResolvedRegister } from "./register.js";
 
-test('ResolvedRegister', () => {
-  assertType<ResolvedRegister['fixedArrayMinLength']>(1);
-  assertType<ResolvedRegister['fixedArrayMaxLength']>(99);
+test("ResolvedRegister", () => {
+  assertType<ResolvedRegister["fixedArrayMinLength"]>(1);
+  assertType<ResolvedRegister["fixedArrayMaxLength"]>(99);
 
-  type AddressType = ResolvedRegister['addressType'];
-  assertType<AddressType>('SM3VDXK3WZZSA84XXFKAFAF15NNZX32CTSG82JFQ4');
+  type AddressType = ResolvedRegister["addressType"];
+  assertType<AddressType>("SM3VDXK3WZZSA84XXFKAFAF15NNZX32CTSG82JFQ4");
   assertType<AddressType>(
-    'SM3VDXK3WZZSA84XXFKAFAF15NNZX32CTSG82JFQ4.sbtc-token'
+    "SM3VDXK3WZZSA84XXFKAFAF15NNZX32CTSG82JFQ4.sbtc-token",
   );
 
-  type BytesType = ResolvedRegister['bytesType'];
+  type BytesType = ResolvedRegister["bytesType"];
   assertType<BytesType>({
-    inputs: '0xfoobarbaz',
-    outputs: '0xfoobarbaz',
+    inputs: "0xfoobarbaz",
+    outputs: "0xfoobarbaz",
   });
 
-  type BigIntType = ResolvedRegister['bigIntType'];
+  type BigIntType = ResolvedRegister["bigIntType"];
   assertType<BigIntType>(123n);
 
-  type StrictAbiType = ResolvedRegister['strictAbiType'];
+  type StrictAbiType = ResolvedRegister["strictAbiType"];
   assertType<StrictAbiType>(false);
 });

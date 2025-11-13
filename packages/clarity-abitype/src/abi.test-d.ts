@@ -1,4 +1,4 @@
-import { assertType, test } from 'vitest';
+import { assertType, test } from "vitest";
 import type {
   ClarityAbiAccess,
   ClarityAbiArg,
@@ -23,17 +23,17 @@ import type {
   ClarityUInt,
   ClarityVariableAccess,
   ClarityVersion,
-} from './abi';
+} from "./abi";
 
-test('Clarity Primitive Types', () => {
-  assertType<ClarityInt>('int128');
-  assertType<ClarityUInt>('uint128');
-  assertType<ClarityBool>('bool');
-  assertType<ClarityPrincipal>('principal');
-  assertType<ClarityNone>('none');
+test("Clarity Primitive Types", () => {
+  assertType<ClarityInt>("int128");
+  assertType<ClarityUInt>("uint128");
+  assertType<ClarityBool>("bool");
+  assertType<ClarityPrincipal>("principal");
+  assertType<ClarityNone>("none");
 });
 
-test('ClarityBuffer', () => {
+test("ClarityBuffer", () => {
   assertType<ClarityBuffer>({
     buffer: {
       length: 32,
@@ -47,45 +47,45 @@ test('ClarityBuffer', () => {
   });
 });
 
-test('ClarityStringAscii', () => {
+test("ClarityStringAscii", () => {
   assertType<ClarityStringAscii>({
-    'string-ascii': {
+    "string-ascii": {
       length: 10,
     },
   });
 
   assertType<ClarityStringAscii>({
-    'string-ascii': {
+    "string-ascii": {
       length: 256,
     },
   });
 });
 
-test('ClarityStringUtf8', () => {
+test("ClarityStringUtf8", () => {
   assertType<ClarityStringUtf8>({
-    'string-utf8': {
+    "string-utf8": {
       length: 256,
     },
   });
 
   assertType<ClarityStringUtf8>({
-    'string-utf8': {
+    "string-utf8": {
       length: 1024,
     },
   });
 });
 
-test('ClarityList', () => {
+test("ClarityList", () => {
   assertType<ClarityList>({
     list: {
-      type: 'uint128',
+      type: "uint128",
       length: 10,
     },
   });
 
   assertType<ClarityList>({
     list: {
-      type: 'principal',
+      type: "principal",
       length: 100,
     },
   });
@@ -95,8 +95,8 @@ test('ClarityList', () => {
     list: {
       type: {
         tuple: [
-          { name: 'amount', type: 'uint128' },
-          { name: 'sender', type: 'principal' },
+          { name: "amount", type: "uint128" },
+          { name: "sender", type: "principal" },
         ],
       },
       length: 200,
@@ -104,21 +104,21 @@ test('ClarityList', () => {
   });
 });
 
-test('ClarityTuple', () => {
+test("ClarityTuple", () => {
   assertType<ClarityTuple>({
     tuple: [
-      { name: 'amount', type: 'uint128' },
-      { name: 'sender', type: 'principal' },
+      { name: "amount", type: "uint128" },
+      { name: "sender", type: "principal" },
     ],
   });
 
   assertType<ClarityTuple>({
     tuple: [
-      { name: 'id', type: 'uint128' },
+      { name: "id", type: "uint128" },
       {
-        name: 'data',
+        name: "data",
         type: {
-          'string-ascii': { length: 32 },
+          "string-ascii": { length: 32 },
         },
       },
     ],
@@ -127,13 +127,13 @@ test('ClarityTuple', () => {
   // Nested tuple
   assertType<ClarityTuple>({
     tuple: [
-      { name: 'name', type: 'principal' },
+      { name: "name", type: "principal" },
       {
-        name: 'metadata',
+        name: "metadata",
         type: {
           tuple: [
-            { name: 'age', type: 'uint128' },
-            { name: 'active', type: 'bool' },
+            { name: "age", type: "uint128" },
+            { name: "active", type: "bool" },
           ],
         },
       },
@@ -141,9 +141,9 @@ test('ClarityTuple', () => {
   });
 });
 
-test('ClarityOptional', () => {
+test("ClarityOptional", () => {
   assertType<ClarityOptional>({
-    optional: 'uint128',
+    optional: "uint128",
   });
 
   assertType<ClarityOptional>({
@@ -154,23 +154,23 @@ test('ClarityOptional', () => {
 
   assertType<ClarityOptional>({
     optional: {
-      'string-utf8': { length: 256 },
+      "string-utf8": { length: 256 },
     },
   });
 });
 
-test('ClarityResponse', () => {
+test("ClarityResponse", () => {
   assertType<ClarityResponse>({
     response: {
-      ok: 'bool',
-      error: 'uint128',
+      ok: "bool",
+      error: "uint128",
     },
   });
 
   assertType<ClarityResponse>({
     response: {
-      ok: 'uint128',
-      error: 'uint128',
+      ok: "uint128",
+      error: "uint128",
     },
   });
 
@@ -178,28 +178,28 @@ test('ClarityResponse', () => {
     response: {
       ok: {
         tuple: [
-          { name: 'id', type: 'uint128' },
-          { name: 'name', type: 'principal' },
+          { name: "id", type: "uint128" },
+          { name: "name", type: "principal" },
         ],
       },
-      error: 'uint128',
+      error: "uint128",
     },
   });
 });
 
-test('ClarityAbiArg', () => {
+test("ClarityAbiArg", () => {
   assertType<ClarityAbiArg>({
-    name: 'amount',
-    type: 'uint128',
+    name: "amount",
+    type: "uint128",
   });
 
   assertType<ClarityAbiArg>({
-    name: 'recipient',
-    type: 'principal',
+    name: "recipient",
+    type: "principal",
   });
 
   assertType<ClarityAbiArg>({
-    name: 'memo',
+    name: "memo",
     type: {
       optional: {
         buffer: { length: 34 },
@@ -208,156 +208,156 @@ test('ClarityAbiArg', () => {
   });
 
   assertType<ClarityAbiArg>({
-    name: 'data',
+    name: "data",
     type: {
       tuple: [
-        { name: 'amount', type: 'uint128' },
-        { name: 'sender', type: 'principal' },
+        { name: "amount", type: "uint128" },
+        { name: "sender", type: "principal" },
       ],
     },
   });
 });
 
-test('ClarityAbiOutput', () => {
+test("ClarityAbiOutput", () => {
   assertType<ClarityAbiOutput>({
-    type: 'uint128',
+    type: "uint128",
   });
 
   assertType<ClarityAbiOutput>({
     type: {
       response: {
-        ok: 'bool',
-        error: 'uint128',
+        ok: "bool",
+        error: "uint128",
       },
     },
   });
 });
 
-test('ClarityAbiAccess', () => {
-  assertType<ClarityAbiAccess>('public');
-  assertType<ClarityAbiAccess>('private');
-  assertType<ClarityAbiAccess>('read_only');
+test("ClarityAbiAccess", () => {
+  assertType<ClarityAbiAccess>("public");
+  assertType<ClarityAbiAccess>("private");
+  assertType<ClarityAbiAccess>("read_only");
   // @ts-expect-error invalid access modifier
-  assertType<ClarityAbiAccess>('invalid');
+  assertType<ClarityAbiAccess>("invalid");
 });
 
-test('ClarityAbiFunction', () => {
+test("ClarityAbiFunction", () => {
   assertType<ClarityAbiFunction>({
-    name: 'transfer',
-    access: 'public',
+    name: "transfer",
+    access: "public",
     args: [
-      { name: 'amount', type: 'uint128' },
-      { name: 'sender', type: 'principal' },
-      { name: 'recipient', type: 'principal' },
+      { name: "amount", type: "uint128" },
+      { name: "sender", type: "principal" },
+      { name: "recipient", type: "principal" },
     ],
     outputs: {
       type: {
         response: {
-          ok: 'bool',
-          error: 'uint128',
+          ok: "bool",
+          error: "uint128",
         },
       },
     },
   });
 
   assertType<ClarityAbiFunction>({
-    name: 'get-balance',
-    access: 'read_only',
-    args: [{ name: 'account', type: 'principal' }],
+    name: "get-balance",
+    access: "read_only",
+    args: [{ name: "account", type: "principal" }],
     outputs: {
-      type: 'uint128',
+      type: "uint128",
     },
   });
 
   assertType<ClarityAbiFunction>({
-    name: 'pow-decimals',
-    access: 'private',
+    name: "pow-decimals",
+    access: "private",
     args: [],
     outputs: {
-      type: 'uint128',
+      type: "uint128",
     },
   });
 });
 
-test('ClarityVariableAccess', () => {
-  assertType<ClarityVariableAccess>('constant');
-  assertType<ClarityVariableAccess>('variable');
+test("ClarityVariableAccess", () => {
+  assertType<ClarityVariableAccess>("constant");
+  assertType<ClarityVariableAccess>("variable");
 });
 
-test('ClarityAbiVariable', () => {
+test("ClarityAbiVariable", () => {
   assertType<ClarityAbiVariable>({
-    name: 'token-name',
+    name: "token-name",
     type: {
-      'string-ascii': { length: 32 },
+      "string-ascii": { length: 32 },
     },
-    access: 'variable',
+    access: "variable",
   });
 
   assertType<ClarityAbiVariable>({
-    name: 'ERR-NOT-AUTHORIZED',
+    name: "ERR-NOT-AUTHORIZED",
     type: {
       response: {
-        ok: 'bool',
-        error: 'uint128',
+        ok: "bool",
+        error: "uint128",
       },
     },
-    access: 'constant',
+    access: "constant",
   });
 
   assertType<ClarityAbiVariable>({
-    name: 'contract-owner',
-    type: 'principal',
-    access: 'constant',
+    name: "contract-owner",
+    type: "principal",
+    access: "constant",
   });
 });
 
-test('ClarityAbiMap', () => {
+test("ClarityAbiMap", () => {
   assertType<ClarityAbiMap>({
-    name: 'balances',
-    key: [{ name: 'account', type: 'principal' }],
-    value: [{ name: 'balance', type: 'uint128' }],
+    name: "balances",
+    key: [{ name: "account", type: "principal" }],
+    value: [{ name: "balance", type: "uint128" }],
   });
 
   assertType<ClarityAbiMap>({
-    name: 'allowances',
+    name: "allowances",
     key: [
-      { name: 'owner', type: 'principal' },
-      { name: 'spender', type: 'principal' },
+      { name: "owner", type: "principal" },
+      { name: "spender", type: "principal" },
     ],
-    value: [{ name: 'amount', type: 'uint128' }],
+    value: [{ name: "amount", type: "uint128" }],
   });
 });
 
-test('ClarityAbiFungibleToken', () => {
+test("ClarityAbiFungibleToken", () => {
   assertType<ClarityAbiFungibleToken>({
-    name: 'wrapped-bitcoin',
+    name: "wrapped-bitcoin",
   });
 });
 
-test('ClarityAbiNonFungibleToken', () => {
+test("ClarityAbiNonFungibleToken", () => {
   assertType<ClarityAbiNonFungibleToken>({
-    name: 'my-nft',
-    type: 'uint128',
+    name: "my-nft",
+    type: "uint128",
   });
 });
 
-test('ClarityEpoch', () => {
-  assertType<ClarityEpoch>('Epoch20');
-  assertType<ClarityEpoch>('Epoch21');
-  assertType<ClarityEpoch>('Epoch22');
-  assertType<ClarityEpoch>('Epoch23');
-  assertType<ClarityEpoch>('Epoch24');
-  assertType<ClarityEpoch>('Epoch25');
-  assertType<ClarityEpoch>('Epoch30');
+test("ClarityEpoch", () => {
+  assertType<ClarityEpoch>("Epoch20");
+  assertType<ClarityEpoch>("Epoch21");
+  assertType<ClarityEpoch>("Epoch22");
+  assertType<ClarityEpoch>("Epoch23");
+  assertType<ClarityEpoch>("Epoch24");
+  assertType<ClarityEpoch>("Epoch25");
+  assertType<ClarityEpoch>("Epoch30");
   // @ts-expect-error Epoch40 does not exist
-  assertType<ClarityEpoch>('Epoch40');
+  assertType<ClarityEpoch>("Epoch40");
 });
 
-test('ClarityVersion', () => {
-  assertType<ClarityVersion>('Clarity1');
-  assertType<ClarityVersion>('Clarity2');
-  assertType<ClarityVersion>('Clarity3');
-  assertType<ClarityVersion>('Clarity4');
+test("ClarityVersion", () => {
+  assertType<ClarityVersion>("Clarity1");
+  assertType<ClarityVersion>("Clarity2");
+  assertType<ClarityVersion>("Clarity3");
+  assertType<ClarityVersion>("Clarity4");
   // @ts-expect-error Clarity5 does not exist
-  assertType<ClarityVersion>('Clarity5');
+  assertType<ClarityVersion>("Clarity5");
 });
