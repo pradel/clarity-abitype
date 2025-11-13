@@ -7,3 +7,25 @@
  * //   ^? type Result = { a: string; b: string; c: number; d: bigint }
  */
 export type Pretty<type> = { [key in keyof type]: type[key] } & unknown;
+
+/**
+ * Prints custom error message
+ *
+ * @param messages - Error message
+ * @returns Custom error message
+ *
+ * @example
+ * type Result = Error<'Custom error message'>
+ * //   ^? type Result = ['Error: Custom error message']
+ */
+export type Error<messages extends string | string[]> = messages extends string
+  ? [
+      // Surrounding with array to prevent `messages` from being widened to `string`
+      `Error: ${messages}`,
+    ]
+  : {
+      [key in keyof messages]: messages[key] extends infer message extends
+        string
+        ? `Error: ${message}`
+        : never;
+    };
