@@ -1,4 +1,5 @@
 import type { ResolvedRegister } from "./register";
+import { Pretty } from "./types";
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // Clarity Types
@@ -194,3 +195,26 @@ export type ClarityEpoch =
  * Clarity version
  */
 export type ClarityVersion = "Clarity1" | "Clarity2" | "Clarity3" | "Clarity4";
+
+/**
+ * Complete Clarity ABI specification
+ */
+export type ClarityAbi = Pretty<{
+  functions: readonly ClarityAbiFunction[];
+  variables: readonly ClarityAbiVariable[];
+  maps: readonly ClarityAbiMap[];
+  fungible_tokens: readonly ClarityAbiFungibleToken[];
+  non_fungible_tokens: readonly ClarityAbiNonFungibleToken[];
+  epoch?: ClarityEpoch | undefined;
+  clarity_version?: ClarityVersion | undefined;
+}>;
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+// Utility types for Clarity ABI items
+
+export type ClarityAbiItemType =
+  | "function"
+  | "variable"
+  | "map"
+  | "fungible_token"
+  | "non_fungible_token";

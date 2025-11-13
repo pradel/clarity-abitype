@@ -1,5 +1,6 @@
 import { assertType, test } from "vitest";
 import type {
+  ClarityAbi,
   ClarityAbiAccess,
   ClarityAbiArg,
   ClarityAbiFunction,
@@ -24,6 +25,7 @@ import type {
   ClarityVariableAccess,
   ClarityVersion,
 } from "./abi";
+import { sip10Abi } from "./abis/json";
 
 test("Clarity Primitive Types", () => {
   assertType<ClarityInt>("int128");
@@ -360,4 +362,76 @@ test("ClarityVersion", () => {
   assertType<ClarityVersion>("Clarity4");
   // @ts-expect-error Clarity5 does not exist
   assertType<ClarityVersion>("Clarity5");
+});
+
+test("ClarityAbi", () => {
+  assertType<ClarityAbi>(sip10Abi);
+
+  assertType<ClarityAbi>({
+    functions: [
+      {
+        name: "transfer",
+        access: "public",
+        args: [
+          { name: "amount", type: "uint128" },
+          { name: "sender", type: "principal" },
+          { name: "recipient", type: "principal" },
+        ],
+        outputs: {
+          type: {
+            response: {
+              ok: "bool",
+              error: "uint128",
+            },
+          },
+        },
+      },
+      {
+        name: "get-balance",
+        access: "read_only",
+        args: [{ name: "who", type: "principal" }],
+        outputs: {
+          type: "uint128",
+        },
+      },
+    ],
+    variables: [
+      {
+        name: "contract-owner",
+        type: "principal",
+        access: "constant",
+      },
+      {
+        name: "token-name",
+        type: {
+          "string-ascii": { length: 32 },
+        },
+        access: "variable",
+      },
+    ],
+    maps: [
+      {
+        name: "balances",
+        key: [{ name: "account", type: "principal" }],
+        value: [{ name: "balance", type: "uint128" }],
+      },
+    ],
+    fungible_tokens: [
+      {
+        name: "my-token",
+      },
+    ],
+    non_fungible_tokens: [],
+    epoch: "Epoch25",
+    clarity_version: "Clarity2",
+  });
+
+  // Minimal valid ABI
+  assertType<ClarityAbi>({
+    functions: [],
+    variables: [],
+    maps: [],
+    fungible_tokens: [],
+    non_fungible_tokens: [],
+  });
 });
