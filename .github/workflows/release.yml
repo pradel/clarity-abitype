@@ -7,16 +7,14 @@ on:
 
 concurrency: ${{ github.workflow }}-${{ github.ref }}
 
-permissions:
-  id-token: write # Required for OIDC
-  contents: write
-  pull-requests: write
-  issues: read
-
 jobs:
   release:
     name: Release
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      id-token: write # Required for OIDC
+      pull-requests: write
     steps:
       - name: Checkout code
         uses: actions/checkout@v5
@@ -27,11 +25,14 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v6
         with:
-          node-version: 22
+          node-version: 24
           cache: "pnpm"
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
+
+      - name: Build
+        run: pnpm build
 
       - name: Create Release Pull Request
         uses: changesets/action@v1
@@ -42,7 +43,5 @@ jobs:
           title: "chore: create new release"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          NPM_CONFIG_PROVENANCE: true
-          # Workaround for trusted publishing with OIDC
-          # https://github.com/changesets/changesets/issues/1152#issuecomment-3190884868
-          NPM_TOKEN: ""
+          # Use OIDC for npm authentication instead of NPM_TOKEN
+          NPM_TOKEN: "" # https://github.com/changesets/changesets/issues/1152#issuecomment-3190884868
