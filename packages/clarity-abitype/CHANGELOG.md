@@ -1,5 +1,11 @@
 # clarity-abitype
 
+## 0.1.4
+
+### Patch Changes
+
+- [`e34cf69`](https://github.com/pradel/clarity-abitype/commit/e34cf695851eded9f22f575250e3623f437dad1a) Thanks [@pradel](https://github.com/pradel)! - Publint before publish.
+
 ## 0.1.3
 
 ### Patch Changes
