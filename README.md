@@ -1,5 +1,9 @@
 # clarity-abitype
 
+## Download a contract ABI
+
+You can get a Clarity contract ABI using the Stacks API: `https://api.hiro.so/extended/v1/contract/{contract_id}`
+
 ```ts
 import type {
   ClarityAbiArgsToPrimitiveTypes,
