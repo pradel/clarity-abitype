@@ -1,36 +1,150 @@
 # clarity-abitype
 
-Monorepo for clarity-abitype packages.
+Strict TypeScript types for Clarity ABIs. Provides utilities and type definitions for [Clarity](https://docs.stacks.co/clarity) smart contract ABIs on the [Stacks](https://www.stacks.co/) blockchain.
 
-## Setup
+```ts
+import type {
+  ClarityAbiArgsToPrimitiveTypes,
+  ExtractAbiFunction,
+  ExtractAbiFunctionNames,
+} from "clarity-abitype";
+import { sip10Abi } from "clarity-abitype/abis";
 
-This monorepo uses:
+type FunctionNames = ExtractAbiFunctionNames<typeof sip10Abi, "read_only">;
+//   ^? type FunctionNames = "get-balance" | "get-decimals" | "get-name" | "get-symbol" | ...
 
-- **pnpm workspaces** for package management
-- **Turborepo** for build orchestration
-- **Prettier** for code formatting
-- **Lefthook** for git hooks
-- **Changesets** for versioning and publishing
-
-## Getting Started
-
-Install dependencies:
-
-```bash
-pnpm install
+type TransferInputTypes = ClarityAbiArgsToPrimitiveTypes<
+  // ^? type TransferInputTypes = readonly [bigint, string, string, `0x${string}` | null]
+  ExtractAbiFunction<typeof sip10Abi, "transfer">["args"]
+>;
 ```
 
-## Available Scripts
+Works great for adding blazing fast autocomplete and type checking to functions, variables, or your own types. No need to generate types with third-party tools – just use your ABI and let TypeScript do the rest!
 
-- `pnpm build` - Build all packages
-- `pnpm dev` - Run all packages in development mode
-- `pnpm lint` - Lint all packages
-- `pnpm format` - Format all files with Prettier
-- `pnpm format:check` - Check formatting without modifying files
-- `pnpm changeset` - Create a changeset for versioning
-- `pnpm version-packages` - Version packages based on changesets
-- `pnpm release` - Build and publish packages
+## Installation
 
-## Packages
+```bash
+npm install clarity-abitype
+# or
+pnpm add clarity-abitype
+# or
+yarn add clarity-abitype
+```
 
-- `@clarity-abitype/example` - Example package
+## Quick Start
+
+### Getting a Contract ABI
+
+You can fetch a Clarity contract ABI from the Stacks API and get the `abi` field from the response:
+
+```bash
+https://api.hiro.so/extended/v1/contract/{contract_id}
+```
+
+For example, to get the ABI for a contract:
+
+```bash
+https://api.hiro.so/extended/v1/contract/SM3VDXK3WZZSA84XXFKAFAF15NNZX32CTSG82JFQ4.sbtc-token
+```
+
+### Usage
+
+To allow TypeScript to infer types from your ABI, **you need to define it with a `const` assertion**:
+
+```ts
+const myTokenAbi = [...] as const
+// or
+const myTokenAbi = <const>[...]
+```
+
+You can use the utilities provided by `clarity-abitype` to extract function names, definitions, and convert Clarity types to TypeScript types.
+
+```ts
+import type { ExtractAbiFunctionNames } from "clarity-abitype";
+
+// Get all function names
+type AllFunctions = ExtractAbiFunctionNames<typeof myTokenAbi>;
+//   ^? "transfer" | ...
+
+// Filter by access level
+type PublicFunctions = ExtractAbiFunctionNames<typeof myTokenAbi, "public">;
+//   ^? "transfer" | ...
+
+type TransferFunction = ExtractAbiFunction<typeof myTokenAbi, "transfer">;
+//   ^? { name: "transfer", access: "public", args: [...], outputs: {...} }
+
+type TransferArgs = ClarityAbiArgsToPrimitiveTypes<
+  ExtractAbiFunction<typeof myTokenAbi, "transfer">["args"]
+>;
+//   ^? readonly [bigint, string, string]
+```
+
+## Examples
+
+### Typed Contract Calls
+
+```ts
+import type {
+  ClarityAbiArgsToPrimitiveTypes,
+  ExtractAbiFunction,
+} from "clarity-abitype";
+
+function createContractCall<
+  TAbi extends ClarityAbi,
+  TFunctionName extends ExtractAbiFunctionNames<TAbi>,
+>(
+  abi: TAbi,
+  functionName: TFunctionName,
+  args: ClarityAbiArgsToPrimitiveTypes<
+    ExtractAbiFunction<TAbi, TFunctionName>["args"]
+  >,
+) {
+  // Implementation with full type safety
+}
+
+// Usage - args are fully typed!
+createContractCall(sip10Abi, "transfer", [
+  1000n, // amount: bigint
+  "SP2C2YFP...", // sender: string
+  "SP3FBR2AGK...", // recipient: string
+  null, // memo: `0x${string}` | null
+]);
+```
+
+### Type-safe Read Calls
+
+```ts
+import type {
+  ClarityAbiOutputToPrimitiveType,
+  ExtractAbiFunction,
+} from "clarity-abitype";
+
+async function readContract<
+  TAbi extends ClarityAbi,
+  TFunctionName extends ExtractAbiFunctionNames<TAbi, "read_only">,
+>(
+  abi: TAbi,
+  functionName: TFunctionName,
+): Promise<
+  ClarityAbiOutputToPrimitiveType<
+    ExtractAbiFunction<TAbi, TFunctionName>["outputs"]
+  >
+> {
+  // Implementation
+}
+
+// Return type is inferred as: { ok: bigint } | { error: null }
+const balance = await readContract(sip10Abi, "get-balance");
+```
+
+## Credits
+
+clarity-abitype initial implementation is based on the amazing work of [abitype](https://github.com/wevm/abitype) by [wevm](https://github.com/wevm).
+
+## Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+## License
+
+MIT

@@ -1,3 +1,2 @@
-export function main() {
-  console.log('Hello');
-}
+export * from "./abi.js";
+export * from "./abis/json.js";
