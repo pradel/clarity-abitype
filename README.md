@@ -35,16 +35,16 @@ yarn add clarity-abitype
 
 ### Getting a Contract ABI
 
-You can fetch a Clarity contract ABI from the Stacks API and get the `abi` field from the response:
+You can fetch a Clarity contract ABI from the Stacks API:
 
 ```bash
-https://api.hiro.so/extended/v1/contract/{contract_id}
+https://api.mainnet.hiro.so/v2/contracts/interface/{contract_address}/{contract_name}
 ```
 
 For example, to get the ABI for a contract:
 
 ```bash
-https://api.hiro.so/extended/v1/contract/SM3VDXK3WZZSA84XXFKAFAF15NNZX32CTSG82JFQ4.sbtc-token
+https://api.mainnet.hiro.so/v2/contracts/interface/SM3VDXK3WZZSA84XXFKAFAF15NNZX32CTSG82JFQ4/sbtc-token
 ```
 
 ### Usage
