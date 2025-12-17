@@ -1,5 +1,11 @@
 # clarity-abitype
 
+## 0.1.6
+
+### Patch Changes
+
+- [#9](https://github.com/pradel/clarity-abitype/pull/9) [`da4a659`](https://github.com/pradel/clarity-abitype/commit/da4a65911982600913c6435c7580a81ae37fb7e4) Thanks [@pradel](https://github.com/pradel)! - Upgrade package dependencies.
+
 ## 0.1.5
 
 ### Patch Changes
