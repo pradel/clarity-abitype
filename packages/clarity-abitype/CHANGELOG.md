@@ -1,5 +1,11 @@
 # clarity-abitype
 
+## 0.1.7
+
+### Patch Changes
+
+- [#11](https://github.com/pradel/clarity-abitype/pull/11) [`6fd3e04`](https://github.com/pradel/clarity-abitype/commit/6fd3e044e02daeba9f7d98648968e8509f2eb434) Thanks [@pradel](https://github.com/pradel)! - Check arethetypeswrong on the build before publishing.
+
 ## 0.1.6
 
 ### Patch Changes
