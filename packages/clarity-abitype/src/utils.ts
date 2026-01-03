@@ -1,10 +1,7 @@
 import type {
   ClarityAbi,
-  ClarityAbiAccess,
   ClarityAbiArg,
-  ClarityAbiFunction,
-  ClarityAbiMap,
-  ClarityAbiVariable,
+  ClarityAbiAccess,
   ClarityBool,
   ClarityBuffer,
   ClarityInt,
@@ -67,8 +64,8 @@ type ClarityTupleToPrimitiveType<tuple extends ClarityTuple> = tuple extends {
   ? entries extends readonly []
     ? {}
     : entries[number] extends {
-          name: infer name extends string;
-          type: infer type;
+          name: string;
+          type: ClarityType | string;
         }
       ? {
           [K in entries[number] as K["name"]]: ClarityTypeToPrimitiveType<
@@ -82,10 +79,7 @@ type ClarityTupleToPrimitiveType<tuple extends ClarityTuple> = tuple extends {
  * Converts Clarity list to TypeScript array type
  */
 type ClarityListToPrimitiveType<list extends ClarityList> = list extends {
-  list: {
-    type: infer itemType extends ClarityType | string;
-    length: infer length;
-  };
+  list: { type: infer itemType extends ClarityType | string };
 }
   ? readonly ClarityTypeToPrimitiveType<itemType>[]
   : never;

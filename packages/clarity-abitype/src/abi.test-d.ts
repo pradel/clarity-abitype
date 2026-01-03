@@ -5,6 +5,7 @@ import type {
   ClarityAbiArg,
   ClarityAbiFunction,
   ClarityAbiFungibleToken,
+  ClarityAbiItemType,
   ClarityAbiMap,
   ClarityAbiNonFungibleToken,
   ClarityAbiOutput,
@@ -21,6 +22,8 @@ import type {
   ClarityStringAscii,
   ClarityStringUtf8,
   ClarityTuple,
+  ClarityTupleEntry,
+  ClarityType,
   ClarityUInt,
   ClarityVariableAccess,
   ClarityVersion,
@@ -141,6 +144,36 @@ test("ClarityTuple", () => {
       },
     ],
   });
+});
+
+test("ClarityTupleEntry", () => {
+  assertType<ClarityTupleEntry>({ name: "amount", type: "uint128" });
+  assertType<ClarityTupleEntry>({ name: "sender", type: "principal" });
+  assertType<ClarityTupleEntry>({
+    name: "data",
+    type: { buffer: { length: 64 } },
+  });
+  // @ts-expect-error missing name
+  assertType<ClarityTupleEntry>({ type: "uint128" });
+  // @ts-expect-error missing type
+  assertType<ClarityTupleEntry>({ name: "amount" });
+});
+
+test("ClarityType", () => {
+  assertType<ClarityType>("principal");
+  assertType<ClarityType>("bool");
+  assertType<ClarityType>("int128");
+  assertType<ClarityType>("uint128");
+  assertType<ClarityType>("none");
+  assertType<ClarityType>({ buffer: { length: 32 } });
+  assertType<ClarityType>({ "string-ascii": { length: 32 } });
+  assertType<ClarityType>({ "string-utf8": { length: 32 } });
+  assertType<ClarityType>({ tuple: [{ name: "id", type: "uint128" }] });
+  assertType<ClarityType>({ list: { type: "uint128", length: 10 } });
+  assertType<ClarityType>({ optional: "uint128" });
+  assertType<ClarityType>({ response: { ok: "bool", error: "uint128" } });
+  // @ts-expect-error not a valid ClarityType
+  assertType<ClarityType>("foo");
 });
 
 test("ClarityOptional", () => {
@@ -434,4 +467,14 @@ test("ClarityAbi", () => {
     fungible_tokens: [],
     non_fungible_tokens: [],
   });
+});
+
+test("ClarityAbiItemType", () => {
+  assertType<ClarityAbiItemType>("function");
+  assertType<ClarityAbiItemType>("variable");
+  assertType<ClarityAbiItemType>("map");
+  assertType<ClarityAbiItemType>("fungible_token");
+  assertType<ClarityAbiItemType>("non_fungible_token");
+  // @ts-expect-error not a valid item type
+  assertType<ClarityAbiItemType>("foo");
 });
