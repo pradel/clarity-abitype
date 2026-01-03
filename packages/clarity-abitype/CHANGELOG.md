@@ -1,5 +1,11 @@
 # clarity-abitype
 
+## 0.1.8
+
+### Patch Changes
+
+- [#13](https://github.com/pradel/clarity-abitype/pull/13) [`c0594a1`](https://github.com/pradel/clarity-abitype/commit/c0594a15f78cc840ee92fac102db71cd9ce9bda9) Thanks [@pradel](https://github.com/pradel)! - Fix lint issues and add more type tests.
+
 ## 0.1.7
 
 ### Patch Changes
