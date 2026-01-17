@@ -1,9 +1,5 @@
 import { describe, it, expect, expectTypeOf } from "vitest";
-import {
-  primitiveToCV,
-  primitivesToCVs,
-  typedCallReadOnlyFunction,
-} from "./stacks-js.js";
+import { primitiveToCV, primitivesToCVs } from "./stacks-js.js";
 import {
   uintCV,
   intCV,
@@ -22,7 +18,6 @@ import {
   responseErrorCV,
 } from "@stacks/transactions";
 import { hexToBytes } from "@stacks/common";
-import type { ClarityAbi, ClarityAbiFunction } from "./abi.js";
 import type {
   ClarityAbiArgsToPrimitiveTypes,
   ClarityAbiOutputToPrimitiveType,

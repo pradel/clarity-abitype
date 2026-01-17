@@ -1,5 +1,6 @@
 import type {
   ClarityAbi,
+  ClarityAbiAccess,
   ClarityAbiFunction,
   ClarityType,
   ClarityTuple,
@@ -38,6 +39,118 @@ import {
   cvToValue,
 } from "@stacks/transactions";
 import { hexToBytes } from "@stacks/common";
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+// Contract Function Types (following viem's pattern)
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * Extracts the function name type for a given access level.
+ * Falls back to `string` if the abi is not narrowable.
+ */
+export type ContractFunctionName<
+  abi extends ClarityAbi | readonly unknown[] = ClarityAbi,
+  access extends ClarityAbiAccess = ClarityAbiAccess,
+> =
+  ExtractAbiFunctionNames<
+    abi extends ClarityAbi ? abi : ClarityAbi,
+    access
+  > extends infer functionName extends string
+    ? [functionName] extends [never]
+      ? string
+      : functionName
+    : string;
+
+/**
+ * Extracts the function arguments type for a given function.
+ * Falls back to `readonly unknown[]` if not inferrable.
+ */
+export type ContractFunctionArgs<
+  abi extends ClarityAbi | readonly unknown[] = ClarityAbi,
+  access extends ClarityAbiAccess = ClarityAbiAccess,
+  functionName extends ContractFunctionName<abi, access> = ContractFunctionName<
+    abi,
+    access
+  >,
+> =
+  ClarityAbiArgsToPrimitiveTypes<
+    ExtractAbiFunction<
+      abi extends ClarityAbi ? abi : ClarityAbi,
+      functionName
+    >["args"]
+  > extends infer args
+    ? [args] extends [never]
+      ? readonly unknown[]
+      : args
+    : readonly unknown[];
+
+/**
+ * Extracts the function return type for a given function.
+ * Falls back to `unknown` if not inferrable.
+ */
+export type ContractFunctionReturnType<
+  abi extends ClarityAbi | readonly unknown[] = ClarityAbi,
+  access extends ClarityAbiAccess = ClarityAbiAccess,
+  functionName extends ContractFunctionName<abi, access> = ContractFunctionName<
+    abi,
+    access
+  >,
+> = abi extends ClarityAbi
+  ? ClarityAbi extends abi
+    ? unknown
+    : ClarityAbiOutputToPrimitiveType<
+        ExtractAbiFunction<abi, functionName>["outputs"]
+      >
+  : unknown;
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+// Read-Only Function Types
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * Parameters for calling a read-only function with type safety.
+ */
+export type TypedCallReadOnlyFunctionParameters<
+  abi extends ClarityAbi | readonly unknown[] = ClarityAbi,
+  functionName extends ContractFunctionName<abi, "read_only"> =
+    ContractFunctionName<abi, "read_only">,
+  args extends ContractFunctionArgs<abi, "read_only", functionName> =
+    ContractFunctionArgs<abi, "read_only", functionName>,
+> = {
+  /** The contract ABI */
+  abi: abi;
+  /** The contract address */
+  contractAddress: string;
+  /** The contract name */
+  contractName: string;
+  /** The function name to call */
+  functionName:
+    | ContractFunctionName<abi, "read_only">
+    | (functionName extends ContractFunctionName<abi, "read_only">
+        ? functionName
+        : never);
+  /** The sender address for the simulated call */
+  senderAddress: string;
+  /** Optional network configuration */
+  network?: NetworkClientParam["network"];
+  /** Optional client configuration */
+  client?: NetworkClientParam["client"];
+} & (readonly [] extends args
+  ? { functionArgs?: args | undefined }
+  : { functionArgs: args });
+
+/**
+ * Return type for calling a read-only function.
+ */
+export type TypedCallReadOnlyFunctionReturnType<
+  abi extends ClarityAbi | readonly unknown[] = ClarityAbi,
+  functionName extends ContractFunctionName<abi, "read_only"> =
+    ContractFunctionName<abi, "read_only">,
+> = ContractFunctionReturnType<abi, "read_only", functionName>;
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+// Primitive to ClarityValue Conversion
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
  * Converts a TypeScript primitive value to a ClarityValue based on the ABI type.
@@ -214,6 +327,10 @@ export function primitivesToCVs(
   return args.map((arg, index) => primitiveToCV(arg, abiArgs[index].type));
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////////////
+// Type-safe Read-Only Function Call
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
 /**
  * Type-safe wrapper around stacks.js fetchCallReadOnlyFunction.
  *
@@ -233,54 +350,37 @@ export function primitivesToCVs(
  * // result is typed as { ok: bigint; error?: never } | { ok?: never; error: null }
  * ```
  *
- * @param config - The call configuration
+ * @param parameters - The call configuration
  * @returns Promise resolving to the typed result
  */
-export function typedCallReadOnlyFunction<
-  abi extends ClarityAbi,
-  functionName extends ExtractAbiFunctionNames<abi, "read_only">,
-  abiFunction extends ClarityAbiFunction = ExtractAbiFunction<
-    abi,
-    functionName
-  >,
->(config: {
-  /** The contract ABI */
-  abi: abi;
-  /** The contract address */
-  contractAddress: string;
-  /** The contract name */
-  contractName: string;
-  /** The function name to call */
-  functionName: functionName | ExtractAbiFunctionNames<abi, "read_only">;
-  /** The function arguments as TypeScript primitive types */
-  functionArgs: ClarityAbiArgsToPrimitiveTypes<abiFunction["args"]>;
-  /** The sender address for the simulated call */
-  senderAddress: string;
-  /** Optional network configuration */
-  network?: NetworkClientParam["network"];
-  /** Optional client configuration */
-  client?: NetworkClientParam["client"];
-}): Promise<ClarityAbiOutputToPrimitiveType<abiFunction["outputs"]>> {
+export async function typedCallReadOnlyFunction<
+  const abi extends ClarityAbi | readonly unknown[],
+  functionName extends ContractFunctionName<abi, "read_only">,
+  const args extends ContractFunctionArgs<abi, "read_only", functionName>,
+>(
+  parameters: TypedCallReadOnlyFunctionParameters<abi, functionName, args>,
+): Promise<TypedCallReadOnlyFunctionReturnType<abi, functionName>> {
   const {
-    abi,
+    abi: abiParam,
     contractAddress,
     contractName,
-    functionName,
-    functionArgs,
+    functionName: funcName,
+    functionArgs = [],
     senderAddress,
     network,
     client,
-  } = config;
+  } = parameters as TypedCallReadOnlyFunctionParameters;
 
   // Find the function in the ABI
-  const abiFunc = abi.functions.find(
+  const abiTyped = abiParam as ClarityAbi;
+  const abiFunc = abiTyped.functions.find(
     (fn: ClarityAbiFunction) =>
-      fn.name === functionName && fn.access === "read_only",
+      fn.name === funcName && fn.access === "read_only",
   );
 
   if (!abiFunc) {
     throw new Error(
-      `Function "${String(functionName)}" not found in ABI or is not a read_only function`,
+      `Function "${String(funcName)}" not found in ABI or is not a read_only function`,
     );
   }
 
@@ -290,20 +390,20 @@ export function typedCallReadOnlyFunction<
     abiFunc.args,
   );
 
-  // Call the underlying stacks.js function and transform result
-  const callPromise = fetchCallReadOnlyFunction({
+  // Call the underlying stacks.js function
+  const result = await fetchCallReadOnlyFunction({
     contractAddress,
     contractName,
-    functionName: String(functionName),
+    functionName: String(funcName),
     functionArgs: clarityArgs,
     senderAddress,
     network,
     client,
   });
 
-  // Use explicit Promise to avoid deep type instantiation issues
-  return callPromise.then((result) => {
-    // Convert the result back to a primitive type
-    return cvToValue(result, true);
-  }) as Promise<ClarityAbiOutputToPrimitiveType<abiFunction["outputs"]>>;
+  // Convert the result back to a primitive type
+  return cvToValue(result, true) as TypedCallReadOnlyFunctionReturnType<
+    abi,
+    functionName
+  >;
 }
