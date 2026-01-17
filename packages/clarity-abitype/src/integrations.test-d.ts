@@ -7,7 +7,8 @@ import type {
   ExtractAbiFunction,
   ExtractAbiFunctionNames,
 } from "./utils";
-import { ccd001DirectExecuteAbi } from "../tests/SP8A9HZ3PKST0S42VM9523Z9NV42SZ026V4K39WH/ccd001-direct-execute";
+import { ccd001DirectExecuteAbi } from "../tests/SP8A9HZ3PKST0S42VM9523Z9NV42SZ026V4K39WH.ccd001-direct-execute";
+import { sbtcTokenAbi } from "../tests/SM3VDXK3WZZSA84XXFKAFAF15NNZX32CTSG82JFQ4.sbtc-token";
 
 function callReadOnlyFunction<
   abi extends ClarityAbi,
@@ -70,6 +71,14 @@ test("callReadOnlyFunction", () => {
 });
 
 test("Various clarity contracts", () => {
+  assertType<ClarityAbiOutputToPrimitiveType<bigint>>(
+    callReadOnlyFunction({
+      abi: sbtcTokenAbi,
+      functionName: "get-symbol",
+      functionArgs: [],
+    }),
+  );
+
   assertType<ClarityAbiOutputToPrimitiveType<bigint>>(
     callReadOnlyFunction({
       abi: ccd001DirectExecuteAbi,
