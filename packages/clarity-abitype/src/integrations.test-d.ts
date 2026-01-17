@@ -7,6 +7,7 @@ import type {
   ExtractAbiFunction,
   ExtractAbiFunctionNames,
 } from "./utils";
+import { ccd001DirectExecuteAbi } from "../tests/SP8A9HZ3PKST0S42VM9523Z9NV42SZ026V4K39WH/ccd001-direct-execute";
 
 function callReadOnlyFunction<
   abi extends ClarityAbi,
@@ -64,6 +65,16 @@ test("callReadOnlyFunction", () => {
       functionName: "get-balance",
       // @ts-expect-error invalid function args
       functionArgs: [1000],
+    }),
+  );
+});
+
+test("Various clarity contracts", () => {
+  assertType<ClarityAbiOutputToPrimitiveType<bigint>>(
+    callReadOnlyFunction({
+      abi: ccd001DirectExecuteAbi,
+      functionName: "is-approver",
+      functionArgs: ["SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR"],
     }),
   );
 });

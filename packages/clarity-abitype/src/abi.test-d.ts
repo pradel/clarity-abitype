@@ -347,19 +347,23 @@ test("ClarityAbiVariable", () => {
 });
 
 test("ClarityAbiMap", () => {
+  // Simple key/value types
   assertType<ClarityAbiMap>({
     name: "balances",
-    key: [{ name: "account", type: "principal" }],
-    value: [{ name: "balance", type: "uint128" }],
+    key: "principal",
+    value: "uint128",
   });
 
+  // Tuple key type
   assertType<ClarityAbiMap>({
     name: "allowances",
-    key: [
-      { name: "owner", type: "principal" },
-      { name: "spender", type: "principal" },
-    ],
-    value: [{ name: "amount", type: "uint128" }],
+    key: {
+      tuple: [
+        { name: "owner", type: "principal" },
+        { name: "spender", type: "principal" },
+      ],
+    },
+    value: "uint128",
   });
 });
 
@@ -445,8 +449,8 @@ test("ClarityAbi", () => {
     maps: [
       {
         name: "balances",
-        key: [{ name: "account", type: "principal" }],
-        value: [{ name: "balance", type: "uint128" }],
+        key: "principal",
+        value: "uint128",
       },
     ],
     fungible_tokens: [

@@ -700,8 +700,8 @@ describe("Maps", () => {
       maps: [
         {
           name: "balances",
-          key: [{ name: "account", type: "principal" as const }],
-          value: [{ name: "balance", type: "uint128" as const }],
+          key: "principal" as const,
+          value: "uint128" as const,
         },
       ],
       fungible_tokens: [],
@@ -711,8 +711,8 @@ describe("Maps", () => {
     type Result = ExtractAbiMaps<typeof testAbi>;
     assertType<Result>({
       name: "balances",
-      key: [{ name: "account", type: "principal" }],
-      value: [{ name: "balance", type: "uint128" }],
+      key: "principal",
+      value: "uint128",
     });
   });
 
@@ -723,16 +723,18 @@ describe("Maps", () => {
       maps: [
         {
           name: "balances",
-          key: [{ name: "account", type: "principal" as const }],
-          value: [{ name: "balance", type: "uint128" as const }],
+          key: "principal" as const,
+          value: "uint128" as const,
         },
         {
           name: "allowances",
-          key: [
-            { name: "owner", type: "principal" as const },
-            { name: "spender", type: "principal" as const },
-          ],
-          value: [{ name: "amount", type: "uint128" as const }],
+          key: {
+            tuple: [
+              { name: "owner", type: "principal" as const },
+              { name: "spender", type: "principal" as const },
+            ],
+          } as const,
+          value: "uint128" as const,
         },
       ],
       fungible_tokens: [],
@@ -750,16 +752,18 @@ describe("Maps", () => {
       maps: [
         {
           name: "balances",
-          key: [{ name: "account", type: "principal" as const }],
-          value: [{ name: "balance", type: "uint128" as const }],
+          key: "principal" as const,
+          value: "uint128" as const,
         },
         {
           name: "allowances",
-          key: [
-            { name: "owner", type: "principal" as const },
-            { name: "spender", type: "principal" as const },
-          ],
-          value: [{ name: "amount", type: "uint128" as const }],
+          key: {
+            tuple: [
+              { name: "owner", type: "principal" as const },
+              { name: "spender", type: "principal" as const },
+            ],
+          } as const,
+          value: "uint128" as const,
         },
       ],
       fungible_tokens: [],
@@ -768,28 +772,43 @@ describe("Maps", () => {
 
     assertType<ExtractAbiMap<typeof testAbi, "balances">>({
       name: "balances",
-      key: [{ name: "account", type: "principal" }],
-      value: [{ name: "balance", type: "uint128" }],
+      key: "principal",
+      value: "uint128",
     });
 
     assertType<ExtractAbiMap<typeof testAbi, "allowances">>({
       name: "allowances",
-      key: [
-        { name: "owner", type: "principal" },
-        { name: "spender", type: "principal" },
-      ],
-      value: [{ name: "amount", type: "uint128" }],
+      key: {
+        tuple: [
+          { name: "owner", type: "principal" },
+          { name: "spender", type: "principal" },
+        ],
+      },
+      value: "uint128",
     });
   });
 
-  test("ExtractAbiMapKeyType", () => {
+  test("ExtractAbiMapKeyType with simple key", () => {
+    const map = {
+      name: "balances",
+      key: "principal" as const,
+      value: "uint128" as const,
+    } as const;
+
+    type KeyType = ExtractAbiMapKeyType<typeof map>;
+    assertType<KeyType>("SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR");
+  });
+
+  test("ExtractAbiMapKeyType with tuple key", () => {
     const map = {
       name: "allowances",
-      key: [
-        { name: "owner", type: "principal" as const },
-        { name: "spender", type: "principal" as const },
-      ],
-      value: [{ name: "amount", type: "uint128" as const }],
+      key: {
+        tuple: [
+          { name: "owner", type: "principal" as const },
+          { name: "spender", type: "principal" as const },
+        ],
+      } as const,
+      value: "uint128" as const,
     } as const;
 
     type KeyType = ExtractAbiMapKeyType<typeof map>;
@@ -799,14 +818,27 @@ describe("Maps", () => {
     });
   });
 
-  test("ExtractAbiMapValueType", () => {
+  test("ExtractAbiMapValueType with simple value", () => {
+    const map = {
+      name: "balances",
+      key: "principal" as const,
+      value: "uint128" as const,
+    } as const;
+
+    type ValueType = ExtractAbiMapValueType<typeof map>;
+    assertType<ValueType>(1000n);
+  });
+
+  test("ExtractAbiMapValueType with tuple value", () => {
     const map = {
       name: "allowances",
-      key: [{ name: "owner", type: "principal" as const }],
-      value: [
-        { name: "amount", type: "uint128" as const },
-        { name: "expires", type: "uint128" as const },
-      ],
+      key: "principal" as const,
+      value: {
+        tuple: [
+          { name: "amount", type: "uint128" as const },
+          { name: "expires", type: "uint128" as const },
+        ],
+      } as const,
     } as const;
 
     type ValueType = ExtractAbiMapValueType<typeof map>;
