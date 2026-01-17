@@ -1,5 +1,11 @@
 # clarity-abitype
 
+## 0.2.1
+
+### Patch Changes
+
+- [`87b7d1e`](https://github.com/pradel/clarity-abitype/commit/87b7d1ec8ee556422a4e1d8efd0589f8f0683e84) Thanks [@pradel](https://github.com/pradel)! - Add README.md to package in npm publish step.
+
 ## 0.2.0
 
 ### Minor Changes
