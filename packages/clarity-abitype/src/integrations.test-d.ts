@@ -1,13 +1,14 @@
 import { assertType, test } from "vitest";
 import type { ClarityAbi, ClarityAbiFunction } from "./abi";
-import {
+import type {
   ClarityAbiArgsToPrimitiveTypes,
+  ClarityAbiOutputToPrimitiveType,
   ExtractAbiFunction,
   ExtractAbiFunctionNames,
 } from "./utils";
 import { sip10Abi } from "./abis/json";
 
-declare function callReadOnlyFunction<
+function callReadOnlyFunction<
   abi extends ClarityAbi,
   functionName extends ExtractAbiFunctionNames<abi, "read_only">,
   abiFunction extends ClarityAbiFunction = ExtractAbiFunction<
@@ -18,15 +19,32 @@ declare function callReadOnlyFunction<
   abi: abi;
   functionName: functionName | ExtractAbiFunctionNames<abi, "read_only">;
   functionArgs: ClarityAbiArgsToPrimitiveTypes<abiFunction["args"]>;
-}): ClarityAbiArgsToPrimitiveTypes<abiFunction["outputs"]>;
+}): ClarityAbiOutputToPrimitiveType<abiFunction["outputs"]> {
+  return {} as any;
+}
 
 test("callReadOnlyFunction", () => {
-  const contractAddress = "ST3KC0MTNW34S1ZXD36JYKFD3JJMWA01M55DSJ4JE";
-  const contractName = "kv-store";
+  assertType<ClarityAbiOutputToPrimitiveType<bigint>>(
+    callReadOnlyFunction({
+      abi: sip10Abi,
+      functionName: "get-decimals",
+      functionArgs: [],
+    }),
+  );
 
-  const result = callReadOnlyFunction({
-    abi: sip10Abi,
-    functionName: "doesnt exist",
-    // functionArgs: [],
-  });
+  assertType<ClarityAbiOutputToPrimitiveType<bigint>>(
+    callReadOnlyFunction({
+      abi: sip10Abi,
+      functionName: "fixed-to-decimals",
+      functionArgs: [1000000n],
+    }),
+  );
+
+  assertType<ClarityAbiOutputToPrimitiveType<bigint>>(
+    callReadOnlyFunction({
+      abi: sip10Abi,
+      functionName: "get-balance",
+      functionArgs: ["SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR"],
+    }),
+  );
 });
