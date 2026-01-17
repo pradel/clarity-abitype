@@ -27,6 +27,11 @@
     "lint": "oxlint .",
     "test": "vitest"
   },
+  "dependencies": {
+    "@stacks/common": "^7.3.1",
+    "@stacks/network": "^7.3.1",
+    "@stacks/transactions": "7.3.1"
+  },
   "peerDependencies": {
     "typescript": ">=5.1.0"
   },
@@ -44,10 +49,5 @@
     "typescript": "5.9.3",
     "vitest": "4.0.17"
   },
-  "funding": "https://github.com/sponsors/pradel",
-  "dependencies": {
-    "@stacks/common": "^7.3.1",
-    "@stacks/network": "^7.3.1",
-    "@stacks/transactions": "7.3.1"
-  }
+  "funding": "https://github.com/sponsors/pradel"
 }
