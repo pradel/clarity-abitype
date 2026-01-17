@@ -85,30 +85,41 @@ type TransferArgs = ClarityAbiArgsToPrimitiveTypes<
 
 ```ts
 import type {
+  ClarityAbi,
+  ClarityAbiFunction,
   ClarityAbiArgsToPrimitiveTypes,
+  ClarityAbiOutputToPrimitiveType,
   ExtractAbiFunction,
+  ExtractAbiFunctionNames,
 } from "clarity-abitype";
 
 function createContractCall<
-  TAbi extends ClarityAbi,
-  TFunctionName extends ExtractAbiFunctionNames<TAbi>,
->(
-  abi: TAbi,
-  functionName: TFunctionName,
-  args: ClarityAbiArgsToPrimitiveTypes<
-    ExtractAbiFunction<TAbi, TFunctionName>["args"]
+  abi extends ClarityAbi,
+  functionName extends ExtractAbiFunctionNames<abi, "public">,
+  abiFunction extends ClarityAbiFunction = ExtractAbiFunction<
+    abi,
+    functionName
   >,
-) {
+>(config: {
+  abi: abi;
+  functionName: functionName | ExtractAbiFunctionNames<abi, "public">;
+  functionArgs: ClarityAbiArgsToPrimitiveTypes<abiFunction["args"]>;
+}): ClarityAbiOutputToPrimitiveType<abiFunction["outputs"]> {
   // Implementation with full type safety
 }
 
 // Usage - args are fully typed!
-createContractCall(sip10Abi, "transfer", [
-  1000n, // amount: bigint
-  "SP2C2YFP...", // sender: string
-  "SP3FBR2AGK...", // recipient: string
-  null, // memo: `0x${string}` | null
-]);
+// Return type is inferred as: { ok: boolean } | { error: bigint }
+const result = createContractCall({
+  abi: sip10Abi,
+  functionName: "transfer",
+  functionArgs: [
+    1000n, // amount: bigint
+    "SP2C2YFP...", // sender: string
+    "SP3FBR2AGK...", // recipient: string
+    null, // memo: `0x${string}` | null
+  ],
+});
 ```
 
 ### Type-safe Read Calls
@@ -135,7 +146,11 @@ async function callReadOnlyFunction<
 }
 
 // Return type is inferred as: { ok: bigint } | { error: null }
-const balance = await callReadOnlyFunction({abi: sip10Abi, functionName: "get-balance", functionArgs: [] }");
+const balance = await callReadOnlyFunction({
+  abi: sip10Abi,
+  functionName: "get-balance",
+  functionArgs: ["SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR"],
+});
 ```
 
 ## Credits
