@@ -22,4 +22,8 @@ test("ResolvedRegister", () => {
 
   type StrictAbiType = ResolvedRegister["strictAbiType"];
   assertType<StrictAbiType>(false);
+
+  // listMaxDepth defaults to false (unlimited depth)
+  type ListMaxDepth = ResolvedRegister["listMaxDepth"];
+  assertType<ListMaxDepth>(false);
 });

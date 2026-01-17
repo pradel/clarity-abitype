@@ -1,5 +1,5 @@
 import type { ResolvedRegister } from "./register";
-import { Pretty } from "./types";
+import type { Pretty } from "./types";
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // Clarity Types
@@ -94,6 +94,20 @@ export type ClarityType =
   | ClarityOptional
   | ClarityResponse;
 
+/**
+ * Basic Clarity types that don't contain nested ClarityType references.
+ * These can be resolved immediately without recursion.
+ */
+export type ClarityBasicType =
+  | ClarityPrincipal
+  | ClarityBool
+  | ClarityInt
+  | ClarityUInt
+  | ClarityNone
+  | ClarityBuffer
+  | ClarityStringAscii
+  | ClarityStringUtf8;
+
 type ResolvedClarityType = ResolvedRegister["strictAbiType"] extends true
   ? ClarityType
   : ClarityType | string;
@@ -177,6 +191,34 @@ export type ClarityAbiNonFungibleToken = {
   type: ResolvedClarityType;
 };
 
+////////////////////////////////////////////////////////////////////////////////////////////////////
+// Clarity Trait Types
+
+/**
+ * Clarity trait function definition.
+ * Traits define function signatures that contracts can implement.
+ */
+export type ClarityAbiTraitFunction = {
+  name: string;
+  access: ClarityAbiAccess;
+  args: readonly ClarityAbiArg[];
+  outputs: ClarityAbiOutput;
+};
+
+/**
+ * Clarity trait definition.
+ * A trait is a collection of function signatures that a contract can implement.
+ *
+ * @see https://docs.stacks.co/clarity/traits
+ */
+export type ClarityAbiTrait = {
+  name: string;
+  functions: readonly ClarityAbiTraitFunction[];
+};
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+// Clarity Version Types
+
 /**
  * Clarity epoch versions
  */
@@ -196,18 +238,52 @@ export type ClarityEpoch =
  */
 export type ClarityVersion = "Clarity1" | "Clarity2" | "Clarity3" | "Clarity4";
 
+////////////////////////////////////////////////////////////////////////////////////////////////////
+// Complete Clarity ABI
+
 /**
- * Complete Clarity ABI specification
+ * Complete Clarity ABI specification.
+ *
+ * This type represents the full ABI of a Clarity smart contract, including:
+ * - Functions (public, private, read-only)
+ * - Variables (constants and data variables)
+ * - Maps (data maps)
+ * - Fungible tokens (FT definitions)
+ * - Non-fungible tokens (NFT definitions)
+ * - Traits (implemented and defined traits)
+ * - Epoch and Clarity version information
  */
 export type ClarityAbi = Pretty<{
+  /** All functions defined in the contract */
   functions: readonly ClarityAbiFunction[];
+  /** All variables (constants and data-vars) defined in the contract */
   variables: readonly ClarityAbiVariable[];
+  /** All data maps defined in the contract */
   maps: readonly ClarityAbiMap[];
+  /** All fungible token definitions in the contract */
   fungible_tokens: readonly ClarityAbiFungibleToken[];
+  /** All non-fungible token definitions in the contract */
   non_fungible_tokens: readonly ClarityAbiNonFungibleToken[];
+  /** Traits defined in this contract */
+  defined_traits?: readonly ClarityAbiTrait[] | undefined;
+  /** Traits implemented by this contract */
+  implemented_traits?: readonly ClarityAbiTraitReference[] | undefined;
+  /** The epoch version this contract targets */
   epoch?: ClarityEpoch | undefined;
+  /** The Clarity language version used */
   clarity_version?: ClarityVersion | undefined;
 }>;
+
+/**
+ * Reference to a trait implemented by a contract.
+ * Format: "principal.contract-name.trait-name"
+ */
+export type ClarityAbiTraitReference = {
+  /** The contract identifier where the trait is defined */
+  contract_id: string;
+  /** The name of the trait */
+  trait_name: string;
+};
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // Utility types for Clarity ABI items
@@ -217,4 +293,5 @@ export type ClarityAbiItemType =
   | "variable"
   | "map"
   | "fungible_token"
-  | "non_fungible_token";
+  | "non_fungible_token"
+  | "trait";
