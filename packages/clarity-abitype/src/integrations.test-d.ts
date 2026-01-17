@@ -1,12 +1,12 @@
 import { assertType, test } from "vitest";
 import type { ClarityAbi, ClarityAbiFunction } from "./abi";
+import { sip10Abi } from "./abis/json";
 import type {
   ClarityAbiArgsToPrimitiveTypes,
   ClarityAbiOutputToPrimitiveType,
   ExtractAbiFunction,
   ExtractAbiFunctionNames,
 } from "./utils";
-import { sip10Abi } from "./abis/json";
 
 function callReadOnlyFunction<
   abi extends ClarityAbi,
@@ -45,6 +45,24 @@ test("callReadOnlyFunction", () => {
       abi: sip10Abi,
       functionName: "get-balance",
       functionArgs: ["SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR"],
+    }),
+  );
+
+  assertType<ClarityAbiOutputToPrimitiveType<bigint>>(
+    callReadOnlyFunction({
+      abi: sip10Abi,
+      // @ts-expect-error invalid function name
+      functionName: "dadsasa",
+      functionArgs: [],
+    }),
+  );
+
+  assertType<ClarityAbiOutputToPrimitiveType<bigint>>(
+    callReadOnlyFunction({
+      abi: sip10Abi,
+      functionName: "get-balance",
+      // @ts-expect-error invalid function args
+      functionArgs: [1000],
     }),
   );
 });
