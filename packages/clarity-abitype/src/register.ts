@@ -45,6 +45,19 @@ export type ResolvedRegister = {
     : DefaultRegister["fixedArrayMaxLength"];
 
   /**
+   * Maximum depth for nested list types.
+   * When set to a number, limits recursion depth for list type resolution.
+   * When set to `false`, no depth limiting is applied.
+   *
+   * @default false
+   */
+  listMaxDepth: Register extends {
+    listMaxDepth: infer type extends number | false;
+  }
+    ? type
+    : DefaultRegister["listMaxDepth"];
+
+  /**
    * When set, validates {@link ClarityType} strictly
    *
    * Note: You probably only want to set this to `true` if parsed types are returning as `unknown`
@@ -74,6 +87,9 @@ export type DefaultRegister = {
   };
   /** TypeScript type to use for `int128` and `uint128` values */
   bigIntType: bigint;
+
+  /** Maximum depth for nested list types (false = unlimited) */
+  listMaxDepth: false;
 
   /** When set, validates {@link ClarityType} strictly */
   strictAbiType: false;
