@@ -25,7 +25,230 @@ import {
   responseOkCV,
   responseErrorCV,
 } from "@stacks/transactions";
-import { hexToBytes } from "@stacks/common";
+import { hexToBytes, bytesToHex } from "@stacks/common";
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+// ClarityValue to Primitive Conversion
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * Represents a ClarityValue as returned by the Stacks API.
+ * The type can be either a numeric enum or a string identifier.
+ */
+type ApiClarityValue =
+  | { type: "ok"; value: ApiClarityValue }
+  | { type: "err"; value: ApiClarityValue }
+  | { type: "int"; value: string | bigint }
+  | { type: "uint"; value: string | bigint }
+  | { type: "bool"; value: boolean }
+  | { type: "ascii"; value: string }
+  | { type: "utf8"; value: string }
+  | { type: "none" }
+  | { type: "some"; value: ApiClarityValue }
+  | { type: "buff"; value: string }
+  | { type: "principal"; value: string }
+  | { type: "list"; value: ApiClarityValue[] }
+  | { type: "tuple"; value: Record<string, ApiClarityValue> }
+  | ClarityValue;
+
+/**
+ * Converts a ClarityValue to a TypeScript primitive value.
+ * Handles both the API response format (string types) and the internal ClarityValue format (numeric types).
+ *
+ * @param cv - The ClarityValue to convert
+ * @returns The corresponding TypeScript primitive value
+ */
+export function cvToPrimitive(cv: ClarityValue | ApiClarityValue): unknown {
+  const cvAny = cv as ApiClarityValue;
+  const cvType = (cv as { type: string | number }).type;
+
+  // Handle string-based types from API responses
+  if (typeof cvType === "string") {
+    switch (cvType) {
+      case "ok":
+        return {
+          ok: cvToPrimitive(
+            (cvAny as { type: "ok"; value: ApiClarityValue }).value,
+          ),
+        };
+
+      case "err":
+        return {
+          error: cvToPrimitive(
+            (cvAny as { type: "err"; value: ApiClarityValue }).value,
+          ),
+        };
+
+      case "int":
+        const intVal = (cvAny as { type: "int"; value: string | bigint }).value;
+        return typeof intVal === "bigint" ? intVal : BigInt(intVal);
+
+      case "uint":
+        const uintVal = (cvAny as { type: "uint"; value: string | bigint })
+          .value;
+        return typeof uintVal === "bigint" ? uintVal : BigInt(uintVal);
+
+      case "bool":
+        return (cvAny as { type: "bool"; value: boolean }).value;
+
+      case "ascii":
+        return (cvAny as { type: "ascii"; value: string }).value;
+
+      case "utf8":
+        return (cvAny as { type: "utf8"; value: string }).value;
+
+      case "none":
+        return null;
+
+      case "some":
+        return cvToPrimitive(
+          (cvAny as { type: "some"; value: ApiClarityValue }).value,
+        );
+
+      case "buff":
+        const buffVal = (cvAny as { type: "buff"; value: string }).value;
+        return buffVal.startsWith("0x") ? buffVal : "0x" + buffVal;
+
+      case "principal":
+        return (cvAny as { type: "principal"; value: string }).value;
+
+      case "list":
+        return (
+          (cvAny as { type: "list"; value: ApiClarityValue[] }).value || []
+        ).map(cvToPrimitive);
+
+      case "tuple":
+        const tupleData = (
+          cvAny as { type: "tuple"; value: Record<string, ApiClarityValue> }
+        ).value;
+        const result: Record<string, unknown> = {};
+        for (const [key, value] of Object.entries(tupleData)) {
+          result[key] = cvToPrimitive(value);
+        }
+        return result;
+
+      default:
+        throw new Error(`Unknown ClarityValue string type: ${cvType}`);
+    }
+  }
+
+  // Handle numeric types from internal ClarityValue format
+  // Based on ClarityType enum from @stacks/transactions
+  // 0 = Int, 1 = UInt, 2 = Buffer, 3 = BoolTrue, 4 = BoolFalse
+  // 5 = PrincipalStandard, 6 = PrincipalContract, 7 = ResponseOk, 8 = ResponseErr
+  // 9 = None, 10 = Some, 11 = List, 12 = Tuple, 13 = StringASCII, 14 = StringUTF8
+
+  switch (cvType) {
+    case 0: // Int
+      return (cv as { value: bigint }).value;
+
+    case 1: // UInt
+      return (cv as { value: bigint }).value;
+
+    case 2: // Buffer
+      return (
+        "0x" + bytesToHex((cv as unknown as { buffer: Uint8Array }).buffer)
+      );
+
+    case 3: // BoolTrue
+      return true;
+
+    case 4: // BoolFalse
+      return false;
+
+    case 5: // PrincipalStandard
+      return formatPrincipal(cv as unknown as PrincipalCV);
+
+    case 6: // PrincipalContract
+      return formatContractPrincipal(cv as unknown as ContractPrincipalCV);
+
+    case 7: // ResponseOk
+      return { ok: cvToPrimitive((cv as { value: ClarityValue }).value) };
+
+    case 8: // ResponseErr
+      return { error: cvToPrimitive((cv as { value: ClarityValue }).value) };
+
+    case 9: // None
+      return null;
+
+    case 10: // Some
+      return cvToPrimitive((cv as { value: ClarityValue }).value);
+
+    case 11: // List
+      return ((cv as unknown as { list: ClarityValue[] }).list || []).map(
+        cvToPrimitive,
+      );
+
+    case 12: // Tuple
+      const numericTupleData = (
+        cv as unknown as { data: Record<string, ClarityValue> }
+      ).data;
+      const numericResult: Record<string, unknown> = {};
+      for (const [key, value] of Object.entries(numericTupleData)) {
+        numericResult[key] = cvToPrimitive(value);
+      }
+      return numericResult;
+
+    case 13: // StringASCII
+      return (cv as unknown as { data: string }).data;
+
+    case 14: // StringUTF8
+      return (cv as unknown as { data: string }).data;
+
+    default:
+      throw new Error(`Unknown ClarityValue numeric type: ${cvType}`);
+  }
+}
+
+// Helper types for principal handling
+interface PrincipalCV {
+  type: number;
+  address: {
+    version: number;
+    hash160: Uint8Array;
+  };
+}
+
+interface ContractPrincipalCV extends PrincipalCV {
+  contractName: {
+    content: string;
+  };
+}
+
+function formatPrincipal(cv: PrincipalCV): string {
+  const { version, hash160 } = cv.address;
+  // Use c32 encoding for the address
+  const c32Alphabet = "0123456789ABCDEFGHJKMNPQRSTVWXYZ";
+  const data = new Uint8Array([version, ...hash160]);
+
+  // Simple c32check encoding
+  let result = "";
+  let carry = 0;
+  let carryBits = 0;
+
+  for (let i = data.length - 1; i >= 0; i--) {
+    carry |= data[i] << carryBits;
+    carryBits += 8;
+    while (carryBits >= 5) {
+      result = c32Alphabet[carry & 0x1f] + result;
+      carry >>= 5;
+      carryBits -= 5;
+    }
+  }
+  if (carryBits > 0) {
+    result = c32Alphabet[carry & 0x1f] + result;
+  }
+
+  // Add prefix based on version
+  const prefix = version === 22 || version === 20 ? "SP" : "ST";
+  return prefix + result;
+}
+
+function formatContractPrincipal(cv: ContractPrincipalCV): string {
+  const address = formatPrincipal(cv);
+  const contractName = cv.contractName.content;
+  return `${address}.${contractName}`;
+}
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // Primitive to ClarityValue Conversion

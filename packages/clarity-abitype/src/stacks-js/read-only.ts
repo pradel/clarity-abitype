@@ -12,9 +12,9 @@ import type {
 
 import type { NetworkClientParam } from "@stacks/network";
 
-import { fetchCallReadOnlyFunction, cvToValue } from "@stacks/transactions";
+import { fetchCallReadOnlyFunction } from "@stacks/transactions";
 
-import { primitivesToCVs } from "./utils.js";
+import { primitivesToCVs, cvToPrimitive } from "./utils.js";
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // Contract Function Types
@@ -199,7 +199,7 @@ export async function typedCallReadOnlyFunction<
   });
 
   // Convert the result back to a primitive type
-  return cvToValue(result, true) as TypedCallReadOnlyFunctionReturnType<
+  return cvToPrimitive(result) as TypedCallReadOnlyFunctionReturnType<
     abi,
     functionName
   >;
