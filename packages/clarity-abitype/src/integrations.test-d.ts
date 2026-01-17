@@ -15,6 +15,7 @@ function callReadOnlyFunction<
     abi,
     functionName
   >,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
 >(config: {
   abi: abi;
   functionName: functionName | ExtractAbiFunctionNames<abi, "read_only">;

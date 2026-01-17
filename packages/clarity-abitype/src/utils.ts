@@ -13,6 +13,7 @@ import type {
   ClarityStringAscii,
   ClarityStringUtf8,
   ClarityTuple,
+  ClarityTupleEntry,
   ClarityType,
   ClarityUInt,
 } from "./abi.js";
@@ -20,107 +21,167 @@ import type { ResolvedRegister } from "./register.js";
 import type { Error, Pretty } from "./types.js";
 
 /**
+ * Basic Clarity types that don't contain nested ClarityType references.
+ * These can be resolved immediately without recursion.
+ */
+type ClarityBasicType =
+  | ClarityPrincipal
+  | ClarityBool
+  | ClarityInt
+  | ClarityUInt
+  | ClarityNone
+  | ClarityBuffer
+  | ClarityStringAscii
+  | ClarityStringUtf8;
+
+/**
+ * Converts basic {@link ClarityType} to corresponding TypeScript primitive type.
+ * This handles only non-recursive types for efficient type resolution.
+ */
+type ClarityBasicTypeToPrimitiveType<T extends ClarityBasicType> =
+  T extends ClarityPrincipal
+    ? ResolvedRegister["addressType"]
+    : T extends ClarityBool
+      ? boolean
+      : T extends ClarityInt
+        ? ResolvedRegister["bigIntType"]
+        : T extends ClarityUInt
+          ? ResolvedRegister["bigIntType"]
+          : T extends ClarityNone
+            ? null
+            : T extends ClarityBuffer
+              ? ResolvedRegister["bytesType"]["outputs"]
+              : T extends ClarityStringAscii
+                ? string
+                : T extends ClarityStringUtf8
+                  ? string
+                  : never;
+
+/**
+ * Converts Clarity tuple to TypeScript object type
+ */
+type ClarityTupleToPrimitiveType<
+  tuple extends ClarityTuple,
+  entries extends readonly ClarityTupleEntry[] = tuple["tuple"],
+> = entries extends readonly []
+  ? {}
+  : {
+      [K in entries[number] as K["name"]]: ClarityTypeToPrimitiveType<
+        K["type"]
+      >;
+    };
+
+/**
+ * Converts Clarity list to TypeScript array type
+ */
+type ClarityListToPrimitiveType<
+  list extends ClarityList,
+  itemType extends ClarityType | string = list["list"]["type"],
+> = readonly ClarityTypeToPrimitiveType<itemType>[];
+
+/**
+ * Converts Clarity optional to TypeScript union with null
+ */
+type ClarityOptionalToPrimitiveType<
+  optional extends ClarityOptional,
+  innerType extends ClarityType | string = optional["optional"],
+> = ClarityTypeToPrimitiveType<innerType> | null;
+
+/**
+ * Converts Clarity response to TypeScript object with ok/error properties
+ */
+type ClarityResponseToPrimitiveType<
+  response extends ClarityResponse,
+  okType extends ClarityType | string = response["response"]["ok"],
+  errorType extends ClarityType | string = response["response"]["error"],
+> =
+  | { ok: ClarityTypeToPrimitiveType<okType>; error?: never }
+  | { ok?: never; error: ClarityTypeToPrimitiveType<errorType> };
+
+/**
  * Converts {@link ClarityType} to corresponding TypeScript primitive type.
+ *
+ * Uses a flattened structure with basic type short-circuiting to avoid
+ * "Type instantiation is excessively deep" errors.
  *
  * @param clarityType - {@link ClarityType} to convert to TypeScript representation
  * @returns TypeScript primitive type
  */
 export type ClarityTypeToPrimitiveType<
   clarityType extends ClarityType | string,
-> = clarityType extends ClarityPrincipal
-  ? ResolvedRegister["addressType"]
-  : clarityType extends ClarityBool
-    ? boolean
-    : clarityType extends ClarityInt
-      ? ResolvedRegister["bigIntType"]
-      : clarityType extends ClarityUInt
-        ? ResolvedRegister["bigIntType"]
-        : clarityType extends ClarityNone
-          ? null
-          : clarityType extends ClarityBuffer
-            ? ResolvedRegister["bytesType"]["outputs"]
-            : clarityType extends ClarityStringAscii
-              ? string
-              : clarityType extends ClarityStringUtf8
-                ? string
-                : clarityType extends ClarityTuple
-                  ? ClarityTupleToPrimitiveType<clarityType>
-                  : clarityType extends ClarityList
-                    ? ClarityListToPrimitiveType<clarityType>
-                    : clarityType extends ClarityOptional
-                      ? ClarityOptionalToPrimitiveType<clarityType>
-                      : clarityType extends ClarityResponse
-                        ? ClarityResponseToPrimitiveType<clarityType>
-                        : ResolvedRegister["strictAbiType"] extends true
-                          ? Error<`Unknown type '${clarityType & string}'.`>
-                          : unknown;
+> =
+  // 1. Short-circuit: Check for basic types first (non-recursive)
+  clarityType extends ClarityBasicType
+    ? ClarityBasicTypeToPrimitiveType<clarityType>
+    : // 2. Tuple type
+      clarityType extends ClarityTuple
+      ? ClarityTupleToPrimitiveType<clarityType>
+      : // 3. List type
+        clarityType extends ClarityList
+        ? ClarityListToPrimitiveType<clarityType>
+        : // 4. Optional type
+          clarityType extends ClarityOptional
+          ? ClarityOptionalToPrimitiveType<clarityType>
+          : // 5. Response type
+            clarityType extends ClarityResponse
+            ? ClarityResponseToPrimitiveType<clarityType>
+            : // 6. Unknown type handling
+              ResolvedRegister["strictAbiType"] extends true
+              ? Error<`Unknown type '${clarityType & string}'.`>
+              : unknown;
 
 /**
- * Converts Clarity tuple to TypeScript object type
+ * Converts a single Clarity ABI argument to its TypeScript primitive type.
+ *
+ * This follows the pattern from ETH abitype's AbiParameterToPrimitiveType,
+ * taking the whole argument object and short-circuiting on basic types.
+ *
+ * @param arg - {@link ClarityAbiArg} to convert
+ * @returns TypeScript primitive type for the argument's type
  */
-type ClarityTupleToPrimitiveType<tuple extends ClarityTuple> = tuple extends {
-  tuple: infer entries extends readonly any[];
-}
-  ? entries extends readonly []
-    ? {}
-    : entries[number] extends {
-          name: string;
-          type: ClarityType | string;
-        }
-      ? {
-          [K in entries[number] as K["name"]]: ClarityTypeToPrimitiveType<
-            K["type"]
-          >;
-        }
-      : never
-  : never;
+type ClarityAbiArgToPrimitiveTypeValue<
+  arg extends ClarityAbiArg | { name: string; type: ClarityType | string },
+> =
+  // 1. Short-circuit: Check for basic types first
+  arg["type"] extends ClarityBasicType
+    ? ClarityBasicTypeToPrimitiveType<arg["type"]>
+    : // 2. Tuple type - pattern match on the arg structure
+      arg extends { type: infer T extends ClarityTuple }
+      ? ClarityTupleToPrimitiveType<T>
+      : // 3. List type
+        arg extends { type: infer T extends ClarityList }
+        ? ClarityListToPrimitiveType<T>
+        : // 4. Optional type
+          arg extends { type: infer T extends ClarityOptional }
+          ? ClarityOptionalToPrimitiveType<T>
+          : // 5. Response type
+            arg extends { type: infer T extends ClarityResponse }
+            ? ClarityResponseToPrimitiveType<T>
+            : // 6. Unknown type handling
+              ResolvedRegister["strictAbiType"] extends true
+              ? Error<`Unknown type '${arg["type"] & string}'.`>
+              : unknown;
 
 /**
- * Converts Clarity list to TypeScript array type
- */
-type ClarityListToPrimitiveType<list extends ClarityList> = list extends {
-  list: { type: infer itemType extends ClarityType | string };
-}
-  ? readonly ClarityTypeToPrimitiveType<itemType>[]
-  : never;
-
-/**
- * Converts Clarity optional to TypeScript union with null
- */
-type ClarityOptionalToPrimitiveType<optional extends ClarityOptional> =
-  optional extends { optional: infer innerType extends ClarityType | string }
-    ? ClarityTypeToPrimitiveType<innerType> | null
-    : never;
-
-/**
- * Converts Clarity response to TypeScript object with ok/error properties
- */
-type ClarityResponseToPrimitiveType<response extends ClarityResponse> =
-  response extends {
-    response: {
-      ok: infer okType extends ClarityType | string;
-      error: infer errorType extends ClarityType | string;
-    };
-  }
-    ?
-        | { ok: ClarityTypeToPrimitiveType<okType>; error?: never }
-        | { ok?: never; error: ClarityTypeToPrimitiveType<errorType> }
-    : never;
-
-/**
- * Converts Clarity ABI argument to TypeScript primitive type
+ * Converts Clarity ABI argument to TypeScript primitive type (as object with name as key)
  */
 export type ClarityAbiArgToPrimitiveType<arg extends ClarityAbiArg> = {
-  [K in arg["name"]]: ClarityTypeToPrimitiveType<arg["type"]>;
+  [K in arg["name"]]: ClarityAbiArgToPrimitiveTypeValue<arg>;
 };
 
 /**
- * Converts array of Clarity ABI arguments to tuple of TypeScript primitive types
+ * Converts array of Clarity ABI arguments to tuple of TypeScript primitive types.
+ *
+ * Uses ClarityAbiArgToPrimitiveTypeValue which short-circuits on basic types
+ * to avoid "Type instantiation is excessively deep" errors.
+ *
+ * @param args - Array of {@link ClarityAbiArg} to convert to TypeScript representations
+ * @returns Tuple of TypeScript primitive types
  */
 export type ClarityAbiArgsToPrimitiveTypes<
   args extends readonly ClarityAbiArg[],
 > = Pretty<{
-  [key in keyof args]: ClarityTypeToPrimitiveType<args[key]["type"]>;
+  [key in keyof args]: ClarityAbiArgToPrimitiveTypeValue<args[key]>;
 }>;
 
 /**
