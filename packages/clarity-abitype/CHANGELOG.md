@@ -1,5 +1,19 @@
 # clarity-abitype
 
+## 0.2.0
+
+### Minor Changes
+
+- [#15](https://github.com/pradel/clarity-abitype/pull/15) [`bbfe595`](https://github.com/pradel/clarity-abitype/commit/bbfe595cb1b19e88a62a3f31021306fee444153d) Thanks [@pradel](https://github.com/pradel)! - Add traits abi specification.
+
+### Patch Changes
+
+- [#15](https://github.com/pradel/clarity-abitype/pull/15) [`bbfe595`](https://github.com/pradel/clarity-abitype/commit/bbfe595cb1b19e88a62a3f31021306fee444153d) Thanks [@pradel](https://github.com/pradel)! - Improve list types with proper length check.
+
+- [#15](https://github.com/pradel/clarity-abitype/pull/15) [`bbfe595`](https://github.com/pradel/clarity-abitype/commit/bbfe595cb1b19e88a62a3f31021306fee444153d) Thanks [@pradel](https://github.com/pradel)! - Improve performance of the ClarityAbiArgsToPrimitiveTypes type.
+
+- [#15](https://github.com/pradel/clarity-abitype/pull/15) [`bbfe595`](https://github.com/pradel/clarity-abitype/commit/bbfe595cb1b19e88a62a3f31021306fee444153d) Thanks [@pradel](https://github.com/pradel)! - Fix "Type instantiation is excessively deep" errors with function args.
+
 ## 0.1.8
 
 ### Patch Changes
