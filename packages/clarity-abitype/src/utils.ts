@@ -14,6 +14,7 @@ import type {
   ClarityResponse,
   ClarityStringAscii,
   ClarityStringUtf8,
+  ClarityTraitReference,
   ClarityTuple,
   ClarityTupleEntry,
   ClarityType,
@@ -39,6 +40,7 @@ interface ClarityStringTypeLookup {
   int128: ResolvedRegister["bigIntType"];
   uint128: ResolvedRegister["bigIntType"];
   none: null;
+  trait_reference: ResolvedRegister["addressType"];
 }
 
 /**
@@ -50,7 +52,8 @@ type ClarityStringTypeToPrimitive<
     | ClarityBool
     | ClarityInt
     | ClarityUInt
-    | ClarityNone,
+    | ClarityNone
+    | ClarityTraitReference,
 > = ClarityStringTypeLookup[T];
 
 /**
@@ -80,6 +83,7 @@ export type ClarityBasicTypeToPrimitiveType<T extends ClarityBasicType> =
     | ClarityInt
     | ClarityUInt
     | ClarityNone
+    | ClarityTraitReference
     ? ClarityStringTypeToPrimitive<T>
     : T extends ClarityBuffer | ClarityStringAscii | ClarityStringUtf8
       ? ClarityObjectTypeToPrimitive<T>
@@ -494,29 +498,20 @@ export type ExtractAbiMap<
  * Extracts the key type from a {@link ClarityAbiMap}.
  *
  * @param map - The map to extract key type from
- * @returns Object type representing the map's key structure
+ * @returns TypeScript primitive type representing the map's key
  */
-export type ExtractAbiMapKeyType<
-  map extends { key: readonly { name: string; type: ClarityType | string }[] },
-> = {
-  [K in map["key"][number] as K["name"]]: ClarityTypeToPrimitiveType<K["type"]>;
-};
+export type ExtractAbiMapKeyType<map extends { key: ClarityType | string }> =
+  ClarityTypeToPrimitiveType<map["key"]>;
 
 /**
  * Extracts the value type from a {@link ClarityAbiMap}.
  *
  * @param map - The map to extract value type from
- * @returns Object type representing the map's value structure
+ * @returns TypeScript primitive type representing the map's value
  */
 export type ExtractAbiMapValueType<
-  map extends {
-    value: readonly { name: string; type: ClarityType | string }[];
-  },
-> = {
-  [K in map["value"][number] as K["name"]]: ClarityTypeToPrimitiveType<
-    K["type"]
-  >;
-};
+  map extends { value: ClarityType | string },
+> = ClarityTypeToPrimitiveType<map["value"]>;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // Clarity ABI Traits

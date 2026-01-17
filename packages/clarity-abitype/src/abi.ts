@@ -10,6 +10,7 @@ export type ClarityUInt = "uint128";
 export type ClarityBool = "bool";
 export type ClarityPrincipal = "principal";
 export type ClarityNone = "none";
+export type ClarityTraitReference = "trait_reference";
 
 /**
  * Clarity buffer type with maximum length
@@ -86,6 +87,7 @@ export type ClarityType =
   | ClarityInt
   | ClarityUInt
   | ClarityNone
+  | ClarityTraitReference
   | ClarityBuffer
   | ClarityStringAscii
   | ClarityStringUtf8
@@ -104,6 +106,7 @@ export type ClarityBasicType =
   | ClarityInt
   | ClarityUInt
   | ClarityNone
+  | ClarityTraitReference
   | ClarityBuffer
   | ClarityStringAscii
   | ClarityStringUtf8;
@@ -160,20 +163,13 @@ export type ClarityAbiVariable = {
 };
 
 /**
- * Clarity ABI map key-value definition
- */
-export type ClarityAbiMapEntry = {
-  name: string;
-  type: ResolvedClarityType;
-};
-
-/**
- * Clarity ABI map definition
+ * Clarity ABI map definition.
+ * Maps in Clarity ABIs have key and value fields that are ClarityType values directly.
  */
 export type ClarityAbiMap = {
   name: string;
-  key: readonly ClarityAbiMapEntry[];
-  value: readonly ClarityAbiMapEntry[];
+  key: ResolvedClarityType;
+  value: ResolvedClarityType;
 };
 
 /**
@@ -225,7 +221,9 @@ export type ClarityAbiTrait = {
 export type ClarityEpoch =
   | "Epoch10"
   | "Epoch20"
+  | "Epoch2_05"
   | "Epoch21"
+  | "Epoch2_1"
   | "Epoch22"
   | "Epoch23"
   | "Epoch24"
