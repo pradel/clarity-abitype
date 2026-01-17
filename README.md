@@ -119,22 +119,23 @@ import type {
   ExtractAbiFunction,
 } from "clarity-abitype";
 
-async function readContract<
-  TAbi extends ClarityAbi,
-  TFunctionName extends ExtractAbiFunctionNames<TAbi, "read_only">,
->(
-  abi: TAbi,
-  functionName: TFunctionName,
-): Promise<
-  ClarityAbiOutputToPrimitiveType<
-    ExtractAbiFunction<TAbi, TFunctionName>["outputs"]
-  >
-> {
+async function callReadOnlyFunction<
+  abi extends ClarityAbi,
+  functionName extends ExtractAbiFunctionNames<abi, "read_only">,
+  abiFunction extends ClarityAbiFunction = ExtractAbiFunction<
+    abi,
+    functionName
+  >,
+>(config: {
+  abi: abi;
+  functionName: functionName | ExtractAbiFunctionNames<abi, "read_only">;
+  functionArgs: ClarityAbiArgsToPrimitiveTypes<abiFunction["args"]>;
+}): Promise<ClarityAbiOutputToPrimitiveType<abiFunction["outputs"]>> {
   // Implementation
 }
 
 // Return type is inferred as: { ok: bigint } | { error: null }
-const balance = await readContract(sip10Abi, "get-balance");
+const balance = await callReadOnlyFunction({abi: sip10Abi, functionName: "get-balance", functionArgs: [] }");
 ```
 
 ## Credits
