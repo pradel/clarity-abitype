@@ -1,5 +1,11 @@
 # clarity-abitype
 
+## 0.2.2
+
+### Patch Changes
+
+- [#18](https://github.com/pradel/clarity-abitype/pull/18) [`aceba71`](https://github.com/pradel/clarity-abitype/commit/aceba71fa0f35c6f19549d9cc739ef79f9a1bd4e) Thanks [@pradel](https://github.com/pradel)! - Fix map type issues, add real contract tests.
+
 ## 0.2.1
 
 ### Patch Changes
