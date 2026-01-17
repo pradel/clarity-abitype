@@ -10,4 +10,5 @@ export default defineConfig({
     level: "error",
     profile: "esm-only",
   },
+  dts: true,
 });
