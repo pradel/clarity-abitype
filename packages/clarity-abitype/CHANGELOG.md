@@ -1,5 +1,11 @@
 # clarity-abitype
 
+## 0.3.1
+
+### Patch Changes
+
+- [`b4640c6`](https://github.com/pradel/clarity-abitype/commit/b4640c6c3892dc58151bf4013ae0bda7d2be6ac4) Thanks [@pradel](https://github.com/pradel)! - Add pkg sourcemaps to build.
+
 ## 0.3.0
 
 ### Minor Changes
