@@ -4,10 +4,8 @@ import type {
   ExtractAbiFunction,
   ExtractAbiFunctionNames,
 } from "../utils.js";
-
 import type { SignedContractCallOptions } from "@stacks/transactions";
 import { makeContractCall } from "@stacks/transactions";
-
 import { primitivesToCVs } from "./utils.js";
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
