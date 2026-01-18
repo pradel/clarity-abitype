@@ -5,6 +5,7 @@ export default defineConfig({
   platform: "neutral",
   publint: true,
   exports: true,
+  sourcemap: true,
   attw: {
     enabled: true,
     level: "error",
