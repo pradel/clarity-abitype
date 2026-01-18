@@ -21,6 +21,7 @@ import type { ExtractAbiFunctionNames } from "../utils.js";
 
 /**
  * Creates a mock simnet instance for testing.
+ * We cast to Simnet since we only need to mock the methods we use.
  */
 function createMockSimnet(callPublicFnMock?: Simnet["callPublicFn"]): Simnet {
   return {
@@ -34,9 +35,9 @@ function createMockSimnet(callPublicFnMock?: Simnet["callPublicFn"]): Simnet {
     callPrivateFn: vi.fn(),
     blockHeight: 1,
     deployer: "ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM",
-    currentEpoch: 2.5,
+    currentEpoch: "2.5",
     getAccounts: vi.fn().mockReturnValue(new Map()),
-  };
+  } as unknown as Simnet;
 }
 
 describe("typedCallPublicFn", () => {
