@@ -29,15 +29,11 @@
   },
   "dependencies": {},
   "peerDependencies": {
-    "@stacks/common": ">= 7.3.0",
     "@stacks/network": ">= 7.3.0",
     "@stacks/transactions": ">= 7.3.0",
     "typescript": ">=5.1.0"
   },
   "peerDependenciesMeta": {
-    "@stacks/common": {
-      "optional": true
-    },
     "@stacks/network": {
       "optional": true
     },
