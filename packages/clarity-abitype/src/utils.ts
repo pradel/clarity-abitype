@@ -21,7 +21,7 @@ import type {
   ClarityUInt,
 } from "./abi.js";
 import type { ResolvedRegister } from "./register.js";
-import type { Error, Merge, Pretty, Range, Tuple } from "./types.js";
+import type { Error, Pretty, Range, Tuple } from "./types.js";
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // Primitive Type Lookup Tables
