@@ -41,6 +41,9 @@ importers:
       chokidar-cli:
         specifier: 3.0.0
         version: 3.0.0
+      clarity-abitype:
+        specifier: workspace:*
+        version: link:../../packages/clarity-abitype
       vitest:
         specifier: 4.0.17
         version: 4.0.17(@types/node@25.0.9)

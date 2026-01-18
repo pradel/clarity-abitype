@@ -16,6 +16,7 @@
     "@stacks/transactions": "7.3.1",
     "@types/node": "25.0.9",
     "chokidar-cli": "3.0.0",
+    "clarity-abitype": "workspace:*",
     "vitest": "4.0.17",
     "vitest-environment-clarinet": "3.0.2"
   }
