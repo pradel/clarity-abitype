@@ -1,5 +1,17 @@
 # clarity-abitype
 
+## 0.3.0
+
+### Minor Changes
+
+- [#22](https://github.com/pradel/clarity-abitype/pull/22) [`d7ff469`](https://github.com/pradel/clarity-abitype/commit/d7ff46930685f5406ceeeb0b4e1fb0f52639bd2c) Thanks [@pradel](https://github.com/pradel)! - Create `typedCallReadOnlyFn` and `typedCallPublicFn` functions to provide type safe contract interaction as drop in replacements for the clarinet-sdk `simnet.callReadOnlyFn` and `simnet.callPublicFn` methods.
+
+- [#20](https://github.com/pradel/clarity-abitype/pull/20) [`9965bb4`](https://github.com/pradel/clarity-abitype/commit/9965bb476db63b3cf445818409eda0abc92265ca) Thanks [@pradel](https://github.com/pradel)! - Create `typedCallReadOnlyFunction` and `typedMakeContractCall` function to provide type safe contract interaction as drop in replacements for the stacks.js `callReadOnlyFunction` and `makeContractCall` functions.
+
+### Patch Changes
+
+- [#22](https://github.com/pradel/clarity-abitype/pull/22) [`d7ff469`](https://github.com/pradel/clarity-abitype/commit/d7ff46930685f5406ceeeb0b4e1fb0f52639bd2c) Thanks [@pradel](https://github.com/pradel)! - Add clarinet counter example.
+
 ## 0.2.2
 
 ### Patch Changes
