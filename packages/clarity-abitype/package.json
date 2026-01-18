@@ -1,6 +1,6 @@
 {
   "name": "clarity-abitype",
-  "version": "0.2.2",
+  "version": "0.3.0",
   "license": "MIT",
   "description": "Strict TypeScript types for Stacks Clarity ABIs",
   "repository": "pradel/clarity-abitype",
