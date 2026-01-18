@@ -79,6 +79,62 @@ type TransferArgs = ClarityAbiArgsToPrimitiveTypes<
 //   ^? readonly [bigint, string, string]
 ```
 
+### Usage with stacks.js
+
+```ts
+import {
+  typedMakeContractCall,
+  typedCallReadOnlyFunction,
+} from "clarity-abitype";
+import { broadcastTransaction } from "@stacks/transactions";
+
+const transaction = await typedMakeContractCall({
+  abi: sip10Abi,
+  contractAddress: "SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR",
+  contractName: "my-token",
+  functionName: "transfer",
+  functionArgs: [100n, "SP2C...", "SP3K...", null],
+  senderKey: "your-private-key",
+  network: "mainnet",
+});
+
+const result = await broadcastTransaction({ transaction, network: "mainnet" });
+
+const balance = await typedCallReadOnlyFunction({
+  abi: sip10Abi,
+  contractAddress: "SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR",
+  contractName: "my-token",
+  functionName: "get-balance",
+  functionArgs: ["SP2C..."],
+  sender: "SP2C...",
+  network: "mainnet",
+});
+```
+
+### Usage with Clarinet
+
+```ts
+import { typedCallPublicFn, typedCallReadOnlyFn } from "clarity-abitype";
+
+const { result: count } = typedCallReadOnlyFn({
+  simnet,
+  abi: counterAbi,
+  contract: "counter",
+  functionName: "get-count",
+  functionArgs: [],
+  sender: simnet.deployer,
+});
+
+const { result, events } = typedCallPublicFn({
+  simnet,
+  abi: counterAbi,
+  contract: "counter",
+  functionName: "increment",
+  functionArgs: [],
+  sender: simnet.deployer,
+});
+```
+
 ## Examples
 
 ### Typed Contract Calls
