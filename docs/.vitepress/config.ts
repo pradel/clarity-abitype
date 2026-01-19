@@ -8,7 +8,11 @@ export default defineConfig({
     sidebar: [
       {
         text: "Guide",
-        items: [{ text: "Getting Started", link: "/" }],
+        items: [
+          { text: "Getting Started", link: "/" },
+          { text: "stacks.js", link: "/stacks-js-guide" },
+          { text: "Clarinet SDK", link: "/clarinet-guide" },
+        ],
       },
       {
         text: "Examples",
