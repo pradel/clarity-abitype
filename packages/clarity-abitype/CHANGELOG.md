@@ -1,5 +1,13 @@
 # clarity-abitype
 
+## 0.4.0
+
+### Minor Changes
+
+- [#26](https://github.com/pradel/clarity-abitype/pull/26) [`36b827b`](https://github.com/pradel/clarity-abitype/commit/36b827b45b4cbc4e8e931e8da92d4d530bc01de3) Thanks [@pradel](https://github.com/pradel)! - Change the integrations to sub imports instead of being exposed directly.
+
+- [`052a54a`](https://github.com/pradel/clarity-abitype/commit/052a54a611b45a2e1ebee9c4dfc760da515a6778) Thanks [@pradel](https://github.com/pradel)! - Create documentation website.
+
 ## 0.3.1
 
 ### Patch Changes
