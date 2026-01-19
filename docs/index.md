@@ -21,3 +21,10 @@ yarn add clarity-abitype
 ```
 
 :::
+
+## Choose Your Integration
+
+Select the guide based on your tooling:
+
+- **[stacks.js](/stacks-js-guide)** — For live blockchain interactions. Use `@stacks/transactions` to build, sign, and broadcast transactions.
+- **[Clarinet SDK](/clarinet-guide)** — For local testing. Use `@stacks/clarinet-sdk` with the simnet to test contracts without deploying.
