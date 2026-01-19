@@ -26,7 +26,7 @@ const wallet1 = accounts.get("wallet_1")!;
 
 ## Generating Your Contract ABI
 
-For local contracts in Clarinet, you need to define the ABI manually. Add this to your test file:
+For local contracts in Clarinet, you need to define the ABI manually. There is currently no way to directly generate the ABI from clarinet but you can call `simnet.getContractsInterfaces()` as a workaround to get the ABI. Then add the ABI to your test file:
 
 ```ts
 const counterAbi = {
