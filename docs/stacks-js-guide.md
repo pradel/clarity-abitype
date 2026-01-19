@@ -10,17 +10,62 @@ The `@stacks/transactions` package is the official library for interacting with 
 npm install @stacks/transactions clarity-abitype
 ```
 
-## Getting Your Contract ABI
+## Downloading the ABI
 
-Fetch your contract ABI from the Hiro API and define it with a `const` assertion to enable type inference:
+Fetch your contract ABI from the Hiro API:
+
+```bash
+curl "https://api.mainnet.hiro.so/v2/contracts/interface/SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR/my-token"
+```
+
+Save the response to a file like `abis/my-token.ts` and add `as const`:
 
 ```ts
-import { fetchAbi } from "@stacks/transactions";
+// abis/my-token.ts
+export const myTokenAbi = {
+  // ... paste the ABI JSON here ...
+} as const;
+```
 
-const response = await fetch(
-  "https://api.mainnet.hiro.so/v2/contracts/interface/SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR/my-token",
-);
-const abi = (await response.json()) as const;
+## Getting Your Contract ABI
+
+For type inference to work, the ABI must be defined inline in your codebase with a `const` assertion. This allows TypeScript to see the exact structure at compile time.
+
+Save the ABI JSON to a file in your project:
+
+```ts
+// abis/my-token.ts
+export const myTokenAbi = {
+  functions: [
+    {
+      name: "transfer",
+      access: "public",
+      args: [
+        { name: "amount", type: "uint128" },
+        { name: "sender", type: "principal" },
+        { name: "recipient", type: "principal" },
+        { name: "memo", type: { optional: "buff-33" } },
+      ],
+      outputs: { type: { response: { ok: "bool", error: "uint128" } } },
+    },
+    {
+      name: "get-balance",
+      access: "read_only",
+      args: [{ name: "owner", type: "principal" }],
+      outputs: { type: { response: { ok: "uint128", error: "none" } } },
+    },
+  ],
+  variables: [],
+  maps: [],
+  fungible_tokens: [{ name: "my-token" }],
+  non_fungible_tokens: [],
+} as const;
+```
+
+Then import it in your code:
+
+```ts
+import { myTokenAbi } from "./abis/my-token";
 ```
 
 ## Making Public Calls
@@ -32,7 +77,7 @@ import { typedMakeContractCall } from "clarity-abitype";
 import { broadcastTransaction } from "@stacks/transactions";
 
 const transaction = await typedMakeContractCall({
-  abi,
+  abi: myTokenAbi,
   contractAddress: "SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR",
   contractName: "my-token",
   functionName: "transfer",
@@ -64,7 +109,7 @@ Use `typedCallReadOnlyFunction` to query contract state. This function wraps `fe
 import { typedCallReadOnlyFunction } from "clarity-abitype";
 
 const balance = await typedCallReadOnlyFunction({
-  abi,
+  abi: myTokenAbi,
   contractAddress: "SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR",
   contractName: "my-token",
   functionName: "get-balance",
