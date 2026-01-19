@@ -2,6 +2,22 @@
 
 Strict TypeScript types for Clarity ABIs. Provides utilities and type definitions for [Clarity](https://docs.stacks.co/clarity) smart contract ABIs on the [Stacks](https://www.stacks.co/) blockchain.
 
+## Documentation
+
+[Head to the documentation](https://pradel.github.io/clarity-abitype/) to read and learn more about the package.
+
+## Installation
+
+```bash
+npm install clarity-abitype
+# or
+pnpm add clarity-abitype
+# or
+yarn add clarity-abitype
+```
+
+## Usage
+
 ```ts
 import type {
   ClarityAbiArgsToPrimitiveTypes,
@@ -20,16 +36,6 @@ type TransferInputTypes = ClarityAbiArgsToPrimitiveTypes<
 ```
 
 Works great for adding blazing fast autocomplete and type checking to functions, variables, or your own types. No need to generate types with third-party tools – just use your ABI and let TypeScript do the rest!
-
-## Installation
-
-```bash
-npm install clarity-abitype
-# or
-pnpm add clarity-abitype
-# or
-yarn add clarity-abitype
-```
 
 ## Quick Start
 
