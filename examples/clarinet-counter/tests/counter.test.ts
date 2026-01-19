@@ -1,7 +1,10 @@
 import { expect, test } from "vitest";
 import { initSimnet } from "@stacks/clarinet-sdk";
 import { Cl } from "@stacks/transactions";
-import { typedCallReadOnlyFn, typedCallPublicFn } from "clarity-abitype";
+import {
+  typedCallReadOnlyFn,
+  typedCallPublicFn,
+} from "clarity-abitype/clarinet-sdk";
 
 const counterAbi = {
   functions: [

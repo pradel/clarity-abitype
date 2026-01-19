@@ -73,7 +73,7 @@ import { myTokenAbi } from "./abis/my-token";
 Use `typedMakeContractCall` to create and sign a transaction. This function wraps `makeContractCall` from stacks.js.
 
 ```ts
-import { typedMakeContractCall } from "clarity-abitype";
+import { typedMakeContractCall } from "clarity-abitype/stacks-js";
 import { broadcastTransaction } from "@stacks/transactions";
 
 const transaction = await typedMakeContractCall({
@@ -106,7 +106,7 @@ const result = await broadcastTransaction({ transaction, network: "mainnet" });
 Use `typedCallReadOnlyFunction` to query contract state. This function wraps `fetchCallReadOnlyFunction` from stacks.js.
 
 ```ts
-import { typedCallReadOnlyFunction } from "clarity-abitype";
+import { typedCallReadOnlyFunction } from "clarity-abitype/stacks-js";
 
 const balance = await typedCallReadOnlyFunction({
   abi: myTokenAbi,

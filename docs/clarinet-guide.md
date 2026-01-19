@@ -58,7 +58,7 @@ const counterAbi = {
 Use `typedCallPublicFn` to call public functions. This function wraps `simnet.callPublicFn` and mines a block.
 
 ```ts
-import { typedCallPublicFn } from "clarity-abitype";
+import { typedCallPublicFn } from "clarity-abitype/clarinet-sdk";
 
 const { result, events } = typedCallPublicFn({
   simnet,
@@ -84,7 +84,7 @@ const { result, events } = typedCallPublicFn({
 Use `typedCallReadOnlyFn` to query contract state. This wraps `simnet.callReadOnlyFn`.
 
 ```ts
-import { typedCallReadOnlyFn } from "clarity-abitype";
+import { typedCallReadOnlyFn } from "clarity-abitype/clarinet-sdk";
 
 const { result } = typedCallReadOnlyFn({
   simnet,
