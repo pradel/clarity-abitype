@@ -10,8 +10,8 @@ export default defineConfig({
         text: "Guide",
         items: [
           { text: "Getting Started", link: "/" },
-          { text: "stacks.js", link: "/stacks-js-guide" },
-          { text: "Clarinet SDK", link: "/clarinet-guide" },
+          { text: "stacks.js Usage", link: "/stacks-js-guide" },
+          { text: "Clarinet SDK Usage", link: "/clarinet-guide" },
         ],
       },
       {

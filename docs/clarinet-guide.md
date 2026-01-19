@@ -24,6 +24,35 @@ const deployer = accounts.get("deployer")!;
 const wallet1 = accounts.get("wallet_1")!;
 ```
 
+## Generating Your Contract ABI
+
+For local contracts in Clarinet, you need to define the ABI manually. Add this to your test file:
+
+```ts
+const counterAbi = {
+  functions: [
+    {
+      name: "increment",
+      access: "public",
+      args: [],
+      outputs: { type: { response: { ok: "bool", error: "none" } } },
+    },
+    {
+      name: "get-count",
+      access: "read_only",
+      args: [{ name: "who", type: "principal" }],
+      outputs: { type: "uint128" },
+    },
+  ],
+  variables: [],
+  maps: [],
+  fungible_tokens: [],
+  non_fungible_tokens: [],
+} as const;
+```
+
+**Note:** The `as const` assertion is required for type inference to work.
+
 ## Calling Public Functions
 
 Use `typedCallPublicFn` to call public functions. This function wraps `simnet.callPublicFn` and mines a block.
