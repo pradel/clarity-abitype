@@ -51,7 +51,7 @@
   },
   "devDependencies": {
     "@arethetypeswrong/core": "0.18.2",
-    "@stacks/clarinet-sdk": "3.13.1",
+    "@stacks/clarinet-sdk": "3.15.1",
     "@stacks/common": "7.3.1",
     "@stacks/network": "7.3.1",
     "@stacks/transactions": "7.3.1",
