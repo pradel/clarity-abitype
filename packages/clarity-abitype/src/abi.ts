@@ -229,7 +229,10 @@ export type ClarityEpoch =
   | "Epoch24"
   | "Epoch25"
   | "Epoch30"
-  | "Epoch31";
+  | "Epoch31"
+  | "Epoch32"
+  | "Epoch33"
+  | "Epoch34";
 
 /**
  * Clarity version
