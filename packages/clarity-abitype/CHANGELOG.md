@@ -1,5 +1,11 @@
 # clarity-abitype
 
+## 0.5.0
+
+### Minor Changes
+
+- [#29](https://github.com/pradel/clarity-abitype/pull/29) [`e0295bf`](https://github.com/pradel/clarity-abitype/commit/e0295bf0d4875e14d23379aa0ccc40eb089845e3) Thanks [@friedger](https://github.com/friedger)! - Add more epochs
+
 ## 0.4.0
 
 ### Minor Changes
