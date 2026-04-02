@@ -45,6 +45,24 @@ clarity-abitype initial implementation is based on the amazing work of [abitype]
 
 Contributions are welcome! Please feel free to submit a Pull Request.
 
+- Check everything is ready:
+
+```bash
+vp run ready
+```
+
+- Run the tests:
+
+```bash
+vp run -r test
+```
+
+- Build the monorepo:
+
+```bash
+vp run -r build
+```
+
 ## License
 
 MIT

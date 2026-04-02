@@ -5,6 +5,8 @@
   "description": "Monorepo for clarity-abitype",
   "scripts": {
     "ready": "vp fmt && vp run -r build && vp lint && vp run -r test",
+    "build": "vp run -r build",
+    "test": "vp run -r test",
     "prepare": "vp config",
     "changeset": "changeset",
     "version": "changeset version",
