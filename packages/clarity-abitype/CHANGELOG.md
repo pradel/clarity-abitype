@@ -1,5 +1,13 @@
 # clarity-abitype
 
+## 0.5.1
+
+### Patch Changes
+
+- [#33](https://github.com/pradel/clarity-abitype/pull/33) [`a895081`](https://github.com/pradel/clarity-abitype/commit/a89508139fe97d680204fd6e9858e55216c55cf7) Thanks [@pradel](https://github.com/pradel)! - Improve repository tooling and publishing.
+
+- [#34](https://github.com/pradel/clarity-abitype/pull/34) [`be2821c`](https://github.com/pradel/clarity-abitype/commit/be2821c5f806eb21a88aa91091f1b6074f3f11ab) Thanks [@pradel](https://github.com/pradel)! - Upgrade repository dependencies.
+
 ## 0.5.0
 
 ### Minor Changes
