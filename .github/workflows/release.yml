@@ -19,11 +19,11 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v6
 
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+
       - name: vite-plus setup
         uses: voidzero-dev/setup-vp@v1
-        with:
-          node-version: "24"
-          cache: true
 
       - name: Build
         run: vp run build
@@ -36,6 +36,7 @@ jobs:
           commit: "chore: release"
           title: "chore: create new release"
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          # Use OIDC for npm authentication instead of NPM_TOKEN
-          NPM_TOKEN: "" # https://github.com/changesets/changesets/issues/1152#issuecomment-3190884868
+          # Fix for OIDC https://github.com/actions/setup-node/issues/1440
+          NODE_AUTH_TOKEN: ""
+          NPM_TOKEN: ""
+          NPM_CONFIG_PROVENANCE: true
