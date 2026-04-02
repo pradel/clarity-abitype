@@ -1,12 +1,4 @@
-import { describe, it, expect, vi, expectTypeOf } from "vitest";
-import {
-  typedCallPublicFn,
-  TypedCallPublicFnFunctionName,
-  TypedCallPublicFnFunctionArgs,
-} from "./call-public-fn.js";
-import { sip10Abi } from "../abis/json.js";
-import { sbtcTokenAbi } from "../../tests/SM3VDXK3WZZSA84XXFKAFAF15NNZX32CTSG82JFQ4.sbtc-token.js";
-import type { Simnet } from "./types.js";
+import { hexToBytes } from "@stacks/common";
 import {
   uintCV,
   responseOkCV,
@@ -16,8 +8,17 @@ import {
   noneCV,
   bufferCV,
 } from "@stacks/transactions";
-import { hexToBytes } from "@stacks/common";
+import { describe, it, expect, vi, expectTypeOf } from "vitest";
+
+import { sbtcTokenAbi } from "../../tests/SM3VDXK3WZZSA84XXFKAFAF15NNZX32CTSG82JFQ4.sbtc-token.js";
+import { sip10Abi } from "../abis/json.js";
 import type { ExtractAbiFunctionNames } from "../utils.js";
+import {
+  typedCallPublicFn,
+  TypedCallPublicFnFunctionName,
+  TypedCallPublicFnFunctionArgs,
+} from "./call-public-fn.js";
+import type { Simnet } from "./types.js";
 
 /**
  * Creates a mock simnet instance for testing.

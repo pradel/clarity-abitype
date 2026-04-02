@@ -1,15 +1,7 @@
 import type {
-  ClarityType as AbiClarityType,
-  ClarityTuple,
-  ClarityList,
-  ClarityResponse,
-} from "../abi.js";
-
-import type {
   ClarityValue,
   ClarityAbiType as StacksClarityAbiType,
 } from "@stacks/transactions";
-
 import {
   noneCV,
   listCV,
@@ -20,6 +12,13 @@ import {
   cvToValue,
   encodeAbiClarityValue,
 } from "@stacks/transactions";
+
+import type {
+  ClarityType as AbiClarityType,
+  ClarityTuple,
+  ClarityList,
+  ClarityResponse,
+} from "../abi.js";
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // ClarityValue to Primitive Conversion

@@ -1,19 +1,20 @@
-import { describe, it, expect, vi, expectTypeOf } from "vitest";
-import {
-  typedCallReadOnlyFn,
-  TypedCallReadOnlyFnFunctionName,
-  TypedCallReadOnlyFnFunctionArgs,
-} from "./call-read-only-fn.js";
-import { sip10Abi } from "../abis/json.js";
-import { sbtcTokenAbi } from "../../tests/SM3VDXK3WZZSA84XXFKAFAF15NNZX32CTSG82JFQ4.sbtc-token.js";
-import type { Simnet } from "./types.js";
 import {
   uintCV,
   responseOkCV,
   stringAsciiCV,
   standardPrincipalCV,
 } from "@stacks/transactions";
+import { describe, it, expect, vi, expectTypeOf } from "vitest";
+
+import { sbtcTokenAbi } from "../../tests/SM3VDXK3WZZSA84XXFKAFAF15NNZX32CTSG82JFQ4.sbtc-token.js";
+import { sip10Abi } from "../abis/json.js";
 import type { ExtractAbiFunctionNames } from "../utils.js";
+import {
+  typedCallReadOnlyFn,
+  TypedCallReadOnlyFnFunctionName,
+  TypedCallReadOnlyFnFunctionArgs,
+} from "./call-read-only-fn.js";
+import type { Simnet } from "./types.js";
 
 /**
  * Creates a mock simnet instance for testing.

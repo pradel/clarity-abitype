@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest";
-import { typedCallReadOnlyFunction } from "./read-only.js";
+
 import { sbtcTokenAbi } from "../../tests/SM3VDXK3WZZSA84XXFKAFAF15NNZX32CTSG82JFQ4.sbtc-token.js";
+import { typedCallReadOnlyFunction } from "./read-only.js";
 
 describe("typedCallReadOnlyFunction", () => {
   it("should call sbtc get-name and return the correct response", async () => {

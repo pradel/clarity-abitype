@@ -1,3 +1,6 @@
+import type { NetworkClientParam } from "@stacks/network";
+import { fetchCallReadOnlyFunction } from "@stacks/transactions";
+
 import type {
   ClarityAbi,
   ClarityAbiAccess,
@@ -9,8 +12,6 @@ import type {
   ExtractAbiFunction,
   ExtractAbiFunctionNames,
 } from "../utils.js";
-import type { NetworkClientParam } from "@stacks/network";
-import { fetchCallReadOnlyFunction } from "@stacks/transactions";
 import { primitivesToCVs, cvToPrimitive } from "./utils.js";
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

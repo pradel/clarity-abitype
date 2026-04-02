@@ -1,4 +1,5 @@
 import { assertType, test } from "vitest";
+
 import type { ResolvedRegister } from "./register.js";
 
 test("ResolvedRegister", () => {

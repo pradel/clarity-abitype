@@ -1,33 +1,47 @@
 {
   "name": "clarity-abitype",
   "version": "0.5.0",
-  "license": "MIT",
   "description": "Strict TypeScript types for Stacks Clarity ABIs",
+  "license": "MIT",
   "repository": "pradel/clarity-abitype",
-  "sideEffects": false,
-  "type": "module",
-  "publishConfig": {
-    "access": "public",
-    "provenance": true
-  },
-  "exports": {
-    ".": "./dist/index.js",
-    "./clarinet-sdk": "./dist/clarinet-sdk/index.js",
-    "./stacks-js": "./dist/stacks-js/index.js",
-    "./package.json": "./package.json"
-  },
+  "funding": "https://github.com/sponsors/pradel",
   "files": [
     "dist",
     "src/**/*.ts",
     "!src/**/*.test.ts",
     "!src/**/*.test-d.ts"
   ],
+  "type": "module",
+  "sideEffects": false,
+  "exports": {
+    ".": "./dist/index.js",
+    "./clarinet-sdk": "./dist/clarinet-sdk/index.js",
+    "./stacks-js": "./dist/stacks-js/index.js",
+    "./package.json": "./package.json"
+  },
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
   "scripts": {
     "build": "tsdown",
     "check-types": "tsc --noEmit",
     "dev": "tsdown --watch",
     "lint": "oxlint .",
     "test": "vitest"
+  },
+  "devDependencies": {
+    "@arethetypeswrong/core": "0.18.2",
+    "@stacks/clarinet-sdk": "3.13.1",
+    "@stacks/common": "7.3.1",
+    "@stacks/network": "7.3.1",
+    "@stacks/transactions": "7.3.1",
+    "@tsconfig/node22": "22.0.5",
+    "@tsconfig/recommended": "1.0.13",
+    "publint": "0.3.16",
+    "tsdown": "0.19.0",
+    "typescript": "5.9.3",
+    "vitest": "4.0.17"
   },
   "peerDependencies": {
     "@stacks/clarinet-sdk": ">= 3.0.0",
@@ -48,19 +62,5 @@
     "typescript": {
       "optional": true
     }
-  },
-  "devDependencies": {
-    "@arethetypeswrong/core": "0.18.2",
-    "@stacks/clarinet-sdk": "3.13.1",
-    "@stacks/common": "7.3.1",
-    "@stacks/network": "7.3.1",
-    "@stacks/transactions": "7.3.1",
-    "@tsconfig/node22": "22.0.5",
-    "@tsconfig/recommended": "1.0.13",
-    "publint": "0.3.16",
-    "tsdown": "0.19.0",
-    "typescript": "5.9.3",
-    "vitest": "4.0.17"
-  },
-  "funding": "https://github.com/sponsors/pradel"
+  }
 }

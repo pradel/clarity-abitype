@@ -1,4 +1,7 @@
 import { assertType, test } from "vitest";
+
+import { sbtcTokenAbi } from "../tests/SM3VDXK3WZZSA84XXFKAFAF15NNZX32CTSG82JFQ4.sbtc-token";
+import { ccd001DirectExecuteAbi } from "../tests/SP8A9HZ3PKST0S42VM9523Z9NV42SZ026V4K39WH.ccd001-direct-execute";
 import type { ClarityAbi, ClarityAbiFunction } from "./abi";
 import { sip10Abi } from "./abis/json";
 import type {
@@ -7,8 +10,6 @@ import type {
   ExtractAbiFunction,
   ExtractAbiFunctionNames,
 } from "./utils";
-import { ccd001DirectExecuteAbi } from "../tests/SP8A9HZ3PKST0S42VM9523Z9NV42SZ026V4K39WH.ccd001-direct-execute";
-import { sbtcTokenAbi } from "../tests/SM3VDXK3WZZSA84XXFKAFAF15NNZX32CTSG82JFQ4.sbtc-token";
 
 function callReadOnlyFunction<
   abi extends ClarityAbi,

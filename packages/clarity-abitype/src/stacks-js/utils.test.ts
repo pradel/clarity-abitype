@@ -1,5 +1,4 @@
-import { describe, it, expect, expectTypeOf } from "vitest";
-import { primitiveToCV, primitivesToCVs } from "./utils.js";
+import { hexToBytes } from "@stacks/common";
 import {
   uintCV,
   intCV,
@@ -17,14 +16,16 @@ import {
   responseOkCV,
   responseErrorCV,
 } from "@stacks/transactions";
-import { hexToBytes } from "@stacks/common";
+import { describe, it, expect, expectTypeOf } from "vitest";
+
+import { sip10Abi } from "../abis/json.js";
 import type {
   ClarityAbiArgsToPrimitiveTypes,
   ClarityAbiOutputToPrimitiveType,
   ExtractAbiFunction,
   ExtractAbiFunctionNames,
 } from "../utils.js";
-import { sip10Abi } from "../abis/json.js";
+import { primitiveToCV, primitivesToCVs } from "./utils.js";
 
 describe("primitiveToCV", () => {
   describe("uint128", () => {
