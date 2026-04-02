@@ -3,7 +3,7 @@ import {
   typedCallReadOnlyFn,
   typedCallPublicFn,
 } from "clarity-abitype/clarinet-sdk";
-import { expect, test } from "vitest";
+import { expect, test } from "vite-plus/test";
 
 const counterAbi = {
   functions: [

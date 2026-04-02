@@ -41,9 +41,9 @@ importers:
       clarity-abitype:
         specifier: workspace:*
         version: link:../../packages/clarity-abitype
-      vitest:
-        specifier: 4.0.17
-        version: 4.0.17(@opentelemetry/api@1.9.0)(@types/node@25.0.9)(lightningcss@1.32.0)
+      vite-plus:
+        specifier: 0.1.15
+        version: 0.1.15(@arethetypeswrong/core@0.18.2)(@opentelemetry/api@1.9.0)(@types/node@25.0.9)(esbuild@0.27.2)(publint@0.3.16)(typescript@5.9.3)(vite@7.3.1(@types/node@25.0.9)(lightningcss@1.32.0))
       vitest-environment-clarinet:
         specifier: 3.0.2
         version: 3.0.2(@stacks/clarinet-sdk@3.13.1)(vitest@4.0.17(@opentelemetry/api@1.9.0)(@types/node@25.0.9)(lightningcss@1.32.0))

@@ -7,8 +7,8 @@
   "author": "",
   "type": "module",
   "scripts": {
-    "test": "vitest run",
-    "test:report": "vitest run -- --coverage --costs",
+    "test": "vp test",
+    "test:report": "vp run -- --coverage --costs",
     "test:watch": "chokidar \"tests/**/*.ts\" \"contracts/**/*.clar\" -c \"npm run test:report\""
   },
   "dependencies": {
@@ -17,7 +17,7 @@
     "@types/node": "25.0.9",
     "chokidar-cli": "3.0.0",
     "clarity-abitype": "workspace:*",
-    "vitest": "4.0.17",
+    "vite-plus": "0.1.15",
     "vitest-environment-clarinet": "3.0.2"
   }
 }

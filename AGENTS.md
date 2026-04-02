@@ -30,5 +30,5 @@ pnpm test
 ### Running a Single Test
 
 ```bash
-cd packages/clarity-abitype && pnpm vitest run src/utils.test-d.ts
+cd packages/clarity-abitype && vp test src/utils.test-d.ts
 ```
