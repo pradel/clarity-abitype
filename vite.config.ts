@@ -8,4 +8,10 @@ export default defineConfig({
     sortImports: true,
     printWidth: 80,
   },
+  lint: {
+    options: { typeAware: true, typeCheck: true },
+  },
+  run: {
+    cache: true,
+  },
 });
