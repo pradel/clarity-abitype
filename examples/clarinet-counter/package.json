@@ -11,9 +11,9 @@
     "test:report": "vp run -- --coverage --costs"
   },
   "dependencies": {
-    "@stacks/clarinet-sdk": "3.13.1",
-    "@stacks/transactions": "7.3.1",
-    "@types/node": "25.0.9",
+    "@stacks/clarinet-sdk": "3.16.0",
+    "@stacks/transactions": "7.4.0",
+    "@types/node": "25.5.0",
     "clarity-abitype": "workspace:*",
     "vite-plus": "0.1.15",
     "vitest-environment-clarinet": "3.0.2"
