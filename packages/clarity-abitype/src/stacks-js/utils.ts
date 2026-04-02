@@ -102,6 +102,7 @@ export function primitiveToCV(
     }
     // For non-null values, encodeAbiClarityValue handles optional
     return encodeAbiClarityValue(
+      // oxlint-disable-next-line typescript/no-base-to-string
       String(value),
       abiType as StacksClarityAbiType,
     );
