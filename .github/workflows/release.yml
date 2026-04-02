@@ -25,6 +25,9 @@ jobs:
           node-version: "24"
           cache: true
 
+      # Update npm to the latest version to ensure compatibility with OIDC and other features
+      - run: npm install -g npm@latest
+
       - name: Build
         run: vp run build
 
