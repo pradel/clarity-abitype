@@ -36,8 +36,6 @@
     "@stacks/common": "7.3.1",
     "@stacks/network": "7.3.1",
     "@stacks/transactions": "7.3.1",
-    "@tsconfig/node22": "22.0.5",
-    "@tsconfig/recommended": "1.0.13",
     "publint": "0.3.16",
     "typescript": "5.9.3",
     "vite-plus": "0.1.15"

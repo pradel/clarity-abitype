@@ -65,12 +65,6 @@ importers:
       '@stacks/transactions':
         specifier: 7.3.1
         version: 7.3.1
-      '@tsconfig/node22':
-        specifier: 22.0.5
-        version: 22.0.5
-      '@tsconfig/recommended':
-        specifier: 1.0.13
-        version: 1.0.13
       publint:
         specifier: 0.3.16
         version: 0.3.16
@@ -955,12 +949,6 @@ packages:
 
   '@standard-schema/spec@1.1.0':
     resolution: {integrity: sha512-l2aFy5jALhniG5HgqrD6jXLi/rUWrKvqN/qJx6yoJsgKhblVd+iqqU4RCXavm/jPityDo5TCvKMnpjKnOriy0w==}
-
-  '@tsconfig/node22@22.0.5':
-    resolution: {integrity: sha512-hLf2ld+sYN/BtOJjHUWOk568dvjFQkHnLNa6zce25GIH+vxKfvTgm3qpaH6ToF5tu/NN0IH66s+Bb5wElHrLcw==}
-
-  '@tsconfig/recommended@1.0.13':
-    resolution: {integrity: sha512-sySRuBfMKyKO/j2ZAhR8kSembhjuPEV4Ra3AHtmWLq51+iGaudr45crPSzNC5b7/Ctrh9dfUpBuTlYrH6rM58Q==}
 
   '@types/chai@5.2.3':
     resolution: {integrity: sha512-Mw558oeA9fFbv65/y4mHtXDs9bPnFMZAL/jxdPFUpOHHIXX91mcgEHbS5Lahr+pwZFR8A7GQleRWeI6cGFC2UA==}
@@ -3135,10 +3123,6 @@ snapshots:
       - encoding
 
   '@standard-schema/spec@1.1.0': {}
-
-  '@tsconfig/node22@22.0.5': {}
-
-  '@tsconfig/recommended@1.0.13': {}
 
   '@types/chai@5.2.3':
     dependencies:
