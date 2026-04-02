@@ -16,7 +16,7 @@ import {
   responseOkCV,
   responseErrorCV,
 } from "@stacks/transactions";
-import { describe, it, expect, expectTypeOf } from "vitest";
+import { describe, it, expect, expectTypeOf } from "vite-plus/test";
 
 import { sip10Abi } from "../abis/json.js";
 import type {

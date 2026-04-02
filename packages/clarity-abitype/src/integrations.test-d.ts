@@ -1,15 +1,15 @@
-import { assertType, test } from "vitest";
+import { assertType, test } from "vite-plus/test";
 
-import { sbtcTokenAbi } from "../tests/SM3VDXK3WZZSA84XXFKAFAF15NNZX32CTSG82JFQ4.sbtc-token";
-import { ccd001DirectExecuteAbi } from "../tests/SP8A9HZ3PKST0S42VM9523Z9NV42SZ026V4K39WH.ccd001-direct-execute";
-import type { ClarityAbi, ClarityAbiFunction } from "./abi";
-import { sip10Abi } from "./abis/json";
+import { sbtcTokenAbi } from "../tests/SM3VDXK3WZZSA84XXFKAFAF15NNZX32CTSG82JFQ4.sbtc-token.js";
+import { ccd001DirectExecuteAbi } from "../tests/SP8A9HZ3PKST0S42VM9523Z9NV42SZ026V4K39WH.ccd001-direct-execute.js";
+import type { ClarityAbi, ClarityAbiFunction } from "./abi.js";
+import { sip10Abi } from "./abis/json.js";
 import type {
   ClarityAbiArgsToPrimitiveTypes,
   ClarityAbiOutputToPrimitiveType,
   ExtractAbiFunction,
   ExtractAbiFunctionNames,
-} from "./utils";
+} from "./utils.js";
 
 function callReadOnlyFunction<
   abi extends ClarityAbi,

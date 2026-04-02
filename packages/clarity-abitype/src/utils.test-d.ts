@@ -1,4 +1,4 @@
-import { assertType, describe, test } from "vitest";
+import { assertType, describe, test } from "vite-plus/test";
 
 import type { ClarityAbi } from "./abi.js";
 import type { sip10Abi } from "./abis/json.js";
