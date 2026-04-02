@@ -1,10 +1,10 @@
 {
-  "name": "clarity-abitype",
+  "name": "clarity-abitype-root",
   "version": "0.0.0",
   "private": true,
   "description": "Monorepo for clarity-abitype",
   "scripts": {
-    "ready": "vp fmt && vp lint && vp run -r test && vp run -r build",
+    "ready": "vp fmt && vp lint && vp run -r build && vp run -r test",
     "prepare": "vp config",
     "changeset": "changeset",
     "version": "changeset version",
