@@ -10,6 +10,7 @@ export default defineConfig({
   },
   lint: {
     options: { typeAware: true, typeCheck: true },
+    plugins: ["node", "typescript", "vitest"],
     rules: {
       "typescript/no-redundant-type-constituents": "off",
     },
