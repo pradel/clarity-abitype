@@ -5,7 +5,10 @@ import type {
 import { makeContractCall } from "@stacks/transactions";
 
 import type { ClarityAbi, ClarityAbiFunction } from "../abi.js";
-import { ContractFunctionName, ContractFunctionArgs } from "./read-only.js";
+import type {
+  ContractFunctionName,
+  ContractFunctionArgs,
+} from "./read-only.js";
 import { primitivesToCVs } from "./utils.js";
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
