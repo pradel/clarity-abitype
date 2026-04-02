@@ -26,8 +26,7 @@
   "scripts": {
     "build": "vp pack",
     "dev": "vp pack --watch",
-    "test": "vp test",
-    "check": "vp check"
+    "test": "vp test"
   },
   "devDependencies": {
     "@arethetypeswrong/core": "0.18.2",

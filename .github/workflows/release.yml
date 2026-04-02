@@ -19,14 +19,11 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v6
 
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+
       - name: vite-plus setup
         uses: voidzero-dev/setup-vp@v1
-        with:
-          node-version: "24"
-          cache: true
-
-      # Update npm to the latest version to ensure compatibility with OIDC and other features
-      - run: npm install -g npm@latest
 
       - name: Build
         run: vp run build
