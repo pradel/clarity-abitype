@@ -28,8 +28,8 @@ import type {
   ClarityUInt,
   ClarityVariableAccess,
   ClarityVersion,
-} from "./abi";
-import { sip10Abi } from "./abis/json";
+} from "./abi.js";
+import { sip10Abi } from "./abis/json.js";
 
 test("Clarity Primitive Types", () => {
   assertType<ClarityInt>("int128");
