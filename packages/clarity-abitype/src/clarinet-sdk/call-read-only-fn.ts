@@ -3,6 +3,7 @@ import type {
   ClarityAbiAccess,
   ClarityAbiFunction,
 } from "../abi.js";
+import { primitivesToCVs, cvToPrimitive } from "../stacks-js/utils.js";
 import type {
   ClarityAbiArgsToPrimitiveTypes,
   ClarityAbiOutputToPrimitiveType,
@@ -14,7 +15,6 @@ import type {
   ParsedTransactionResult,
   TypedTransactionResult,
 } from "./types.js";
-import { primitivesToCVs, cvToPrimitive } from "../stacks-js/utils.js";
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // Contract Function Types (Internal - not exported from main index)

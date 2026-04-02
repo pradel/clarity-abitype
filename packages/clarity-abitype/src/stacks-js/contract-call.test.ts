@@ -1,11 +1,12 @@
-import { describe, it, expect, expectTypeOf } from "vitest";
-import {
-  typedMakeContractCall,
+import { describe, it, expect, expectTypeOf } from "vite-plus/test";
+
+import { sip10Abi } from "../abis/json.js";
+import type { ExtractAbiFunctionNames } from "../utils.js";
+import { typedMakeContractCall } from "./contract-call.js";
+import type {
   TypedContractCallFunctionName,
   TypedContractCallFunctionArgs,
 } from "./contract-call.js";
-import { sip10Abi } from "../abis/json.js";
-import type { ExtractAbiFunctionNames } from "../utils.js";
 
 describe("typedMakeContractCall", () => {
   describe("type inference", () => {

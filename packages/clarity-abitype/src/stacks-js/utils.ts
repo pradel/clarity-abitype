@@ -1,15 +1,7 @@
 import type {
-  ClarityType as AbiClarityType,
-  ClarityTuple,
-  ClarityList,
-  ClarityResponse,
-} from "../abi.js";
-
-import type {
   ClarityValue,
   ClarityAbiType as StacksClarityAbiType,
 } from "@stacks/transactions";
-
 import {
   noneCV,
   listCV,
@@ -20,6 +12,13 @@ import {
   cvToValue,
   encodeAbiClarityValue,
 } from "@stacks/transactions";
+
+import type {
+  ClarityType as AbiClarityType,
+  ClarityTuple,
+  ClarityList,
+  ClarityResponse,
+} from "../abi.js";
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // ClarityValue to Primitive Conversion
@@ -103,6 +102,7 @@ export function primitiveToCV(
     }
     // For non-null values, encodeAbiClarityValue handles optional
     return encodeAbiClarityValue(
+      // oxlint-disable-next-line typescript/no-base-to-string
       String(value),
       abiType as StacksClarityAbiType,
     );

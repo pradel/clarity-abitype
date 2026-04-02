@@ -19,17 +19,11 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v6
 
-      - name: Install pnpm
-        uses: pnpm/action-setup@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v6
+      - name: vite-plus setup
+        uses: voidzero-dev/setup-vp@v1
         with:
-          node-version: 24
-          cache: "pnpm"
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+          node-version: "24"
+          cache: true
 
       - name: Build
         run: pnpm build
@@ -37,8 +31,8 @@ jobs:
       - name: Create Release Pull Request
         uses: changesets/action@v1
         with:
-          version: pnpm run version
-          publish: pnpm run release
+          version: vp run version
+          publish: vp run release
           commit: "chore: release"
           title: "chore: create new release"
         env:

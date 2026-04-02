@@ -2,7 +2,7 @@ import {
   getClarinetVitestsArgv,
   vitestSetupFilePath,
 } from "@stacks/clarinet-sdk/vitest";
-import { defineConfig } from "vitest/config";
+import { defineConfig } from "vite-plus";
 
 export default defineConfig({
   test: {
@@ -13,7 +13,7 @@ export default defineConfig({
     setupFiles: [vitestSetupFilePath],
     environmentOptions: {
       clarinet: {
-        ...getClarinetVitestsArgv(),
+        ...(await getClarinetVitestsArgv()),
       },
     },
   },

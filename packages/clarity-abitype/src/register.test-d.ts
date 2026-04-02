@@ -1,4 +1,5 @@
-import { assertType, test } from "vitest";
+import { assertType, test } from "vite-plus/test";
+
 import type { ResolvedRegister } from "./register.js";
 
 test("ResolvedRegister", () => {
