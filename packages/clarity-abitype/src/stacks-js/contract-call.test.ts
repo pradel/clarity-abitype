@@ -2,8 +2,8 @@ import { describe, it, expect, expectTypeOf } from "vite-plus/test";
 
 import { sip10Abi } from "../abis/json.js";
 import type { ExtractAbiFunctionNames } from "../utils.js";
-import {
-  typedMakeContractCall,
+import { typedMakeContractCall } from "./contract-call.js";
+import type {
   TypedContractCallFunctionName,
   TypedContractCallFunctionArgs,
 } from "./contract-call.js";

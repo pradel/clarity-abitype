@@ -13,7 +13,7 @@ export default defineConfig({
     setupFiles: [vitestSetupFilePath],
     environmentOptions: {
       clarinet: {
-        ...getClarinetVitestsArgv(),
+        ...(await getClarinetVitestsArgv()),
       },
     },
   },

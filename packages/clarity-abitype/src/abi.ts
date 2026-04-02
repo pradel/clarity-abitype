@@ -1,5 +1,5 @@
-import type { ResolvedRegister } from "./register";
-import type { Pretty } from "./types";
+import type { ResolvedRegister } from "./register.js";
+import type { Pretty } from "./types.js";
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // Clarity Types

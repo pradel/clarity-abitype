@@ -13,8 +13,8 @@ import { describe, it, expect, vi, expectTypeOf } from "vite-plus/test";
 import { sbtcTokenAbi } from "../../tests/SM3VDXK3WZZSA84XXFKAFAF15NNZX32CTSG82JFQ4.sbtc-token.js";
 import { sip10Abi } from "../abis/json.js";
 import type { ExtractAbiFunctionNames } from "../utils.js";
-import {
-  typedCallPublicFn,
+import { typedCallPublicFn } from "./call-public-fn.js";
+import type {
   TypedCallPublicFnFunctionName,
   TypedCallPublicFnFunctionArgs,
 } from "./call-public-fn.js";
