@@ -27,6 +27,7 @@ yarn add clarity-abitype
 Select the guide based on your tooling:
 
 - **[stacks.js](/stacks-js-guide)** — For live blockchain interactions. Use `@stacks/transactions` to build, sign, and broadcast transactions.
+- **[stacks-connect](/stacks-connect-guide)** — For wallet-based interactions. Use `@stacks/connect` to open the Stacks wallet and sign transactions.
 - **[Clarinet SDK](/clarinet-guide)** — For local testing. Use `@stacks/clarinet-sdk` with the simnet to test contracts without deploying.
 
 ## Direct Usage
