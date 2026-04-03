@@ -2,6 +2,9 @@ packages:
   - docs
   - examples/*
   - packages/*
+ignoredBuiltDependencies:
+  - "@reown/appkit"
+  - secp256k1
 
 onlyBuiltDependencies:
   - esbuild
