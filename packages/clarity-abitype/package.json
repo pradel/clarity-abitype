@@ -16,6 +16,7 @@
   "exports": {
     ".": "./dist/index.js",
     "./clarinet-sdk": "./dist/clarinet-sdk/index.js",
+    "./stacks-connect": "./dist/stacks-connect/index.js",
     "./stacks-js": "./dist/stacks-js/index.js",
     "./package.json": "./package.json"
   },
