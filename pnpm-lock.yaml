@@ -16,13 +16,13 @@ importers:
         version: 2.30.0(@types/node@25.5.0)
       vite-plus:
         specifier: 0.1.15
-        version: 0.1.15(@arethetypeswrong/core@0.18.2)(@opentelemetry/api@1.9.0)(@types/node@25.5.0)(esbuild@0.27.2)(publint@0.3.18)(typescript@5.9.3)(vite@7.3.1(@types/node@25.5.0)(lightningcss@1.32.0))
+        version: 0.1.15(@arethetypeswrong/core@0.18.2)(@opentelemetry/api@1.9.0)(@types/node@25.5.0)(esbuild@0.27.2)(publint@0.3.18)(typescript@6.0.2)(vite@7.3.1(@types/node@25.5.0)(lightningcss@1.32.0))
 
   docs:
     devDependencies:
       vitepress:
         specifier: 2.0.0-alpha.15
-        version: 2.0.0-alpha.15(@algolia/client-search@5.46.3)(@types/node@25.5.0)(lightningcss@1.32.0)(postcss@8.5.6)(react@19.2.3)(search-insights@2.17.3)(typescript@5.9.3)
+        version: 2.0.0-alpha.15(@algolia/client-search@5.46.3)(@types/node@25.5.0)(lightningcss@1.32.0)(postcss@8.5.6)(react@19.2.3)(search-insights@2.17.3)(typescript@6.0.2)
 
   examples/clarinet-counter:
     dependencies:
@@ -38,9 +38,12 @@ importers:
       clarity-abitype:
         specifier: workspace:*
         version: link:../../packages/clarity-abitype
+      typescript:
+        specifier: 6.0.2
+        version: 6.0.2
       vite-plus:
         specifier: 0.1.15
-        version: 0.1.15(@arethetypeswrong/core@0.18.2)(@opentelemetry/api@1.9.0)(@types/node@25.5.0)(esbuild@0.27.2)(publint@0.3.18)(typescript@5.9.3)(vite@7.3.1(@types/node@25.5.0)(lightningcss@1.32.0))
+        version: 0.1.15(@arethetypeswrong/core@0.18.2)(@opentelemetry/api@1.9.0)(@types/node@25.5.0)(esbuild@0.27.2)(publint@0.3.18)(typescript@6.0.2)(vite@7.3.1(@types/node@25.5.0)(lightningcss@1.32.0))
       vitest-environment-clarinet:
         specifier: 3.0.2
         version: 3.0.2(@stacks/clarinet-sdk@3.16.0)(vitest@4.0.17(@opentelemetry/api@1.9.0)(@types/node@25.5.0)(lightningcss@1.32.0))
@@ -66,11 +69,11 @@ importers:
         specifier: 0.3.18
         version: 0.3.18
       typescript:
-        specifier: 5.9.3
-        version: 5.9.3
+        specifier: 6.0.2
+        version: 6.0.2
       vite-plus:
         specifier: 0.1.15
-        version: 0.1.15(@arethetypeswrong/core@0.18.2)(@opentelemetry/api@1.9.0)(@types/node@25.5.0)(esbuild@0.27.2)(publint@0.3.18)(typescript@5.9.3)(vite@7.3.1(@types/node@25.5.0)(lightningcss@1.32.0))
+        version: 0.1.15(@arethetypeswrong/core@0.18.2)(@opentelemetry/api@1.9.0)(@types/node@25.5.0)(esbuild@0.27.2)(publint@0.3.18)(typescript@6.0.2)(vite@7.3.1(@types/node@25.5.0)(lightningcss@1.32.0))
 
 packages:
 
@@ -2059,8 +2062,8 @@ packages:
     engines: {node: '>=14.17'}
     hasBin: true
 
-  typescript@5.9.3:
-    resolution: {integrity: sha512-jl1vZzPDinLr9eUt3J/t7V6FgNEw9QjvBPdysz9KfQDD41fQrC2Y4vKQdiaUpFT4bXlb1RHhLpp8wtm6M5TgSw==}
+  typescript@6.0.2:
+    resolution: {integrity: sha512-bGdAIrZ0wiGDo5l8c++HWtbaNCWTS4UTv7RaTH/ThVIgjkveJt83m74bBHMJkuCbslY8ixgLBVZJIOiQlQTjfQ==}
     engines: {node: '>=14.17'}
     hasBin: true
 
@@ -3076,11 +3079,11 @@ snapshots:
 
   '@vercel/oidc@3.1.0': {}
 
-  '@vitejs/plugin-vue@6.0.3(vite@7.3.1(@types/node@25.5.0)(lightningcss@1.32.0))(vue@3.5.27(typescript@5.9.3))':
+  '@vitejs/plugin-vue@6.0.3(vite@7.3.1(@types/node@25.5.0)(lightningcss@1.32.0))(vue@3.5.27(typescript@6.0.2))':
     dependencies:
       '@rolldown/pluginutils': 1.0.0-beta.53
       vite: 7.3.1(@types/node@25.5.0)(lightningcss@1.32.0)
-      vue: 3.5.27(typescript@5.9.3)
+      vue: 3.5.27(typescript@6.0.2)
 
   '@vitest/expect@4.0.17':
     dependencies:
@@ -3121,7 +3124,7 @@ snapshots:
       '@vitest/pretty-format': 4.0.17
       tinyrainbow: 3.1.0
 
-  '@voidzero-dev/vite-plus-core@0.1.15(@arethetypeswrong/core@0.18.2)(@types/node@25.5.0)(esbuild@0.27.2)(publint@0.3.18)(typescript@5.9.3)':
+  '@voidzero-dev/vite-plus-core@0.1.15(@arethetypeswrong/core@0.18.2)(@types/node@25.5.0)(esbuild@0.27.2)(publint@0.3.18)(typescript@6.0.2)':
     dependencies:
       '@oxc-project/runtime': 0.122.0
       '@oxc-project/types': 0.122.0
@@ -3133,7 +3136,7 @@ snapshots:
       esbuild: 0.27.2
       fsevents: 2.3.3
       publint: 0.3.18
-      typescript: 5.9.3
+      typescript: 6.0.2
 
   '@voidzero-dev/vite-plus-darwin-arm64@0.1.15':
     optional: true
@@ -3153,11 +3156,11 @@ snapshots:
   '@voidzero-dev/vite-plus-linux-x64-musl@0.1.15':
     optional: true
 
-  '@voidzero-dev/vite-plus-test@0.1.15(@arethetypeswrong/core@0.18.2)(@opentelemetry/api@1.9.0)(@types/node@25.5.0)(esbuild@0.27.2)(publint@0.3.18)(typescript@5.9.3)(vite@7.3.1(@types/node@25.5.0)(lightningcss@1.32.0))':
+  '@voidzero-dev/vite-plus-test@0.1.15(@arethetypeswrong/core@0.18.2)(@opentelemetry/api@1.9.0)(@types/node@25.5.0)(esbuild@0.27.2)(publint@0.3.18)(typescript@6.0.2)(vite@7.3.1(@types/node@25.5.0)(lightningcss@1.32.0))':
     dependencies:
       '@standard-schema/spec': 1.1.0
       '@types/chai': 5.2.3
-      '@voidzero-dev/vite-plus-core': 0.1.15(@arethetypeswrong/core@0.18.2)(@types/node@25.5.0)(esbuild@0.27.2)(publint@0.3.18)(typescript@5.9.3)
+      '@voidzero-dev/vite-plus-core': 0.1.15(@arethetypeswrong/core@0.18.2)(@types/node@25.5.0)(esbuild@0.27.2)(publint@0.3.18)(typescript@6.0.2)
       es-module-lexer: 1.7.0
       obug: 2.1.1
       pixelmatch: 7.1.0
@@ -3263,34 +3266,34 @@ snapshots:
       '@vue/shared': 3.5.27
       csstype: 3.2.3
 
-  '@vue/server-renderer@3.5.27(vue@3.5.27(typescript@5.9.3))':
+  '@vue/server-renderer@3.5.27(vue@3.5.27(typescript@6.0.2))':
     dependencies:
       '@vue/compiler-ssr': 3.5.27
       '@vue/shared': 3.5.27
-      vue: 3.5.27(typescript@5.9.3)
+      vue: 3.5.27(typescript@6.0.2)
 
   '@vue/shared@3.5.27': {}
 
-  '@vueuse/core@14.1.0(vue@3.5.27(typescript@5.9.3))':
+  '@vueuse/core@14.1.0(vue@3.5.27(typescript@6.0.2))':
     dependencies:
       '@types/web-bluetooth': 0.0.21
       '@vueuse/metadata': 14.1.0
-      '@vueuse/shared': 14.1.0(vue@3.5.27(typescript@5.9.3))
-      vue: 3.5.27(typescript@5.9.3)
+      '@vueuse/shared': 14.1.0(vue@3.5.27(typescript@6.0.2))
+      vue: 3.5.27(typescript@6.0.2)
 
-  '@vueuse/integrations@14.1.0(focus-trap@7.8.0)(vue@3.5.27(typescript@5.9.3))':
+  '@vueuse/integrations@14.1.0(focus-trap@7.8.0)(vue@3.5.27(typescript@6.0.2))':
     dependencies:
-      '@vueuse/core': 14.1.0(vue@3.5.27(typescript@5.9.3))
-      '@vueuse/shared': 14.1.0(vue@3.5.27(typescript@5.9.3))
-      vue: 3.5.27(typescript@5.9.3)
+      '@vueuse/core': 14.1.0(vue@3.5.27(typescript@6.0.2))
+      '@vueuse/shared': 14.1.0(vue@3.5.27(typescript@6.0.2))
+      vue: 3.5.27(typescript@6.0.2)
     optionalDependencies:
       focus-trap: 7.8.0
 
   '@vueuse/metadata@14.1.0': {}
 
-  '@vueuse/shared@14.1.0(vue@3.5.27(typescript@5.9.3))':
+  '@vueuse/shared@14.1.0(vue@3.5.27(typescript@6.0.2))':
     dependencies:
-      vue: 3.5.27(typescript@5.9.3)
+      vue: 3.5.27(typescript@6.0.2)
 
   ai@5.0.121(zod@4.3.5):
     dependencies:
@@ -4041,7 +4044,7 @@ snapshots:
 
   typescript@5.6.1-rc: {}
 
-  typescript@5.9.3: {}
+  typescript@6.0.2: {}
 
   undici-types@7.18.2: {}
 
@@ -4086,11 +4089,11 @@ snapshots:
       '@types/unist': 3.0.3
       vfile-message: 4.0.3
 
-  vite-plus@0.1.15(@arethetypeswrong/core@0.18.2)(@opentelemetry/api@1.9.0)(@types/node@25.5.0)(esbuild@0.27.2)(publint@0.3.18)(typescript@5.9.3)(vite@7.3.1(@types/node@25.5.0)(lightningcss@1.32.0)):
+  vite-plus@0.1.15(@arethetypeswrong/core@0.18.2)(@opentelemetry/api@1.9.0)(@types/node@25.5.0)(esbuild@0.27.2)(publint@0.3.18)(typescript@6.0.2)(vite@7.3.1(@types/node@25.5.0)(lightningcss@1.32.0)):
     dependencies:
       '@oxc-project/types': 0.122.0
-      '@voidzero-dev/vite-plus-core': 0.1.15(@arethetypeswrong/core@0.18.2)(@types/node@25.5.0)(esbuild@0.27.2)(publint@0.3.18)(typescript@5.9.3)
-      '@voidzero-dev/vite-plus-test': 0.1.15(@arethetypeswrong/core@0.18.2)(@opentelemetry/api@1.9.0)(@types/node@25.5.0)(esbuild@0.27.2)(publint@0.3.18)(typescript@5.9.3)(vite@7.3.1(@types/node@25.5.0)(lightningcss@1.32.0))
+      '@voidzero-dev/vite-plus-core': 0.1.15(@arethetypeswrong/core@0.18.2)(@types/node@25.5.0)(esbuild@0.27.2)(publint@0.3.18)(typescript@6.0.2)
+      '@voidzero-dev/vite-plus-test': 0.1.15(@arethetypeswrong/core@0.18.2)(@opentelemetry/api@1.9.0)(@types/node@25.5.0)(esbuild@0.27.2)(publint@0.3.18)(typescript@6.0.2)(vite@7.3.1(@types/node@25.5.0)(lightningcss@1.32.0))
       cac: 7.0.0
       cross-spawn: 7.0.6
       jsonc-parser: 3.3.1
@@ -4148,7 +4151,7 @@ snapshots:
       fsevents: 2.3.3
       lightningcss: 1.32.0
 
-  vitepress@2.0.0-alpha.15(@algolia/client-search@5.46.3)(@types/node@25.5.0)(lightningcss@1.32.0)(postcss@8.5.6)(react@19.2.3)(search-insights@2.17.3)(typescript@5.9.3):
+  vitepress@2.0.0-alpha.15(@algolia/client-search@5.46.3)(@types/node@25.5.0)(lightningcss@1.32.0)(postcss@8.5.6)(react@19.2.3)(search-insights@2.17.3)(typescript@6.0.2):
     dependencies:
       '@docsearch/css': 4.4.0
       '@docsearch/js': 4.4.0(@algolia/client-search@5.46.3)(react@19.2.3)(search-insights@2.17.3)
@@ -4157,17 +4160,17 @@ snapshots:
       '@shikijs/transformers': 3.21.0
       '@shikijs/types': 3.21.0
       '@types/markdown-it': 14.1.2
-      '@vitejs/plugin-vue': 6.0.3(vite@7.3.1(@types/node@25.5.0)(lightningcss@1.32.0))(vue@3.5.27(typescript@5.9.3))
+      '@vitejs/plugin-vue': 6.0.3(vite@7.3.1(@types/node@25.5.0)(lightningcss@1.32.0))(vue@3.5.27(typescript@6.0.2))
       '@vue/devtools-api': 8.0.5
       '@vue/shared': 3.5.27
-      '@vueuse/core': 14.1.0(vue@3.5.27(typescript@5.9.3))
-      '@vueuse/integrations': 14.1.0(focus-trap@7.8.0)(vue@3.5.27(typescript@5.9.3))
+      '@vueuse/core': 14.1.0(vue@3.5.27(typescript@6.0.2))
+      '@vueuse/integrations': 14.1.0(focus-trap@7.8.0)(vue@3.5.27(typescript@6.0.2))
       focus-trap: 7.8.0
       mark.js: 8.11.1
       minisearch: 7.2.0
       shiki: 3.21.0
       vite: 7.3.1(@types/node@25.5.0)(lightningcss@1.32.0)
-      vue: 3.5.27(typescript@5.9.3)
+      vue: 3.5.27(typescript@6.0.2)
     optionalDependencies:
       postcss: 8.5.6
     transitivePeerDependencies:
@@ -4243,15 +4246,15 @@ snapshots:
       - tsx
       - yaml
 
-  vue@3.5.27(typescript@5.9.3):
+  vue@3.5.27(typescript@6.0.2):
     dependencies:
       '@vue/compiler-dom': 3.5.27
       '@vue/compiler-sfc': 3.5.27
       '@vue/runtime-dom': 3.5.27
-      '@vue/server-renderer': 3.5.27(vue@3.5.27(typescript@5.9.3))
+      '@vue/server-renderer': 3.5.27(vue@3.5.27(typescript@6.0.2))
       '@vue/shared': 3.5.27
     optionalDependencies:
-      typescript: 5.9.3
+      typescript: 6.0.2
 
   webidl-conversions@3.0.1: {}
 
