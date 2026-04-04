@@ -2,9 +2,9 @@ packages:
   - docs
   - examples/*
   - packages/*
-ignoredBuiltDependencies:
-  - "@reown/appkit"
-  - secp256k1
-
-onlyBuiltDependencies:
-  - esbuild
+allowBuilds:
+  "@reown/appkit": false
+  esbuild: true
+  secp256k1: false
+blockExoticSubdeps: true
+strictDepBuilds: true
