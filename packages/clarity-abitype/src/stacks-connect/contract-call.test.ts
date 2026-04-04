@@ -65,8 +65,7 @@ describe("typedCallContract", () => {
       await expect(
         typedCallContract({
           abi: sip10Abi,
-          contractAddress: "SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR",
-          contractName: "my-token",
+          contract: "SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR.my-token",
           // @ts-expect-error - testing runtime error for non-existent function name
           functionName: "non-existent-function",
           network: "mainnet",
@@ -80,8 +79,7 @@ describe("typedCallContract", () => {
       await expect(
         typedCallContract({
           abi: sip10Abi,
-          contractAddress: "SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR",
-          contractName: "my-token",
+          contract: "SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR.my-token",
           // @ts-expect-error - testing runtime error for calling read_only function
           functionName: "get-balance",
           functionArgs: ["SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR"],
@@ -102,8 +100,7 @@ describe("typedCallContract", () => {
 
       const result = await typedCallContract({
         abi: sip10Abi,
-        contractAddress: "SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR",
-        contractName: "my-token",
+        contract: "SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR.my-token",
         functionName: "mint",
         functionArgs: [1000n, recipient],
         network: "mainnet",
@@ -132,8 +129,7 @@ describe("typedCallContract", () => {
 
       const result = await typedCallContract({
         abi: sip10Abi,
-        contractAddress: "SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR",
-        contractName: "my-token",
+        contract: "SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR.my-token",
         functionName: "transfer",
         functionArgs: [100n, sender, recipient, null],
         network: "mainnet",
@@ -165,8 +161,7 @@ describe("typedCallContract", () => {
 
       await typedCallContract({
         abi: sip10Abi,
-        contractAddress: "SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR",
-        contractName: "my-token",
+        contract: "SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR.my-token",
         functionName: "mint",
         functionArgs: [1000n, "SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR"],
         network: "mainnet",
@@ -192,8 +187,7 @@ describe("typedCallContract", () => {
       await expect(
         typedCallContract({
           abi: sip10Abi,
-          contractAddress: "SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR",
-          contractName: "my-token",
+          contract: "SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR.my-token",
           functionName: "mint",
           functionArgs: [1000n, "SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR"],
           network: "mainnet",
@@ -214,8 +208,7 @@ describe("typedCallContract", () => {
 
       const result = await typedCallContract({
         abi: sbtcTokenAbi,
-        contractAddress: "SM3VDXK3WZZSA84XXFKAFAF15NNZX32CTSG82JFQ4",
-        contractName: "sbtc-token",
+        contract: "SM3VDXK3WZZSA84XXFKAFAF15NNZX32CTSG82JFQ4.sbtc-token",
         functionName: "protocol-mint",
         functionArgs: [100000000n, recipient, contractFlag],
         network: "mainnet",
@@ -242,8 +235,7 @@ describe("typedCallContract", () => {
 
       const result = await typedCallContract({
         abi: sbtcTokenAbi,
-        contractAddress: "SM3VDXK3WZZSA84XXFKAFAF15NNZX32CTSG82JFQ4",
-        contractName: "sbtc-token",
+        contract: "SM3VDXK3WZZSA84XXFKAFAF15NNZX32CTSG82JFQ4.sbtc-token",
         functionName: "protocol-set-name",
         functionArgs: [newName, contractFlag],
         network: "mainnet",
@@ -262,8 +254,7 @@ describe("typedCallContract", () => {
 
       const validConfig = {
         abi: sip10Abi,
-        contractAddress: "SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR",
-        contractName: "my-token",
+        contract: "SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR.my-token",
         functionName: "transfer",
         functionArgs: [
           100n,

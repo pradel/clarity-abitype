@@ -71,8 +71,7 @@ import { typedCallContract } from "clarity-abitype/stacks-connect";
 
 const txId = await typedCallContract({
   abi: myTokenAbi,
-  contractAddress: "SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR",
-  contractName: "my-token",
+  contract: "SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR.my-token",
   functionName: "transfer",
   functionArgs: [
     1000n, // amount: uint128

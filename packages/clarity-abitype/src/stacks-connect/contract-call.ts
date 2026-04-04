@@ -38,14 +38,9 @@ export type TypedCallContractParameters<
     TypedCallContractFunctionName<abi>,
   args extends TypedCallContractFunctionArgs<abi, functionName> =
     TypedCallContractFunctionArgs<abi, functionName>,
-> = Omit<CallContractParams, "functionName" | "functionArgs" | "contract"> & {
+> = Omit<CallContractParams, "functionName" | "functionArgs"> & {
   /** The contract ABI */
   abi: abi;
-  // TODO combine contractAddress and contractName
-  /** The contract address */
-  contractAddress: string;
-  /** The contract name */
-  contractName: string;
   /** The function name to call */
   functionName:
     | TypedCallContractFunctionName<abi>
@@ -78,8 +73,7 @@ export type TypedCallContractReturnType = string;
  *
  * const result = await typedCallContract({
  *   abi: swapAbi,
- *   contractAddress: "SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR",
- *   contractName: "swap",
+ *   contract: "SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR.swap",
  *   functionName: "xbtc-to-sbtc-swap",
  *   functionArgs: [Cl.uint(amount)],
  *   network: "mainnet",
@@ -103,8 +97,6 @@ export async function typedCallContract<
 ): Promise<TypedCallContractReturnType> {
   const {
     abi: abiParam,
-    contractAddress,
-    contractName,
     functionName: funcName,
     functionArgs = [],
     ...options
@@ -128,13 +120,9 @@ export async function typedCallContract<
     abiFunc.args,
   );
 
-  // Build contract identifier
-  const contract = `${contractAddress}.${contractName}` as const;
-
   // Call the underlying @stacks/connect request
   const response = await request("stx_callContract", {
     ...options,
-    contract,
     functionName: String(funcName),
     functionArgs: clarityArgs,
   });
