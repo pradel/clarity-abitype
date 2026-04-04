@@ -178,7 +178,7 @@ describe("typedCallContract", () => {
         },
       );
 
-      const postConditions = ["0xpostcondition"] as unknown[];
+      const postConditions = ["0xpostcondition"];
 
       await typedCallContract({
         abi: sip10Abi,

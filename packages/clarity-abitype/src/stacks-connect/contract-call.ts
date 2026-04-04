@@ -38,7 +38,7 @@ export type TypedCallContractParameters<
     TypedCallContractFunctionName<abi>,
   args extends TypedCallContractFunctionArgs<abi, functionName> =
     TypedCallContractFunctionArgs<abi, functionName>,
-> = Omit<CallContractParams, "functionName" | "contract"> & {
+> = Omit<CallContractParams, "functionName" | "functionArgs" | "contract"> & {
   /** The contract ABI */
   abi: abi;
   // TODO combine contractAddress and contractName
