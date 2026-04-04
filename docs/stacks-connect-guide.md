@@ -95,33 +95,6 @@ const txId = await typedCallContract({
 3. Opens the Stacks Wallet with the transaction details
 4. After the user signs, returns the transaction ID
 
-### Post Conditions
-
-You can add post conditions to the transaction:
-
-```ts
-import { typedCallContract } from "clarity-abitype/stacks-connect";
-import { makeStandardSTXPostCondition } from "@stacks/transactions";
-
-const postConditions = [
-  makeStandardSTXPostCondition(
-    "SP2C...", // contract address
-    1000n, // expected balance
-  ),
-];
-
-const txId = await typedCallContract({
-  abi: myTokenAbi,
-  contractAddress: "SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR",
-  contractName: "my-token",
-  functionName: "transfer",
-  functionArgs: [1000n, "SP2C...", "SP3K...", null],
-  network: "mainnet",
-  postConditionMode: "deny",
-  postConditions,
-});
-```
-
 ## Type Safety Benefits
 
 - **Function names** are autocomplete-enabled and validated at compile time
