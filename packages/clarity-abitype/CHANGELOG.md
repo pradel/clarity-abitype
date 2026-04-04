@@ -1,5 +1,13 @@
 # clarity-abitype
 
+## 0.6.0
+
+### Minor Changes
+
+- [`772e3cb`](https://github.com/pradel/clarity-abitype/commit/772e3cb51484859907911c67baddeba51f4de2ca) Thanks [@pradel](https://github.com/pradel)! - Create `typedCallContract` function to provide type safe contract interaction as drop in replacements for the `@stacks/connect` `request("stx_callContract")` method. Add new stacks-connect documentation.
+
+- [#43](https://github.com/pradel/clarity-abitype/pull/43) [`f9803ba`](https://github.com/pradel/clarity-abitype/commit/f9803bae99e8388a0df4478a58a0c8fce484d157) Thanks [@pradel](https://github.com/pradel)! - Add support for typescript v6.
+
 ## 0.5.1
 
 ### Patch Changes
