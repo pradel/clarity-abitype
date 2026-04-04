@@ -2,6 +2,9 @@ packages:
   - docs
   - examples/*
   - packages/*
-
-onlyBuiltDependencies:
-  - esbuild
+allowBuilds:
+  "@reown/appkit": false
+  esbuild: true
+  secp256k1: false
+blockExoticSubdeps: true
+strictDepBuilds: true
