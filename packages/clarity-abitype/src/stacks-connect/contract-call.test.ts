@@ -63,12 +63,12 @@ describe("typedCallContract", () => {
   describe("function behavior", () => {
     it("throws for non-existent function name", async () => {
       await expect(
-        (typedCallContract as Function)({
+        typedCallContract({
           abi: sip10Abi,
           contractAddress: "SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR",
           contractName: "my-token",
+          // @ts-expect-error - testing runtime error for non-existent function name
           functionName: "non-existent-function",
-          functionArgs: [],
           network: "mainnet",
         }),
       ).rejects.toThrow(
@@ -78,10 +78,11 @@ describe("typedCallContract", () => {
 
     it("throws for read_only function name", async () => {
       await expect(
-        (typedCallContract as Function)({
+        typedCallContract({
           abi: sip10Abi,
           contractAddress: "SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR",
           contractName: "my-token",
+          // @ts-expect-error - testing runtime error for calling read_only function
           functionName: "get-balance",
           functionArgs: ["SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR"],
           network: "mainnet",
@@ -93,15 +94,9 @@ describe("typedCallContract", () => {
 
     it("calls request with correct ClarityValues for mint", async () => {
       const mockRequest = request as ReturnType<typeof vi.fn>;
-      mockRequest.mockImplementation(
-        async (_method: string, options: unknown) => {
-          const opts = options as {
-            onFinish?: (data: { txId: string }) => void;
-          };
-          opts.onFinish?.({ txId: "0x1234" });
-          return Promise.resolve();
-        },
-      );
+      mockRequest.mockImplementation(async () => {
+        return Promise.resolve({ txid: "0x1234" });
+      });
 
       const recipient = "SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR";
 
@@ -128,15 +123,9 @@ describe("typedCallContract", () => {
 
     it("calls request with correct ClarityValues for transfer", async () => {
       const mockRequest = request as ReturnType<typeof vi.fn>;
-      mockRequest.mockImplementation(
-        async (_method: string, options: unknown) => {
-          const opts = options as {
-            onFinish?: (data: { txId: string }) => void;
-          };
-          opts.onFinish?.({ txId: "0x5678" });
-          return Promise.resolve();
-        },
-      );
+      mockRequest.mockImplementation(async () => {
+        return Promise.resolve({ txid: "0x5678" });
+      });
 
       const sender = "ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM";
       const recipient = "SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR";
@@ -168,15 +157,9 @@ describe("typedCallContract", () => {
 
     it("passes through postConditionMode and postConditions", async () => {
       const mockRequest = request as ReturnType<typeof vi.fn>;
-      mockRequest.mockImplementation(
-        async (_method: string, options: unknown) => {
-          const opts = options as {
-            onFinish?: (data: { txId: string }) => void;
-          };
-          opts.onFinish?.({ txId: "0x9999" });
-          return Promise.resolve();
-        },
-      );
+      mockRequest.mockImplementation(async () => {
+        return Promise.resolve({ txid: "0x9999" });
+      });
 
       const postConditions = ["0xpostcondition"];
 
@@ -203,7 +186,7 @@ describe("typedCallContract", () => {
     it("throws when transaction is cancelled (no txId)", async () => {
       const mockRequest = request as ReturnType<typeof vi.fn>;
       mockRequest.mockImplementation(async () => {
-        return Promise.resolve();
+        return Promise.resolve({});
       });
 
       await expect(
@@ -222,15 +205,9 @@ describe("typedCallContract", () => {
   describe("with sbtc-token ABI", () => {
     it("calls protocol-mint correctly", async () => {
       const mockRequest = request as ReturnType<typeof vi.fn>;
-      mockRequest.mockImplementation(
-        async (_method: string, options: unknown) => {
-          const opts = options as {
-            onFinish?: (data: { txId: string }) => void;
-          };
-          opts.onFinish?.({ txId: "0xabcd" });
-          return Promise.resolve();
-        },
-      );
+      mockRequest.mockImplementation(async () => {
+        return Promise.resolve({ txid: "0xabcd" });
+      });
 
       const recipient = "SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR";
       const contractFlag = "0x00";
@@ -256,15 +233,9 @@ describe("typedCallContract", () => {
 
     it("calls protocol-set-name correctly", async () => {
       const mockRequest = request as ReturnType<typeof vi.fn>;
-      mockRequest.mockImplementation(
-        async (_method: string, options: unknown) => {
-          const opts = options as {
-            onFinish?: (data: { txId: string }) => void;
-          };
-          opts.onFinish?.({ txId: "0xdef0" });
-          return Promise.resolve();
-        },
-      );
+      mockRequest.mockImplementation(async () => {
+        return Promise.resolve({ txid: "0xdef0" });
+      });
 
       const newName = "Wrapped sBTC";
       const contractFlag = "0x00";
@@ -285,29 +256,23 @@ describe("typedCallContract", () => {
   describe("parameter validation", () => {
     it("accepts valid parameters matching the ABI", async () => {
       const mockRequest = request as ReturnType<typeof vi.fn>;
-      mockRequest.mockImplementation(
-        async (_method: string, options: unknown) => {
-          const opts = options as {
-            onFinish?: (data: { txId: string }) => void;
-          };
-          opts.onFinish?.({ txId: "0xvalid" });
-          return Promise.resolve();
-        },
-      );
+      mockRequest.mockImplementation(async () => {
+        return Promise.resolve({ txid: "0xvalid" });
+      });
 
       const validConfig = {
         abi: sip10Abi,
         contractAddress: "SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR",
         contractName: "my-token",
-        functionName: "transfer" as const,
+        functionName: "transfer",
         functionArgs: [
           100n,
           "SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR",
           "SP3K8BC0PPEVCV7NZ6QSRWPQ2JE9E5B6N3PA0KBR9",
           null,
-        ] as const,
-        network: "mainnet" as const,
-      };
+        ],
+        network: "mainnet",
+      } as const;
 
       expectTypeOf(validConfig.functionName).toEqualTypeOf<"transfer">();
       expectTypeOf(validConfig.functionArgs).toMatchTypeOf<
