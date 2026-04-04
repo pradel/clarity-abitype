@@ -1,5 +1,5 @@
 import { request } from "@stacks/connect";
-import type { NetworkClientParam } from "@stacks/network";
+import type { CallContractParams } from "@stacks/connect/dist/types/methods.js";
 
 import type { ClarityAbi, ClarityAbiFunction } from "../abi.js";
 import type {
@@ -28,19 +28,6 @@ export type TypedCallContractFunctionArgs<
     TypedCallContractFunctionName<abi>,
 > = ContractFunctionArgs<abi, "public", functionName>;
 
-type StacksConnectPostConditionMode = "permit" | "deny";
-
-type StacksConnectPostCondition = unknown;
-
-interface TypedCallContractOptions {
-  network: NetworkClientParam["network"];
-  postConditionMode?: StacksConnectPostConditionMode;
-  postConditions?: StacksConnectPostCondition[];
-  sponsored?: boolean;
-  onFinish?: (data: { txId: string }) => void;
-  onCancel?: (data: { error?: string }) => void;
-}
-
 /**
  * Parameters for making a typed contract call via @stacks/connect.
  * Extends the base options but replaces functionName and functionArgs with typed versions.
@@ -51,9 +38,10 @@ export type TypedCallContractParameters<
     TypedCallContractFunctionName<abi>,
   args extends TypedCallContractFunctionArgs<abi, functionName> =
     TypedCallContractFunctionArgs<abi, functionName>,
-> = Omit<TypedCallContractOptions, "postConditionMode" | "postConditions"> & {
+> = Omit<CallContractParams, "functionName" | "contract"> & {
   /** The contract ABI */
   abi: abi;
+  // TODO combine contractAddress and contractName
   /** The contract address */
   contractAddress: string;
   /** The contract name */
@@ -64,10 +52,6 @@ export type TypedCallContractParameters<
     | (functionName extends TypedCallContractFunctionName<abi>
         ? functionName
         : never);
-  /** Post condition mode (default: "permit") */
-  postConditionMode?: StacksConnectPostConditionMode;
-  /** Post conditions to include */
-  postConditions?: StacksConnectPostCondition[];
 } & (readonly [] extends args
     ? { functionArgs?: args | undefined }
     : { functionArgs: args });
@@ -123,8 +107,6 @@ export async function typedCallContract<
     contractName,
     functionName: funcName,
     functionArgs = [],
-    postConditionMode,
-    postConditions,
     ...options
   } = parameters as TypedCallContractParameters;
 
@@ -147,27 +129,19 @@ export async function typedCallContract<
   );
 
   // Build contract identifier
-  const contract = `${contractAddress}.${contractName}`;
-
-  let txId: string | undefined;
+  const contract = `${contractAddress}.${contractName}` as const;
 
   // Call the underlying @stacks/connect request
-  await (request as Function)("stx_callContract", {
+  const response = await request("stx_callContract", {
     ...options,
     contract,
     functionName: String(funcName),
     functionArgs: clarityArgs,
-    postConditionMode: postConditionMode ?? "permit",
-    postConditions: postConditions ?? [],
-    onFinish: (data: { txId: string }) => {
-      txId = data.txId;
-      options.onFinish?.(data);
-    },
   });
 
-  if (!txId) {
+  if (!response.txid) {
     throw new Error("Transaction was cancelled or failed to submit");
   }
 
-  return txId;
+  return response.txid;
 }
