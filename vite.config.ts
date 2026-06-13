@@ -13,6 +13,7 @@ export default defineConfig({
     plugins: ["node", "typescript", "vitest"],
     rules: {
       "typescript/no-redundant-type-constituents": "off",
+      "vitest/require-mock-type-parameters": "off",
     },
   },
   run: {
