@@ -86,6 +86,23 @@ describe("typedMakeContractCall", () => {
       );
     });
 
+    it("throws for argument count mismatch", async () => {
+      await expect(
+        typedMakeContractCall({
+          abi: sip10Abi,
+          contractAddress: "SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR",
+          contractName: "my-token",
+          functionName: "transfer",
+          // @ts-expect-error - testing invalid function args count
+          functionArgs: [100n],
+          senderKey:
+            "753b7cc01a1a2e86221266a154af739463fce51219d97e4f856cd7200c3bd2a601",
+        }),
+      ).rejects.toThrow(
+        'Argument count mismatch for function "transfer": expected 4, got 1.',
+      );
+    });
+
     it("creates a valid transaction for transfer function", async () => {
       const transaction = await typedMakeContractCall({
         abi: sip10Abi,

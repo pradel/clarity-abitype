@@ -275,6 +275,48 @@ describe("typedCallPublicFn", () => {
         }),
       ).toThrow('Function "get-balance" not found in ABI with access "public"');
     });
+
+    it("throws for argument count mismatch", () => {
+      const simnet = createMockSimnet();
+
+      expect(() =>
+        (typedCallPublicFn as Function)({
+          simnet,
+          abi: sip10Abi,
+          contract: "my-token",
+          functionName: "transfer",
+          functionArgs: [100n],
+          sender: simnet.deployer,
+        }),
+      ).toThrow(
+        'Argument count mismatch for function "transfer": expected 4, got 1.',
+      );
+    });
+
+    it("throws ContractExecutionError when execution throws", () => {
+      const mockCallPublic = vi.fn().mockImplementation(() => {
+        throw new Error("Simnet failure");
+      });
+      const simnet = createMockSimnet(mockCallPublic);
+
+      expect(() =>
+        (typedCallPublicFn as Function)({
+          simnet,
+          abi: sip10Abi,
+          contract: "my-token",
+          functionName: "transfer",
+          functionArgs: [
+            100n,
+            "SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR",
+            "SP3K8BC0PPEVCV7NZ6QSRWPQ2JE9E5B6N3PA0KBR9",
+            null,
+          ],
+          sender: simnet.deployer,
+        }),
+      ).toThrow(
+        'Execution failed for contract "my-token" function "transfer".',
+      );
+    });
   });
 
   describe("with sbtc-token ABI", () => {
