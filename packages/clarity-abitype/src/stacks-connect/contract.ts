@@ -19,23 +19,12 @@ export type ContractConnectCallOptions<
   (readonly [] extends args
     ? {
         /** Function arguments (optional when function takes no arguments) */
-        args?: UnionWiden<args> | undefined;
-        /** @deprecated Use `args` instead */
         functionArgs?: UnionWiden<args> | undefined;
       }
-    :
-        | {
-            /** Function arguments */
-            args: UnionWiden<args>;
-            /** @deprecated Use `args` instead */
-            functionArgs?: never;
-          }
-        | {
-            /** @deprecated Use `args` instead */
-            functionArgs: UnionWiden<args>;
-            /** Function arguments */
-            args?: never;
-          });
+    : {
+        /** Function arguments */
+        functionArgs: UnionWiden<args>;
+      });
 
 export type GetContractParameters<
   abi extends ClarityAbi | readonly unknown[] = ClarityAbi,
@@ -71,7 +60,7 @@ export type GetContractReturnType<
  * });
  *
  * const txId = await contract.call.transfer({
- *   args: [100n, "SP2C...", "SP3K...", null],
+ *   functionArgs: [100n, "SP2C...", "SP3K...", null],
  *   network: "mainnet",
  * });
  * ```

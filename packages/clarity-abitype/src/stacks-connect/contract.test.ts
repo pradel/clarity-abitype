@@ -39,7 +39,7 @@ describe("getContract (stacks-connect)", () => {
     });
 
     const txId = await contract.call.transfer({
-      args: [
+      functionArgs: [
         100n,
         "ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM",
         "SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR",

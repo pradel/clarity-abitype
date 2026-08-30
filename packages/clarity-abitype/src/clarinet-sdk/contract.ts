@@ -26,23 +26,12 @@ export type ContractPublicFnOptions<
 } & (readonly [] extends args
   ? {
       /** Function arguments (optional when function takes no arguments) */
-      args?: UnionWiden<args> | undefined;
-      /** @deprecated Use `args` instead */
       functionArgs?: UnionWiden<args> | undefined;
     }
-  :
-      | {
-          /** Function arguments */
-          args: UnionWiden<args>;
-          /** @deprecated Use `args` instead */
-          functionArgs?: never;
-        }
-      | {
-          /** @deprecated Use `args` instead */
-          functionArgs: UnionWiden<args>;
-          /** Function arguments */
-          args?: never;
-        });
+  : {
+      /** Function arguments */
+      functionArgs: UnionWiden<args>;
+    });
 
 export type ContractReadOnlyFnOptions<
   abi extends ClarityAbi | readonly unknown[] = ClarityAbi,
@@ -56,23 +45,12 @@ export type ContractReadOnlyFnOptions<
 } & (readonly [] extends args
   ? {
       /** Function arguments (optional when function takes no arguments) */
-      args?: UnionWiden<args> | undefined;
-      /** @deprecated Use `args` instead */
       functionArgs?: UnionWiden<args> | undefined;
     }
-  :
-      | {
-          /** Function arguments */
-          args: UnionWiden<args>;
-          /** @deprecated Use `args` instead */
-          functionArgs?: never;
-        }
-      | {
-          /** @deprecated Use `args` instead */
-          functionArgs: UnionWiden<args>;
-          /** Function arguments */
-          args?: never;
-        });
+  : {
+      /** Function arguments */
+      functionArgs: UnionWiden<args>;
+    });
 
 export type GetContractParameters<
   abi extends ClarityAbi | readonly unknown[] = ClarityAbi,
@@ -120,13 +98,13 @@ export type GetContractReturnType<
  *
  * // Public function call (mines a block)
  * const { result, events } = contract.public.transfer({
- *   args: [100n, "SP2C...", "SP3K...", null],
+ *   functionArgs: [100n, "SP2C...", "SP3K...", null],
  *   sender: simnet.deployer,
  * });
  *
  * // Read-only function call
  * const { result: balance } = contract.read["get-balance"]({
- *   args: ["SP2C..."],
+ *   functionArgs: ["SP2C..."],
  *   sender: simnet.deployer,
  * });
  * ```

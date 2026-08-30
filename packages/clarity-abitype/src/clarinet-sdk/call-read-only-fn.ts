@@ -132,23 +132,12 @@ export type TypedCallReadOnlyFnParameters<
 } & (readonly [] extends args
   ? {
       /** Function arguments (optional when function takes no arguments) */
-      args?: UnionWiden<args> | undefined;
-      /** @deprecated Use `args` instead */
       functionArgs?: UnionWiden<args> | undefined;
     }
-  :
-      | {
-          /** Function arguments */
-          args: UnionWiden<args>;
-          /** @deprecated Use `args` instead */
-          functionArgs?: never;
-        }
-      | {
-          /** @deprecated Use `args` instead */
-          functionArgs: UnionWiden<args>;
-          /** Function arguments */
-          args?: never;
-        });
+  : {
+      /** Function arguments */
+      functionArgs: UnionWiden<args>;
+    });
 
 /**
  * Return type for calling a read-only function.
@@ -180,7 +169,7 @@ export type TypedCallReadOnlyFnReturnType<
  *   abi: sip10Abi,
  *   contract: "my-token",
  *   functionName: "get-balance",
- *   args: ["SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR"],
+ *   functionArgs: ["SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR"],
  *   sender: simnet.deployer,
  * });
  * // result is typed as { ok: bigint; error?: never } | { ok?: never; error: null }
@@ -201,10 +190,9 @@ export function typedCallReadOnlyFn<
     abi: abiParam,
     contract,
     functionName: funcName,
+    functionArgs = [],
     sender,
-  } = parameters as any;
-
-  const rawArgs = parameters.args ?? (parameters as any).functionArgs ?? [];
+  } = parameters as TypedCallReadOnlyFnParameters;
 
   // Find the function in the ABI
   const abiTyped = abiParam as ClarityAbi;
@@ -219,17 +207,17 @@ export function typedCallReadOnlyFn<
     });
   }
 
-  if (rawArgs.length !== abiFunc.args.length) {
+  if (functionArgs.length !== abiFunc.args.length) {
     throw new AbiArgumentMismatchError({
       functionName: String(funcName),
       expectedCount: abiFunc.args.length,
-      givenCount: rawArgs.length,
+      givenCount: functionArgs.length,
     });
   }
 
   // Convert primitive args to ClarityValues
   const clarityArgs = primitivesToCVs(
-    rawArgs as readonly unknown[],
+    functionArgs as readonly unknown[],
     abiFunc.args,
   );
 

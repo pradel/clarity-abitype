@@ -84,13 +84,13 @@ const contract = getContract({
 
 // Read-only call
 const balance = await contract.read["get-balance"]({
-  args: ["SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR"],
+  functionArgs: ["SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR"],
   senderAddress: "SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR",
 });
 
 // Create & sign transaction
 const tx = await contract.call.transfer({
-  args: [1000n, "SP2C...", "SP3K...", null],
+  functionArgs: [1000n, "SP2C...", "SP3K...", null],
   senderKey: "your-private-key",
 });
 ```
@@ -110,7 +110,7 @@ const transaction = await typedMakeContractCall({
   contractAddress: "SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR",
   contractName: "my-token",
   functionName: "transfer",
-  args: [
+  functionArgs: [
     1000n, // amount: bigint
     "SP2C...", // sender: string
     "SP3K...", // recipient: string
@@ -135,7 +135,7 @@ const balance = await typedCallReadOnlyFunction({
   contractAddress: "SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR",
   contractName: "my-token",
   functionName: "get-balance",
-  args: ["SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR"],
+  functionArgs: ["SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR"],
   senderAddress: "SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR",
 });
 // Result type: { ok: bigint } | { error: uint128 }
@@ -145,6 +145,6 @@ const balance = await typedCallReadOnlyFunction({
 
 - **`getContract` instance** creates intuitive `.read` and `.call` method proxies
 - **Function names** are autocomplete-enabled and validated at compile time
-- **Arguments** use concise `args` with automatic literal widening (`NoInfer` & `UnionWiden`)
+- **Arguments** are typed to match the ABI, no more wrong types or counts
 - **Return types** are inferred, response types become discriminated unions
 - **Structured Error diagnostics** provide clear error messages (`AbiFunctionNotFoundError`, `AbiArgumentMismatchError`)

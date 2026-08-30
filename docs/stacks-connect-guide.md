@@ -75,7 +75,7 @@ const contract = getContract({
 });
 
 const txId = await contract.call.transfer({
-  args: [1000n, "SP2C...", "SP3K...", null],
+  functionArgs: [1000n, "SP2C...", "SP3K...", null],
   network: "mainnet",
 });
 ```
@@ -91,7 +91,7 @@ const txId = await typedCallContract({
   abi: myTokenAbi,
   contract: "SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR.my-token",
   functionName: "transfer",
-  args: [
+  functionArgs: [
     1000n, // amount: uint128
     "SP2C...", // sender: principal
     "SP3K...", // recipient: principal
@@ -107,8 +107,8 @@ const txId = await typedCallContract({
 
 ## Type Safety Benefits
 
-- **`getContract` instance** allows calling functions via `contract.call.<fnName>({ args, ...options })`
+- **`getContract` instance** allows calling functions via `contract.call.<fnName>({ functionArgs, ...options })`
 - **Function names** are autocomplete-enabled and validated at compile time
-- **Arguments** use concise `args` with automatic literal widening (`NoInfer` & `UnionWiden`)
+- **Arguments** are typed to match the ABI, no more wrong types or counts
 - **Return types** are inferred, the txId is typed as a string
 - **Structured Error diagnostics** provide clear error messages (`AbiFunctionNotFoundError`, `AbiArgumentMismatchError`)

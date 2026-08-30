@@ -36,7 +36,7 @@ describe("getContract (stacks-js)", () => {
     expect(symbolResult).toEqual({ ok: "sBTC" });
 
     const balanceResult = await contract.read["get-balance"]({
-      args: ["SM3VDXK3WZZSA84XXFKAFAF15NNZX32CTSG82JFQ4"],
+      functionArgs: ["SM3VDXK3WZZSA84XXFKAFAF15NNZX32CTSG82JFQ4"],
     });
     expect(balanceResult).toHaveProperty("ok");
   });
@@ -51,7 +51,7 @@ describe("getContract (stacks-js)", () => {
     });
 
     const tx = await contract.call.transfer({
-      args: [
+      functionArgs: [
         100n,
         "SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR",
         "SP3K8BC0PPEVCV7NZ6QSRWPQ2JE9E5B6N3PA0KBR9",

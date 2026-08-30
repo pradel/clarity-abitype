@@ -57,23 +57,12 @@ export type TypedCallContractParameters<
 } & (readonly [] extends args
     ? {
         /** Function arguments (optional when function takes no arguments) */
-        args?: UnionWiden<args> | undefined;
-        /** @deprecated Use `args` instead */
         functionArgs?: UnionWiden<args> | undefined;
       }
-    :
-        | {
-            /** Function arguments */
-            args: UnionWiden<args>;
-            /** @deprecated Use `args` instead */
-            functionArgs?: never;
-          }
-        | {
-            /** @deprecated Use `args` instead */
-            functionArgs: UnionWiden<args>;
-            /** Function arguments */
-            args?: never;
-          });
+    : {
+        /** Function arguments */
+        functionArgs: UnionWiden<args>;
+      });
 
 /**
  * Return type for typedCallContract - returns the transaction ID from the wallet.
@@ -98,7 +87,7 @@ export type TypedCallContractReturnType = string;
  *   abi: swapAbi,
  *   contract: "SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR.swap",
  *   functionName: "xbtc-to-sbtc-swap",
- *   args: [100n],
+ *   functionArgs: [100n],
  *   network: "mainnet",
  * });
  *
@@ -119,10 +108,9 @@ export async function typedCallContract<
   const {
     abi: abiParam,
     functionName: funcName,
+    functionArgs = [],
     ...options
-  } = parameters as any;
-
-  const rawArgs = parameters.args ?? (parameters as any).functionArgs ?? [];
+  } = parameters as TypedCallContractParameters;
 
   // Find the function in the ABI
   const abiTyped = abiParam as ClarityAbi;
@@ -136,17 +124,17 @@ export async function typedCallContract<
     });
   }
 
-  if (rawArgs.length !== abiFunc.args.length) {
+  if (functionArgs.length !== abiFunc.args.length) {
     throw new AbiArgumentMismatchError({
       functionName: String(funcName),
       expectedCount: abiFunc.args.length,
-      givenCount: rawArgs.length,
+      givenCount: functionArgs.length,
     });
   }
 
   // Convert primitive args to ClarityValues
   const clarityArgs = primitivesToCVs(
-    rawArgs as readonly unknown[],
+    functionArgs as readonly unknown[],
     abiFunc.args,
   );
 

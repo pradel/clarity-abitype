@@ -73,7 +73,7 @@ const { result, events } = contract.public.increment({
 
 // Call read-only function
 const { result: count } = contract.read["get-count"]({
-  args: [deployer],
+  functionArgs: [deployer],
   sender: deployer,
 });
 ```
@@ -92,7 +92,7 @@ const { result, events } = typedCallPublicFn({
   abi: counterAbi,
   contract: "counter",
   functionName: "increment",
-  args: [],
+  functionArgs: [],
   sender: deployer,
 });
 // Result type: { ok: boolean } | { error: uint128 }
@@ -110,7 +110,7 @@ const { result } = typedCallReadOnlyFn({
   abi: counterAbi,
   contract: "counter",
   functionName: "get-count",
-  args: [deployer],
+  functionArgs: [deployer],
   sender: deployer,
 });
 // Result type: uint128
@@ -118,8 +118,8 @@ const { result } = typedCallReadOnlyFn({
 
 ## Type Safety Benefits
 
-- **`getContract` instance** allows calling functions via `contract.public.<fnName>({ args, ...options })` and `contract.read.<fnName>({ args, ...options })`
+- **`getContract` instance** allows calling functions via `contract.public.<fnName>({ functionArgs, ...options })` and `contract.read.<fnName>({ functionArgs, ...options })`
 - **Function names** are autocomplete-enabled and validated at compile time
-- **Arguments** use concise `args` with automatic literal widening (`NoInfer` & `UnionWiden`)
+- **Arguments** are typed to match the ABI, no more wrong types or counts
 - **Return types** are inferred, response types become discriminated unions
 - **Structured Error diagnostics** provide clear error messages (`AbiFunctionNotFoundError`, `AbiArgumentMismatchError`)

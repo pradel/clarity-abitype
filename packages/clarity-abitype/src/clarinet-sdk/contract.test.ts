@@ -67,7 +67,7 @@ describe("getContract (clarinet-sdk)", () => {
     const recipient = "SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR";
 
     const { result, events } = contract.public.transfer({
-      args: [100n, sender, recipient, null],
+      functionArgs: [100n, sender, recipient, null],
       sender,
     });
 
@@ -100,7 +100,7 @@ describe("getContract (clarinet-sdk)", () => {
     });
 
     const { result } = contract.read["get-balance"]({
-      args: ["SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR"],
+      functionArgs: ["SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR"],
     });
 
     expect(result).toEqual({ ok: 42n });

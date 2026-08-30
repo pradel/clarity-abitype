@@ -63,23 +63,12 @@ export type TypedMakeContractCallParameters<
 } & (readonly [] extends args
     ? {
         /** Function arguments (optional when function takes no arguments) */
-        args?: UnionWiden<args> | undefined;
-        /** @deprecated Use `args` instead */
         functionArgs?: UnionWiden<args> | undefined;
       }
-    :
-        | {
-            /** Function arguments */
-            args: UnionWiden<args>;
-            /** @deprecated Use `args` instead */
-            functionArgs?: never;
-          }
-        | {
-            /** @deprecated Use `args` instead */
-            functionArgs: UnionWiden<args>;
-            /** Function arguments */
-            args?: never;
-          });
+    : {
+        /** Function arguments */
+        functionArgs: UnionWiden<args>;
+      });
 
 /**
  * Return type for typedMakeContractCall - returns the signed transaction.
@@ -110,7 +99,7 @@ export type TypedMakeContractCallReturnType = StacksTransactionWire;
  *   contractAddress: "SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR",
  *   contractName: "my-token",
  *   functionName: "transfer",
- *   args: [100n, "SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR", "SP3K8BC0PPEVCV7NZ6QSRWPQ2JE9E5B6N3PA0KBR9", null],
+ *   functionArgs: [100n, "SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR", "SP3K8BC0PPEVCV7NZ6QSRWPQ2JE9E5B6N3PA0KBR9", null],
  *   senderKey: "your-private-key",
  *   network: "mainnet",
  * });
@@ -132,10 +121,9 @@ export async function typedMakeContractCall<
   const {
     abi: abiParam,
     functionName: funcName,
+    functionArgs = [],
     ...options
-  } = parameters as any;
-
-  const rawArgs = parameters.args ?? (parameters as any).functionArgs ?? [];
+  } = parameters as TypedMakeContractCallParameters;
 
   // Find the function in the ABI
   const abiTyped = abiParam as ClarityAbi;
@@ -149,17 +137,17 @@ export async function typedMakeContractCall<
     });
   }
 
-  if (rawArgs.length !== abiFunc.args.length) {
+  if (functionArgs.length !== abiFunc.args.length) {
     throw new AbiArgumentMismatchError({
       functionName: String(funcName),
       expectedCount: abiFunc.args.length,
-      givenCount: rawArgs.length,
+      givenCount: functionArgs.length,
     });
   }
 
   // Convert primitive args to ClarityValues
   const clarityArgs = primitivesToCVs(
-    rawArgs as readonly unknown[],
+    functionArgs as readonly unknown[],
     abiFunc.args,
   );
 
