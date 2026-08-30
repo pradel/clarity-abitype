@@ -107,6 +107,7 @@ const { result } = typedCallReadOnlyFn({
 
 ## Type Safety Benefits
 
-- **Function names** are autocomplete, enabled and validated at compile time
-- **Arguments** are typed to match the ABI, no more wrong types
-- **Return types** are inferred response types become discriminated unions
+- **Function names** are autocomplete-enabled and validated at compile time
+- **Arguments** are typed to match the ABI, no more wrong types or counts
+- **Return types** are inferred, response types become discriminated unions
+- **Structured Error diagnostics** provide clear error messages (`AbiFunctionNotFoundError`, `AbiArgumentMismatchError`)

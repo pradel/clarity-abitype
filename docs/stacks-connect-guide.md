@@ -99,3 +99,4 @@ const txId = await typedCallContract({
 - **Function names** are autocomplete-enabled and validated at compile time
 - **Arguments** are typed to match the ABI, no more wrong types or counts
 - **Return types** are inferred, the txId is typed as a string
+- **Structured Error diagnostics** provide clear error messages (`AbiFunctionNotFoundError`, `AbiArgumentMismatchError`)
