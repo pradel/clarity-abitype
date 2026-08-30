@@ -13,6 +13,7 @@ import {
   ContractExecutionError,
   BaseError,
 } from "clarity-abitype";
+import { typedMakeContractCall } from "clarity-abitype/stacks-js";
 
 try {
   await typedMakeContractCall({ ... });
