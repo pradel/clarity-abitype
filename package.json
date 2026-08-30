@@ -15,7 +15,7 @@
   "devDependencies": {
     "@changesets/changelog-github": "0.7.0",
     "@changesets/cli": "2.31.0",
-    "vite-plus": "0.1.24"
+    "vite-plus": "catalog:"
   },
-  "packageManager": "pnpm@11.6.0"
+  "packageManager": "pnpm@11.24.0"
 }

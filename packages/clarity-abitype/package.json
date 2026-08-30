@@ -30,15 +30,15 @@
     "test": "vp test"
   },
   "devDependencies": {
-    "@arethetypeswrong/core": "0.18.2",
-    "@stacks/clarinet-sdk": "3.16.0",
-    "@stacks/common": "7.3.1",
-    "@stacks/connect": "8.2.6",
-    "@stacks/network": "7.3.1",
-    "@stacks/transactions": "7.4.0",
-    "publint": "0.3.18",
+    "@arethetypeswrong/core": "0.18.5",
+    "@stacks/clarinet-sdk": "^3.23.2",
+    "@stacks/common": "7.6.0",
+    "@stacks/connect": "^8.2.7",
+    "@stacks/network": "^7.6.0",
+    "@stacks/transactions": "^7.6.0",
+    "publint": "0.3.24",
     "typescript": "6.0.2",
-    "vite-plus": "0.1.24"
+    "vite-plus": "catalog:"
   },
   "peerDependencies": {
     "@stacks/clarinet-sdk": ">= 3.0.0",
