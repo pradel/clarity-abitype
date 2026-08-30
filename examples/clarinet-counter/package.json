@@ -15,7 +15,7 @@
     "@stacks/transactions": "7.6.0",
     "@types/node": "26.4.0",
     "clarity-abitype": "workspace:*",
-    "typescript": "6.0.2",
+    "typescript": "7.0.2",
     "vite-plus": "catalog:",
     "vitest-environment-clarinet": "3.0.2"
   }

@@ -37,7 +37,7 @@
     "@stacks/network": "^7.6.0",
     "@stacks/transactions": "^7.6.0",
     "publint": "0.3.24",
-    "typescript": "6.0.2",
+    "typescript": "7.0.2",
     "vite-plus": "catalog:"
   },
   "peerDependencies": {
@@ -45,7 +45,7 @@
     "@stacks/connect": ">= 8.0.0",
     "@stacks/network": ">= 7.3.0",
     "@stacks/transactions": ">= 7.3.0",
-    "typescript": ">=5.4.0 || >=6.0.0"
+    "typescript": ">=5.4.0 || >=6.0.0 || >=7.0.0"
   },
   "peerDependenciesMeta": {
     "@stacks/clarinet-sdk": {
