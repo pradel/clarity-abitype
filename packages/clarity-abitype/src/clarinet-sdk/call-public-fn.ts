@@ -10,6 +10,7 @@ import {
   ContractExecutionError,
 } from "../errors.js";
 import { primitivesToCVs, cvToPrimitive } from "../stacks-js/utils.js";
+import type { UnionWiden } from "../types.js";
 import type {
   ClarityAbiArgsToPrimitiveTypes,
   ClarityAbiOutputToPrimitiveType,
@@ -129,8 +130,14 @@ export type TypedCallPublicFnParameters<
   /** The sender address for the transaction */
   sender: string;
 } & (readonly [] extends args
-  ? { functionArgs?: args | undefined }
-  : { functionArgs: args });
+  ? {
+      /** Function arguments (optional when function takes no arguments) */
+      functionArgs?: UnionWiden<args> | undefined;
+    }
+  : {
+      /** Function arguments */
+      functionArgs: UnionWiden<args>;
+    });
 
 /**
  * Return type for calling a public function.

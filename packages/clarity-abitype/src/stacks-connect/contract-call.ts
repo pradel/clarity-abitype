@@ -13,6 +13,7 @@ import type {
   ContractFunctionArgs,
 } from "../stacks-js/read-only.js";
 import { primitivesToCVs } from "../stacks-js/utils.js";
+import type { UnionWiden } from "../types.js";
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // Contract Call Types
@@ -54,8 +55,14 @@ export type TypedCallContractParameters<
         ? functionName
         : never);
 } & (readonly [] extends args
-    ? { functionArgs?: args | undefined }
-    : { functionArgs: args });
+    ? {
+        /** Function arguments (optional when function takes no arguments) */
+        functionArgs?: UnionWiden<args> | undefined;
+      }
+    : {
+        /** Function arguments */
+        functionArgs: UnionWiden<args>;
+      });
 
 /**
  * Return type for typedCallContract - returns the transaction ID from the wallet.

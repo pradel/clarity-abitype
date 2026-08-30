@@ -11,6 +11,7 @@ import {
   BaseError,
   ContractExecutionError,
 } from "../errors.js";
+import type { UnionWiden } from "../types.js";
 import type {
   ContractFunctionName,
   ContractFunctionArgs,
@@ -60,8 +61,14 @@ export type TypedMakeContractCallParameters<
         ? functionName
         : never);
 } & (readonly [] extends args
-    ? { functionArgs?: args | undefined }
-    : { functionArgs: args });
+    ? {
+        /** Function arguments (optional when function takes no arguments) */
+        functionArgs?: UnionWiden<args> | undefined;
+      }
+    : {
+        /** Function arguments */
+        functionArgs: UnionWiden<args>;
+      });
 
 /**
  * Return type for typedMakeContractCall - returns the signed transaction.

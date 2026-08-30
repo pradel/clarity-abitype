@@ -12,6 +12,7 @@ import {
   BaseError,
   ContractExecutionError,
 } from "../errors.js";
+import type { UnionWiden } from "../types.js";
 import type {
   ClarityAbiArgsToPrimitiveTypes,
   ClarityAbiOutputToPrimitiveType,
@@ -116,8 +117,14 @@ export type TypedCallReadOnlyFunctionParameters<
   /** Optional client configuration */
   client?: NetworkClientParam["client"];
 } & (readonly [] extends args
-  ? { functionArgs?: args | undefined }
-  : { functionArgs: args });
+  ? {
+      /** Function arguments (optional when function takes no arguments) */
+      functionArgs?: UnionWiden<args> | undefined;
+    }
+  : {
+      /** Function arguments */
+      functionArgs: UnionWiden<args>;
+    });
 
 /**
  * Return type for calling a read-only function.
