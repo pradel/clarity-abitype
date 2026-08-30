@@ -1,3 +1,5 @@
+import type { ResolvedRegister } from "./register.js";
+
 /**
  * Prints custom error message
  *
@@ -38,10 +40,129 @@ export type Merge<object1, object2> = Omit<object1, keyof object2> & object2;
  *
  * @link https://twitter.com/mattpocockuk/status/1622730173446557697?s=20&t=NdpAcmEFXY01xkqU3KO0Mg
  * @example
- * type Result = Pretty<{ a: string } | { b: string } | { c: number, d: bigint }>
+ * type Result = Prettify<{ a: string } & { b: string } & { c: number, d: bigint }>
  * //   ^? type Result = { a: string; b: string; c: number; d: bigint }
  */
-export type Pretty<type> = { [key in keyof type]: type[key] } & unknown;
+export type Prettify<type> = { [key in keyof type]: type[key] } & {};
+
+/** Alias for {@link Prettify} */
+export type Pretty<type> = Prettify<type>;
+
+/**
+ * Evaluates each union member with {@link Prettify}.
+ */
+export type UnionEvaluate<type> = type extends object ? Prettify<type> : type;
+
+/**
+ * Prevents TypeScript from inferring generic type arguments from a specific position.
+ */
+export type NoInfer<type> = [type][type extends any ? 0 : never];
+
+/**
+ * Checks if {@link T} is `never`.
+ */
+export type IsNever<T> = [T] extends [never] ? true : false;
+
+/**
+ * Checks if {@link T} can be narrowed further than {@link U}.
+ */
+export type IsNarrowable<T, U> =
+  IsNever<
+    (T extends U ? true : false) & (U extends T ? false : true)
+  > extends true
+    ? false
+    : true;
+
+/**
+ * Checks if {@link union} is a union type.
+ */
+export type IsUnion<
+  union,
+  ///
+  union2 = union,
+> = union extends union2 ? ([union2] extends [union] ? false : true) : never;
+
+/**
+ * Widens literal types to their general primitive types (e.g. `100n` -> `bigint`, `"SP..."` -> `string`).
+ */
+export type Widen<type> =
+  | ([unknown] extends [type] ? unknown : never)
+  | (type extends Function ? type : never)
+  | (type extends null ? null : never)
+  | (type extends undefined ? undefined : never)
+  | (type extends boolean ? boolean : never)
+  | (type extends ResolvedRegister["bigIntType"] ? bigint : never)
+  | (type extends number ? number : never)
+  | (type extends string
+      ? type extends ResolvedRegister["addressType"]
+        ? ResolvedRegister["addressType"]
+        : type extends ResolvedRegister["bytesType"]["inputs"]
+          ? ResolvedRegister["bytesType"]["inputs"]
+          : string
+      : never)
+  | (type extends readonly [] ? readonly [] : never)
+  | (type extends Record<string, unknown>
+      ? { [K in keyof type]: Widen<type[K]> }
+      : never)
+  | (type extends readonly unknown[]
+      ? {
+          [K in keyof type]: Widen<type[K]>;
+        }
+      : never);
+
+/**
+ * Distributes {@link Widen} over union types.
+ */
+export type UnionWiden<type> = type extends any ? Widen<type> : never;
+
+/**
+ * Construct a type with the properties of union type T except for those in type K.
+ */
+export type UnionOmit<type, keys extends keyof any> = type extends any
+  ? Omit<type, keys>
+  : never;
+
+/**
+ * Construct a type with the picked properties of union type T.
+ */
+export type UnionPick<type, keys extends keyof any> = type extends any
+  ? Pick<type, keys & keyof type>
+  : never;
+
+/**
+ * Makes all properties optional without undefined widening.
+ */
+export type ExactPartial<type> = {
+  [key in keyof type]?: type[key] | undefined;
+};
+
+/**
+ * Makes all properties required and removes undefined.
+ */
+export type ExactRequired<type> = {
+  [P in keyof type]-?: Exclude<type[P], undefined>;
+};
+
+/**
+ * Enforces that only one variant in a union is provided.
+ */
+export type OneOf<
+  union extends object,
+  fallback extends object | undefined = undefined,
+  ///
+  keys extends KeyofUnion<union> = KeyofUnion<union>,
+> = union extends infer item
+  ? Prettify<
+      item & {
+        [key in Exclude<keys, keyof item>]?: fallback extends object
+          ? key extends keyof fallback
+            ? fallback[key]
+            : undefined
+          : undefined;
+      }
+    >
+  : never;
+type KeyofUnion<type> = type extends type ? keyof type : never;
 
 /**
  * Creates range between two positive numbers using [tail recursion](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-4-5.html#tail-recursion-elimination-on-conditional-types).

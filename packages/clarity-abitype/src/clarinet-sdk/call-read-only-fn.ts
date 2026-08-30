@@ -1,8 +1,4 @@
-import type {
-  ClarityAbi,
-  ClarityAbiAccess,
-  ClarityAbiFunction,
-} from "../abi.js";
+import type { ClarityAbi, ClarityAbiFunction } from "../abi.js";
 import {
   AbiArgumentMismatchError,
   AbiFunctionNotFoundError,
@@ -10,79 +6,17 @@ import {
   ContractExecutionError,
 } from "../errors.js";
 import { primitivesToCVs, cvToPrimitive } from "../stacks-js/utils.js";
+import type { UnionEvaluate, UnionWiden } from "../types.js";
 import type {
-  ClarityAbiArgsToPrimitiveTypes,
-  ClarityAbiOutputToPrimitiveType,
-  ExtractAbiFunction,
-  ExtractAbiFunctionNames,
+  ContractFunctionArgs,
+  ContractFunctionName,
+  ContractFunctionReturnType,
 } from "../utils.js";
 import type {
   Simnet,
   ParsedTransactionResult,
   TypedTransactionResult,
 } from "./types.js";
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-// Contract Function Types (Internal - not exported from main index)
-////////////////////////////////////////////////////////////////////////////////////////////////////
-
-/**
- * Extracts the function name type for a given access level.
- * Falls back to `string` if the abi is not narrowable.
- * @internal
- */
-type SimnetContractFunctionName<
-  abi extends ClarityAbi | readonly unknown[] = ClarityAbi,
-  access extends ClarityAbiAccess = ClarityAbiAccess,
-> =
-  ExtractAbiFunctionNames<
-    abi extends ClarityAbi ? abi : ClarityAbi,
-    access
-  > extends infer functionName extends string
-    ? [functionName] extends [never]
-      ? string
-      : functionName
-    : string;
-
-/**
- * Extracts the function arguments type for a given function.
- * Falls back to `readonly unknown[]` if not inferrable.
- * @internal
- */
-type SimnetContractFunctionArgs<
-  abi extends ClarityAbi | readonly unknown[] = ClarityAbi,
-  access extends ClarityAbiAccess = ClarityAbiAccess,
-  functionName extends SimnetContractFunctionName<abi, access> =
-    SimnetContractFunctionName<abi, access>,
-> =
-  ClarityAbiArgsToPrimitiveTypes<
-    ExtractAbiFunction<
-      abi extends ClarityAbi ? abi : ClarityAbi,
-      functionName
-    >["args"]
-  > extends infer args
-    ? [args] extends [never]
-      ? readonly unknown[]
-      : args
-    : readonly unknown[];
-
-/**
- * Extracts the function return type for a given function.
- * Falls back to `unknown` if not inferrable.
- * @internal
- */
-type SimnetContractFunctionReturnType<
-  abi extends ClarityAbi | readonly unknown[] = ClarityAbi,
-  access extends ClarityAbiAccess = ClarityAbiAccess,
-  functionName extends SimnetContractFunctionName<abi, access> =
-    SimnetContractFunctionName<abi, access>,
-> = abi extends ClarityAbi
-  ? ClarityAbi extends abi
-    ? unknown
-    : ClarityAbiOutputToPrimitiveType<
-        ExtractAbiFunction<abi, functionName>["outputs"]
-      >
-  : unknown;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // Read-Only Function Types
@@ -93,7 +27,7 @@ type SimnetContractFunctionReturnType<
  */
 export type TypedCallReadOnlyFnFunctionName<
   abi extends ClarityAbi | readonly unknown[] = ClarityAbi,
-> = SimnetContractFunctionName<abi, "read_only">;
+> = ContractFunctionName<abi, "read_only">;
 
 /**
  * Read-only function arguments type.
@@ -102,7 +36,7 @@ export type TypedCallReadOnlyFnFunctionArgs<
   abi extends ClarityAbi | readonly unknown[] = ClarityAbi,
   functionName extends TypedCallReadOnlyFnFunctionName<abi> =
     TypedCallReadOnlyFnFunctionName<abi>,
-> = SimnetContractFunctionArgs<abi, "read_only", functionName>;
+> = ContractFunctionArgs<abi, "read_only", functionName>;
 
 /**
  * Parameters for calling a read-only function with type safety.
@@ -113,24 +47,32 @@ export type TypedCallReadOnlyFnParameters<
     TypedCallReadOnlyFnFunctionName<abi>,
   args extends TypedCallReadOnlyFnFunctionArgs<abi, functionName> =
     TypedCallReadOnlyFnFunctionArgs<abi, functionName>,
-> = {
-  /** The simnet instance from @stacks/clarinet-sdk */
-  simnet: Simnet;
-  /** The contract ABI */
-  abi: abi;
-  /** The contract name (without deployer prefix) */
-  contract: string;
-  /** The function name to call */
-  functionName:
-    | TypedCallReadOnlyFnFunctionName<abi>
-    | (functionName extends TypedCallReadOnlyFnFunctionName<abi>
-        ? functionName
-        : never);
-  /** The sender address for the simulated call */
-  sender: string;
-} & (readonly [] extends args
-  ? { functionArgs?: args | undefined }
-  : { functionArgs: args });
+> = UnionEvaluate<
+  {
+    /** The simnet instance from @stacks/clarinet-sdk */
+    simnet: Simnet;
+    /** The contract ABI */
+    abi: abi;
+    /** The contract name (without deployer prefix) */
+    contract: string;
+    /** The function name to call */
+    functionName:
+      | TypedCallReadOnlyFnFunctionName<abi>
+      | (functionName extends TypedCallReadOnlyFnFunctionName<abi>
+          ? functionName
+          : never);
+    /** The sender address for the simulated call */
+    sender: string;
+  } & (readonly [] extends args
+    ? {
+        /** Function arguments (optional when function takes no arguments) */
+        functionArgs?: UnionWiden<args> | undefined;
+      }
+    : {
+        /** Function arguments */
+        functionArgs: UnionWiden<args>;
+      })
+>;
 
 /**
  * Return type for calling a read-only function.
@@ -140,7 +82,7 @@ export type TypedCallReadOnlyFnReturnType<
   functionName extends TypedCallReadOnlyFnFunctionName<abi> =
     TypedCallReadOnlyFnFunctionName<abi>,
 > = TypedTransactionResult<
-  SimnetContractFunctionReturnType<abi, "read_only", functionName>
+  ContractFunctionReturnType<abi, "read_only", functionName>
 >;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

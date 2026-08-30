@@ -21,7 +21,7 @@ import type {
   ClarityUInt,
 } from "./abi.js";
 import type { ResolvedRegister } from "./register.js";
-import type { Error, Pretty, Range, Tuple } from "./types.js";
+import type { Error, IsNarrowable, Pretty, Range, Tuple } from "./types.js";
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // Primitive Type Lookup Tables
@@ -585,6 +585,18 @@ export type ExtractAbiFungibleTokenNames<abi extends ClarityAbi> =
   ExtractAbiFungibleTokens<abi>["name"];
 
 /**
+ * Extracts a specific fungible token by name from {@link ClarityAbi}.
+ *
+ * @param abi - {@link ClarityAbi} to extract token from
+ * @param tokenName - String name of token to extract
+ * @returns Matching fungible token definition
+ */
+export type ExtractAbiFungibleToken<
+  abi extends ClarityAbi,
+  tokenName extends ExtractAbiFungibleTokenNames<abi>,
+> = Extract<ExtractAbiFungibleTokens<abi>, { name: tokenName }>;
+
+/**
  * Extracts all non-fungible token definitions from {@link ClarityAbi}.
  *
  * @param abi - {@link ClarityAbi} to extract non-fungible tokens from
@@ -623,3 +635,99 @@ export type ExtractAbiNonFungibleToken<
 export type ExtractAbiNonFungibleTokenType<
   token extends { type: ClarityType | string },
 > = ClarityTypeToPrimitiveType<token["type"]>;
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+// Contract Function Helpers
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * Extracts the function name type for a given access level from {@link ClarityAbi}.
+ * Uses {@link IsNarrowable} to immediately return `string` if the ABI is not a const literal.
+ *
+ * @param abi - {@link ClarityAbi} to extract function names from
+ * @param access - {@link ClarityAbiAccess} access level to filter by
+ * @returns Function name union or string fallback
+ */
+export type ContractFunctionName<
+  abi extends ClarityAbi | readonly unknown[] = ClarityAbi,
+  access extends ClarityAbiAccess = ClarityAbiAccess,
+  _narrowable extends boolean = IsNarrowable<abi, ClarityAbi>,
+> = _narrowable extends true
+  ? ExtractAbiFunctionNames<
+      abi extends ClarityAbi ? abi : ClarityAbi,
+      access
+    > extends infer functionName extends string
+    ? [functionName] extends [never]
+      ? string
+      : functionName
+    : string
+  : string;
+
+/**
+ * Extracts the function arguments type for a given function in {@link ClarityAbi}.
+ * Falls back to `readonly unknown[]` if the ABI or function is not inferrable.
+ *
+ * @param abi - {@link ClarityAbi} to extract function arguments from
+ * @param access - {@link ClarityAbiAccess} access level to filter by
+ * @param functionName - Name of the function to extract args for
+ * @returns Tuple of argument primitive types or readonly unknown[]
+ */
+export type ContractFunctionArgs<
+  abi extends ClarityAbi | readonly unknown[] = ClarityAbi,
+  access extends ClarityAbiAccess = ClarityAbiAccess,
+  functionName extends ContractFunctionName<abi, access> = ContractFunctionName<
+    abi,
+    access
+  >,
+  _narrowable extends boolean = IsNarrowable<abi, ClarityAbi>,
+> = _narrowable extends true
+  ? ClarityAbiArgsToPrimitiveTypes<
+      ExtractAbiFunction<
+        abi extends ClarityAbi ? abi : ClarityAbi,
+        functionName extends ExtractAbiFunctionNames<
+          abi extends ClarityAbi ? abi : ClarityAbi,
+          access
+        >
+          ? functionName
+          : never,
+        access
+      >["args"]
+    > extends infer args
+    ? [args] extends [never]
+      ? readonly unknown[]
+      : args
+    : readonly unknown[]
+  : readonly unknown[];
+
+/**
+ * Extracts the function return type for a given function in {@link ClarityAbi}.
+ * Falls back to `unknown` if the ABI or function is not inferrable.
+ *
+ * @param abi - {@link ClarityAbi} to extract return type from
+ * @param access - {@link ClarityAbiAccess} access level to filter by
+ * @param functionName - Name of the function to extract return type for
+ * @returns Inferred primitive return type or unknown
+ */
+export type ContractFunctionReturnType<
+  abi extends ClarityAbi | readonly unknown[] = ClarityAbi,
+  access extends ClarityAbiAccess = ClarityAbiAccess,
+  functionName extends ContractFunctionName<abi, access> = ContractFunctionName<
+    abi,
+    access
+  >,
+  _narrowable extends boolean = IsNarrowable<abi, ClarityAbi>,
+> = _narrowable extends true
+  ? abi extends ClarityAbi
+    ? ClarityAbi extends abi
+      ? unknown
+      : ClarityAbiOutputToPrimitiveType<
+          ExtractAbiFunction<
+            abi,
+            functionName extends ExtractAbiFunctionNames<abi, access>
+              ? functionName
+              : never,
+            access
+          >["outputs"]
+        >
+    : unknown
+  : unknown;
