@@ -62,7 +62,25 @@ Then import it in your code:
 import { myTokenAbi } from "./abis/my-token";
 ```
 
-## Making Contract Calls
+## Contract Abstraction with `getContract`
+
+You can create a typed contract instance using `getContract`:
+
+```ts
+import { getContract } from "clarity-abitype/stacks-connect";
+
+const contract = getContract({
+  abi: myTokenAbi,
+  contract: "SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR.my-token",
+});
+
+const txId = await contract.call.transfer({
+  args: [1000n, "SP2C...", "SP3K...", null],
+  network: "mainnet",
+});
+```
+
+## Standalone Function Calls
 
 Use `typedCallContract` to open the Stacks Wallet and submit a contract call transaction. This function wraps the `stx_callContract` method from @stacks/connect.
 
@@ -73,7 +91,7 @@ const txId = await typedCallContract({
   abi: myTokenAbi,
   contract: "SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR.my-token",
   functionName: "transfer",
-  functionArgs: [
+  args: [
     1000n, // amount: uint128
     "SP2C...", // sender: principal
     "SP3K...", // recipient: principal
@@ -87,15 +105,10 @@ const txId = await typedCallContract({
 // txId is the transaction ID returned by the wallet
 ```
 
-### What happens under the hood
-
-1. Looks up the function in your ABI to get argument types
-2. Converts your TypeScript values to ClarityValues automatically
-3. Opens the Stacks Wallet with the transaction details
-4. After the user signs, returns the transaction ID
-
 ## Type Safety Benefits
 
+- **`getContract` instance** allows calling functions via `contract.call.<fnName>({ args, ...options })`
 - **Function names** are autocomplete-enabled and validated at compile time
-- **Arguments** are typed to match the ABI, no more wrong types or counts
+- **Arguments** use concise `args` with automatic literal widening (`NoInfer` & `UnionWiden`)
 - **Return types** are inferred, the txId is typed as a string
+- **Structured Error diagnostics** provide clear error messages (`AbiFunctionNotFoundError`, `AbiArgumentMismatchError`)

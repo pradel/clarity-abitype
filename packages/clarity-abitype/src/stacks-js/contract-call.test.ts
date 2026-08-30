@@ -65,7 +65,7 @@ describe("typedMakeContractCall", () => {
             "753b7cc01a1a2e86221266a154af739463fce51219d97e4f856cd7200c3bd2a601",
         }),
       ).rejects.toThrow(
-        'Function "non-existent-function" not found in ABI or is not a public function',
+        'Function "non-existent-function" not found in ABI with access "public"',
       );
     });
 
@@ -82,7 +82,7 @@ describe("typedMakeContractCall", () => {
             "753b7cc01a1a2e86221266a154af739463fce51219d97e4f856cd7200c3bd2a601",
         }),
       ).rejects.toThrow(
-        'Function "get-balance" not found in ABI or is not a public function',
+        'Function "get-balance" not found in ABI with access "public"',
       );
     });
 

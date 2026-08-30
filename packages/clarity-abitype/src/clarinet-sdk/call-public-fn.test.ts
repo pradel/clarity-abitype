@@ -256,7 +256,7 @@ describe("typedCallPublicFn", () => {
           sender: simnet.deployer,
         }),
       ).toThrow(
-        'Function "non-existent-function" not found in ABI or is not a public function',
+        'Function "non-existent-function" not found in ABI with access "public"',
       );
     });
 
@@ -273,9 +273,7 @@ describe("typedCallPublicFn", () => {
           functionArgs: ["SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR"],
           sender: simnet.deployer,
         }),
-      ).toThrow(
-        'Function "get-balance" not found in ABI or is not a public function',
-      );
+      ).toThrow('Function "get-balance" not found in ABI with access "public"');
     });
   });
 

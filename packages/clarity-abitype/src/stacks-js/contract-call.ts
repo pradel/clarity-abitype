@@ -5,6 +5,13 @@ import type {
 import { makeContractCall } from "@stacks/transactions";
 
 import type { ClarityAbi, ClarityAbiFunction } from "../abi.js";
+import {
+  AbiArgumentMismatchError,
+  AbiFunctionNotFoundError,
+  BaseError,
+  ContractExecutionError,
+} from "../errors.js";
+import type { UnionWiden } from "../types.js";
 import type {
   ContractFunctionName,
   ContractFunctionArgs,
@@ -54,8 +61,25 @@ export type TypedMakeContractCallParameters<
         ? functionName
         : never);
 } & (readonly [] extends args
-    ? { functionArgs?: args | undefined }
-    : { functionArgs: args });
+    ? {
+        /** Function arguments (optional when function takes no arguments) */
+        args?: UnionWiden<args> | undefined;
+        /** @deprecated Use `args` instead */
+        functionArgs?: UnionWiden<args> | undefined;
+      }
+    :
+        | {
+            /** Function arguments */
+            args: UnionWiden<args>;
+            /** @deprecated Use `args` instead */
+            functionArgs?: never;
+          }
+        | {
+            /** @deprecated Use `args` instead */
+            functionArgs: UnionWiden<args>;
+            /** Function arguments */
+            args?: never;
+          });
 
 /**
  * Return type for typedMakeContractCall - returns the signed transaction.
@@ -86,7 +110,7 @@ export type TypedMakeContractCallReturnType = StacksTransactionWire;
  *   contractAddress: "SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR",
  *   contractName: "my-token",
  *   functionName: "transfer",
- *   functionArgs: [100n, "SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR", "SP3K8BC0PPEVCV7NZ6QSRWPQ2JE9E5B6N3PA0KBR9", null],
+ *   args: [100n, "SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR", "SP3K8BC0PPEVCV7NZ6QSRWPQ2JE9E5B6N3PA0KBR9", null],
  *   senderKey: "your-private-key",
  *   network: "mainnet",
  * });
@@ -108,35 +132,53 @@ export async function typedMakeContractCall<
   const {
     abi: abiParam,
     functionName: funcName,
-    functionArgs = [],
     ...options
-  } = parameters as TypedMakeContractCallParameters;
+  } = parameters as any;
+
+  const rawArgs = parameters.args ?? (parameters as any).functionArgs ?? [];
 
   // Find the function in the ABI
   const abiTyped = abiParam as ClarityAbi;
-  const abiFunc = abiTyped.functions.find(
+  const abiFunc = abiTyped.functions?.find(
     (fn: ClarityAbiFunction) => fn.name === funcName && fn.access === "public",
   );
 
   if (!abiFunc) {
-    throw new Error(
-      `Function "${String(funcName)}" not found in ABI or is not a public function`,
-    );
+    throw new AbiFunctionNotFoundError(String(funcName), {
+      access: "public",
+    });
+  }
+
+  if (rawArgs.length !== abiFunc.args.length) {
+    throw new AbiArgumentMismatchError({
+      functionName: String(funcName),
+      expectedCount: abiFunc.args.length,
+      givenCount: rawArgs.length,
+    });
   }
 
   // Convert primitive args to ClarityValues
   const clarityArgs = primitivesToCVs(
-    functionArgs as readonly unknown[],
+    rawArgs as readonly unknown[],
     abiFunc.args,
   );
 
-  // Build and sign the transaction using stacks.js makeContractCall
-  const transaction = await makeContractCall({
-    ...options,
-    functionName: String(funcName),
-    functionArgs: clarityArgs,
-    validateWithAbi: false,
-  });
+  try {
+    // Build and sign the transaction using stacks.js makeContractCall
+    const transaction = await makeContractCall({
+      ...options,
+      functionName: String(funcName),
+      functionArgs: clarityArgs,
+      validateWithAbi: false,
+    });
 
-  return transaction;
+    return transaction;
+  } catch (error) {
+    if (error instanceof BaseError) throw error;
+    throw new ContractExecutionError(error, {
+      contractAddress: options.contractAddress,
+      contractName: options.contractName,
+      functionName: String(funcName),
+    });
+  }
 }

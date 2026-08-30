@@ -3,7 +3,14 @@ import type {
   ClarityAbiAccess,
   ClarityAbiFunction,
 } from "../abi.js";
+import {
+  AbiArgumentMismatchError,
+  AbiFunctionNotFoundError,
+  BaseError,
+  ContractExecutionError,
+} from "../errors.js";
 import { primitivesToCVs, cvToPrimitive } from "../stacks-js/utils.js";
+import type { UnionWiden } from "../types.js";
 import type {
   ClarityAbiArgsToPrimitiveTypes,
   ClarityAbiOutputToPrimitiveType,
@@ -123,8 +130,25 @@ export type TypedCallPublicFnParameters<
   /** The sender address for the transaction */
   sender: string;
 } & (readonly [] extends args
-  ? { functionArgs?: args | undefined }
-  : { functionArgs: args });
+  ? {
+      /** Function arguments (optional when function takes no arguments) */
+      args?: UnionWiden<args> | undefined;
+      /** @deprecated Use `args` instead */
+      functionArgs?: UnionWiden<args> | undefined;
+    }
+  :
+      | {
+          /** Function arguments */
+          args: UnionWiden<args>;
+          /** @deprecated Use `args` instead */
+          functionArgs?: never;
+        }
+      | {
+          /** @deprecated Use `args` instead */
+          functionArgs: UnionWiden<args>;
+          /** Function arguments */
+          args?: never;
+        });
 
 /**
  * Return type for calling a public function.
@@ -158,7 +182,7 @@ export type TypedCallPublicFnReturnType<
  *   abi: sip10Abi,
  *   contract: "my-token",
  *   functionName: "transfer",
- *   functionArgs: [100n, "SP2C2YFP...", "SP3K8BC0...", null],
+ *   args: [100n, "SP2C2YFP...", "SP3K8BC0...", null],
  *   sender: simnet.deployer,
  * });
  * // result is typed as { ok: boolean; error?: never } | { ok?: never; error: bigint }
@@ -179,39 +203,56 @@ export function typedCallPublicFn<
     abi: abiParam,
     contract,
     functionName: funcName,
-    functionArgs = [],
     sender,
-  } = parameters as TypedCallPublicFnParameters;
+  } = parameters as any;
+
+  const rawArgs = parameters.args ?? (parameters as any).functionArgs ?? [];
 
   // Find the function in the ABI
   const abiTyped = abiParam as ClarityAbi;
-  const abiFunc = abiTyped.functions.find(
+  const abiFunc = abiTyped.functions?.find(
     (fn: ClarityAbiFunction) => fn.name === funcName && fn.access === "public",
   );
 
   if (!abiFunc) {
-    throw new Error(
-      `Function "${String(funcName)}" not found in ABI or is not a public function`,
-    );
+    throw new AbiFunctionNotFoundError(String(funcName), {
+      access: "public",
+    });
+  }
+
+  if (rawArgs.length !== abiFunc.args.length) {
+    throw new AbiArgumentMismatchError({
+      functionName: String(funcName),
+      expectedCount: abiFunc.args.length,
+      givenCount: rawArgs.length,
+    });
   }
 
   // Convert primitive args to ClarityValues
   const clarityArgs = primitivesToCVs(
-    functionArgs as readonly unknown[],
+    rawArgs as readonly unknown[],
     abiFunc.args,
   );
 
-  // Call the underlying clarinet-sdk function
-  const result: ParsedTransactionResult = simnet.callPublicFn(
-    contract,
-    String(funcName),
-    clarityArgs,
-    sender,
-  );
+  try {
+    // Call the underlying clarinet-sdk function
+    const result: ParsedTransactionResult = simnet.callPublicFn(
+      contract,
+      String(funcName),
+      clarityArgs,
+      sender,
+    );
 
-  // Convert the result back to a primitive type
-  return {
-    result: cvToPrimitive(result.result),
-    events: result.events,
-  } as TypedCallPublicFnReturnType<abi, functionName>;
+    // Convert the result back to a primitive type
+    return {
+      result: cvToPrimitive(result.result),
+      events: result.events,
+    } as TypedCallPublicFnReturnType<abi, functionName>;
+  } catch (error) {
+    if (error instanceof BaseError) throw error;
+    throw new ContractExecutionError(error, {
+      contractName: contract,
+      functionName: String(funcName),
+    });
+  }
 }

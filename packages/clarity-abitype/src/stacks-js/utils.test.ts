@@ -104,7 +104,7 @@ describe("primitiveToCV", () => {
 
     it("throws for invalid principal format", () => {
       // encodeAbiClarityValue will throw for invalid c32 address format
-      expect(() => primitiveToCV(123, "principal")).toThrow();
+      expect(() => primitiveToCV(123, "principal")).toThrow(/invalid/i);
     });
   });
 

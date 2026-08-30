@@ -200,7 +200,7 @@ describe("typedCallReadOnlyFn", () => {
           sender: simnet.deployer,
         }),
       ).toThrow(
-        'Function "non-existent-function" not found in ABI or is not a read_only function',
+        'Function "non-existent-function" not found in ABI with access "read_only"',
       );
     });
 
@@ -216,9 +216,7 @@ describe("typedCallReadOnlyFn", () => {
           functionName: "transfer",
           sender: simnet.deployer,
         }),
-      ).toThrow(
-        'Function "transfer" not found in ABI or is not a read_only function',
-      );
+      ).toThrow('Function "transfer" not found in ABI with access "read_only"');
     });
   });
 

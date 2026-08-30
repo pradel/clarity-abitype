@@ -2,7 +2,12 @@ import type {
   ClarityAbi,
   ClarityAbiArg,
   ClarityAbiAccess,
+  ClarityAbiFunction,
+  ClarityAbiFungibleToken,
+  ClarityAbiMap,
+  ClarityAbiNonFungibleToken,
   ClarityAbiTrait,
+  ClarityAbiVariable,
   ClarityBasicType,
   ClarityBool,
   ClarityBuffer,
@@ -585,6 +590,18 @@ export type ExtractAbiFungibleTokenNames<abi extends ClarityAbi> =
   ExtractAbiFungibleTokens<abi>["name"];
 
 /**
+ * Extracts a specific fungible token by name from {@link ClarityAbi}.
+ *
+ * @param abi - {@link ClarityAbi} to extract token from
+ * @param tokenName - String name of token to extract
+ * @returns Matching fungible token definition
+ */
+export type ExtractAbiFungibleToken<
+  abi extends ClarityAbi,
+  tokenName extends ExtractAbiFungibleTokenNames<abi>,
+> = Extract<ExtractAbiFungibleTokens<abi>, { name: tokenName }>;
+
+/**
  * Extracts all non-fungible token definitions from {@link ClarityAbi}.
  *
  * @param abi - {@link ClarityAbi} to extract non-fungible tokens from
@@ -623,3 +640,182 @@ export type ExtractAbiNonFungibleToken<
 export type ExtractAbiNonFungibleTokenType<
   token extends { type: ClarityType | string },
 > = ClarityTypeToPrimitiveType<token["type"]>;
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+// Standalone ABI Inspection and Formatting Utilities
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * Parameters for {@link getAbiItem}.
+ */
+export type GetAbiItemParameters<
+  abi extends ClarityAbi | readonly unknown[] = ClarityAbi,
+  name extends string = string,
+> = {
+  abi: abi;
+  name: name;
+  access?: ClarityAbiAccess | undefined;
+};
+
+/**
+ * Return type for {@link getAbiItem}.
+ */
+export type GetAbiItemReturnType<
+  abi extends ClarityAbi | readonly unknown[] = ClarityAbi,
+  name extends string = string,
+  access extends ClarityAbiAccess = ClarityAbiAccess,
+> = abi extends ClarityAbi
+  ?
+      | ExtractAbiFunction<
+          abi,
+          name extends ExtractAbiFunctionNames<abi, access> ? name : never,
+          access
+        >
+      | ExtractAbiVariable<
+          abi,
+          name extends ExtractAbiVariableNames<abi> ? name : never
+        >
+      | ExtractAbiMap<abi, name extends ExtractAbiMapNames<abi> ? name : never>
+      | ExtractAbiFungibleToken<
+          abi,
+          name extends ExtractAbiFungibleTokenNames<abi> ? name : never
+        >
+      | ExtractAbiNonFungibleToken<
+          abi,
+          name extends ExtractAbiNonFungibleTokenNames<abi> ? name : never
+        >
+  : unknown;
+
+/**
+ * Extracts an ABI item (function, variable, map, or token) from a Clarity ABI.
+ *
+ * @param parameters - {@link GetAbiItemParameters}
+ * @returns The matching ABI item, or undefined if not found
+ *
+ * @example
+ * ```ts
+ * const fn = getAbiItem({ abi: sip10Abi, name: "transfer", access: "public" });
+ * ```
+ */
+export function getAbiItem<
+  const abi extends ClarityAbi | readonly unknown[],
+  name extends string,
+  access extends ClarityAbiAccess = ClarityAbiAccess,
+>(
+  parameters: GetAbiItemParameters<abi, name>,
+): GetAbiItemReturnType<abi, name, access> {
+  const { abi: abiParam, name: itemName, access: itemAccess } = parameters;
+  const abiTyped = abiParam as ClarityAbi;
+
+  if (abiTyped.functions) {
+    const fn = abiTyped.functions.find(
+      (f: ClarityAbiFunction) =>
+        f.name === itemName && (!itemAccess || f.access === itemAccess),
+    );
+    if (fn) return fn as GetAbiItemReturnType<abi, name, access>;
+  }
+
+  if (abiTyped.variables) {
+    const v = abiTyped.variables.find((item) => item.name === itemName);
+    if (v) return v as GetAbiItemReturnType<abi, name, access>;
+  }
+
+  if (abiTyped.maps) {
+    const m = abiTyped.maps.find((item) => item.name === itemName);
+    if (m) return m as GetAbiItemReturnType<abi, name, access>;
+  }
+
+  if (abiTyped.fungible_tokens) {
+    const ft = abiTyped.fungible_tokens.find((item) => item.name === itemName);
+    if (ft) return ft as GetAbiItemReturnType<abi, name, access>;
+  }
+
+  if (abiTyped.non_fungible_tokens) {
+    const nft = abiTyped.non_fungible_tokens.find(
+      (item) => item.name === itemName,
+    );
+    if (nft) return nft as GetAbiItemReturnType<abi, name, access>;
+  }
+
+  return undefined as GetAbiItemReturnType<abi, name, access>;
+}
+
+/**
+ * Formats a Clarity type into its canonical Clarity language string representation.
+ *
+ * @param type - Clarity type to format
+ * @returns Formatted string
+ *
+ * @example
+ * ```ts
+ * formatClarityType({ "string-ascii": { length: 32 } }) // "(string-ascii 32)"
+ * ```
+ */
+export function formatClarityType(type: ClarityType | string): string {
+  if (typeof type === "string") {
+    return type;
+  }
+  if ("buffer" in type) {
+    return `(buff ${type.buffer.length})`;
+  }
+  if ("string-ascii" in type) {
+    return `(string-ascii ${type["string-ascii"].length})`;
+  }
+  if ("string-utf8" in type) {
+    return `(string-utf8 ${type["string-utf8"].length})`;
+  }
+  if ("list" in type) {
+    return `(list ${type.list.length} ${formatClarityType(type.list.type)})`;
+  }
+  if ("tuple" in type) {
+    const entries = type.tuple
+      .map((entry) => `(${entry.name} ${formatClarityType(entry.type)})`)
+      .join(" ");
+    return `(tuple ${entries})`;
+  }
+  if ("optional" in type) {
+    return `(optional ${formatClarityType(type.optional)})`;
+  }
+  if ("response" in type) {
+    return `(response ${formatClarityType(type.response.ok)} ${formatClarityType(type.response.error)})`;
+  }
+  return String(type);
+}
+
+/**
+ * Formats an ABI item into a human-readable Clarity declaration.
+ *
+ * @param item - ABI item (function, variable, map, or token)
+ * @returns Formatted string
+ *
+ * @example
+ * ```ts
+ * formatAbiItem(transferFn)
+ * // "public transfer(amount: uint128, sender: principal, recipient: principal, memo: (optional (buff 34))) -> (response bool uint128)"
+ * ```
+ */
+export function formatAbiItem(
+  item:
+    | ClarityAbiFunction
+    | ClarityAbiVariable
+    | ClarityAbiMap
+    | ClarityAbiFungibleToken
+    | ClarityAbiNonFungibleToken,
+): string {
+  if ("access" in item && "args" in item && "outputs" in item) {
+    const argsStr = item.args
+      .map((arg) => `${arg.name}: ${formatClarityType(arg.type)}`)
+      .join(", ");
+    return `${item.access} ${item.name}(${argsStr}) -> ${formatClarityType(item.outputs.type)}`;
+  }
+  if ("access" in item && "type" in item) {
+    return `${item.access} ${item.name}: ${formatClarityType(item.type)}`;
+  }
+  if ("key" in item && "value" in item) {
+    return `map ${item.name}(${formatClarityType(item.key)}) -> ${formatClarityType(item.value)}`;
+  }
+  if ("type" in item) {
+    return `nft ${item.name}: ${formatClarityType(item.type)}`;
+  }
+  return `ft ${item.name}`;
+}

@@ -3,7 +3,14 @@ import type {
   ClarityAbiAccess,
   ClarityAbiFunction,
 } from "../abi.js";
+import {
+  AbiArgumentMismatchError,
+  AbiFunctionNotFoundError,
+  BaseError,
+  ContractExecutionError,
+} from "../errors.js";
 import { primitivesToCVs, cvToPrimitive } from "../stacks-js/utils.js";
+import type { UnionWiden } from "../types.js";
 import type {
   ClarityAbiArgsToPrimitiveTypes,
   ClarityAbiOutputToPrimitiveType,
@@ -123,8 +130,25 @@ export type TypedCallReadOnlyFnParameters<
   /** The sender address for the simulated call */
   sender: string;
 } & (readonly [] extends args
-  ? { functionArgs?: args | undefined }
-  : { functionArgs: args });
+  ? {
+      /** Function arguments (optional when function takes no arguments) */
+      args?: UnionWiden<args> | undefined;
+      /** @deprecated Use `args` instead */
+      functionArgs?: UnionWiden<args> | undefined;
+    }
+  :
+      | {
+          /** Function arguments */
+          args: UnionWiden<args>;
+          /** @deprecated Use `args` instead */
+          functionArgs?: never;
+        }
+      | {
+          /** @deprecated Use `args` instead */
+          functionArgs: UnionWiden<args>;
+          /** Function arguments */
+          args?: never;
+        });
 
 /**
  * Return type for calling a read-only function.
@@ -156,7 +180,7 @@ export type TypedCallReadOnlyFnReturnType<
  *   abi: sip10Abi,
  *   contract: "my-token",
  *   functionName: "get-balance",
- *   functionArgs: ["SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR"],
+ *   args: ["SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR"],
  *   sender: simnet.deployer,
  * });
  * // result is typed as { ok: bigint; error?: never } | { ok?: never; error: null }
@@ -177,40 +201,57 @@ export function typedCallReadOnlyFn<
     abi: abiParam,
     contract,
     functionName: funcName,
-    functionArgs = [],
     sender,
-  } = parameters as TypedCallReadOnlyFnParameters;
+  } = parameters as any;
+
+  const rawArgs = parameters.args ?? (parameters as any).functionArgs ?? [];
 
   // Find the function in the ABI
   const abiTyped = abiParam as ClarityAbi;
-  const abiFunc = abiTyped.functions.find(
+  const abiFunc = abiTyped.functions?.find(
     (fn: ClarityAbiFunction) =>
       fn.name === funcName && fn.access === "read_only",
   );
 
   if (!abiFunc) {
-    throw new Error(
-      `Function "${String(funcName)}" not found in ABI or is not a read_only function`,
-    );
+    throw new AbiFunctionNotFoundError(String(funcName), {
+      access: "read_only",
+    });
+  }
+
+  if (rawArgs.length !== abiFunc.args.length) {
+    throw new AbiArgumentMismatchError({
+      functionName: String(funcName),
+      expectedCount: abiFunc.args.length,
+      givenCount: rawArgs.length,
+    });
   }
 
   // Convert primitive args to ClarityValues
   const clarityArgs = primitivesToCVs(
-    functionArgs as readonly unknown[],
+    rawArgs as readonly unknown[],
     abiFunc.args,
   );
 
-  // Call the underlying clarinet-sdk function
-  const result: ParsedTransactionResult = simnet.callReadOnlyFn(
-    contract,
-    String(funcName),
-    clarityArgs,
-    sender,
-  );
+  try {
+    // Call the underlying clarinet-sdk function
+    const result: ParsedTransactionResult = simnet.callReadOnlyFn(
+      contract,
+      String(funcName),
+      clarityArgs,
+      sender,
+    );
 
-  // Convert the result back to a primitive type
-  return {
-    result: cvToPrimitive(result.result),
-    events: result.events,
-  } as TypedCallReadOnlyFnReturnType<abi, functionName>;
+    // Convert the result back to a primitive type
+    return {
+      result: cvToPrimitive(result.result),
+      events: result.events,
+    } as TypedCallReadOnlyFnReturnType<abi, functionName>;
+  } catch (error) {
+    if (error instanceof BaseError) throw error;
+    throw new ContractExecutionError(error, {
+      contractName: contract,
+      functionName: String(funcName),
+    });
+  }
 }

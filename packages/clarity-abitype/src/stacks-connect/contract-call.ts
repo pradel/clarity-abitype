@@ -2,11 +2,18 @@ import { request } from "@stacks/connect";
 import type { CallContractParams } from "@stacks/connect/dist/types/methods.js";
 
 import type { ClarityAbi, ClarityAbiFunction } from "../abi.js";
+import {
+  AbiArgumentMismatchError,
+  AbiFunctionNotFoundError,
+  BaseError,
+  ContractExecutionError,
+} from "../errors.js";
 import type {
   ContractFunctionName,
   ContractFunctionArgs,
 } from "../stacks-js/read-only.js";
 import { primitivesToCVs } from "../stacks-js/utils.js";
+import type { UnionWiden } from "../types.js";
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // Contract Call Types
@@ -48,8 +55,25 @@ export type TypedCallContractParameters<
         ? functionName
         : never);
 } & (readonly [] extends args
-    ? { functionArgs?: args | undefined }
-    : { functionArgs: args });
+    ? {
+        /** Function arguments (optional when function takes no arguments) */
+        args?: UnionWiden<args> | undefined;
+        /** @deprecated Use `args` instead */
+        functionArgs?: UnionWiden<args> | undefined;
+      }
+    :
+        | {
+            /** Function arguments */
+            args: UnionWiden<args>;
+            /** @deprecated Use `args` instead */
+            functionArgs?: never;
+          }
+        | {
+            /** @deprecated Use `args` instead */
+            functionArgs: UnionWiden<args>;
+            /** Function arguments */
+            args?: never;
+          });
 
 /**
  * Return type for typedCallContract - returns the transaction ID from the wallet.
@@ -69,16 +93,13 @@ export type TypedCallContractReturnType = string;
  * @example
  * ```ts
  * import { typedCallContract } from 'clarity-abitype/stacks-connect';
- * import { Cl } from '@stacks/transactions';
  *
  * const result = await typedCallContract({
  *   abi: swapAbi,
  *   contract: "SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR.swap",
  *   functionName: "xbtc-to-sbtc-swap",
- *   functionArgs: [Cl.uint(amount)],
+ *   args: [100n],
  *   network: "mainnet",
- *   postConditionMode: "deny",
- *   postConditions: [userSendsXbtc, contractSendsSbtc],
  * });
  *
  * // result is the txId of the submitted transaction
@@ -98,38 +119,55 @@ export async function typedCallContract<
   const {
     abi: abiParam,
     functionName: funcName,
-    functionArgs = [],
     ...options
-  } = parameters as TypedCallContractParameters;
+  } = parameters as any;
+
+  const rawArgs = parameters.args ?? (parameters as any).functionArgs ?? [];
 
   // Find the function in the ABI
   const abiTyped = abiParam as ClarityAbi;
-  const abiFunc = abiTyped.functions.find(
+  const abiFunc = abiTyped.functions?.find(
     (fn: ClarityAbiFunction) => fn.name === funcName && fn.access === "public",
   );
 
   if (!abiFunc) {
-    throw new Error(
-      `Function "${String(funcName)}" not found in ABI or is not a public function`,
-    );
+    throw new AbiFunctionNotFoundError(String(funcName), {
+      access: "public",
+    });
+  }
+
+  if (rawArgs.length !== abiFunc.args.length) {
+    throw new AbiArgumentMismatchError({
+      functionName: String(funcName),
+      expectedCount: abiFunc.args.length,
+      givenCount: rawArgs.length,
+    });
   }
 
   // Convert primitive args to ClarityValues
   const clarityArgs = primitivesToCVs(
-    functionArgs as readonly unknown[],
+    rawArgs as readonly unknown[],
     abiFunc.args,
   );
 
-  // Call the underlying @stacks/connect request
-  const response = await request("stx_callContract", {
-    ...options,
-    functionName: String(funcName),
-    functionArgs: clarityArgs,
-  });
+  try {
+    // Call the underlying @stacks/connect request
+    const response = await request("stx_callContract", {
+      ...options,
+      functionName: String(funcName),
+      functionArgs: clarityArgs,
+    });
 
-  if (!response.txid) {
-    throw new Error("Transaction was cancelled or failed to submit");
+    if (!response.txid) {
+      throw new Error("Transaction was cancelled or failed to submit");
+    }
+
+    return response.txid;
+  } catch (error) {
+    if (error instanceof BaseError) throw error;
+    throw new ContractExecutionError(error, {
+      contractName: options.contract,
+      functionName: String(funcName),
+    });
   }
-
-  return response.txid;
 }

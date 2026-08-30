@@ -53,7 +53,34 @@ const counterAbi = {
 
 **Note:** The `as const` assertion is required for type inference to work.
 
-## Calling Public Functions
+## Contract Abstraction with `getContract`
+
+You can create a typed contract instance using `getContract`:
+
+```ts
+import { getContract } from "clarity-abitype/clarinet-sdk";
+
+const contract = getContract({
+  simnet,
+  abi: counterAbi,
+  contract: "counter",
+});
+
+// Call public function (mines a block)
+const { result, events } = contract.public.increment({
+  sender: deployer,
+});
+
+// Call read-only function
+const { result: count } = contract.read["get-count"]({
+  args: [deployer],
+  sender: deployer,
+});
+```
+
+## Standalone Function Calls
+
+### Calling Public Functions
 
 Use `typedCallPublicFn` to call public functions. This function wraps `simnet.callPublicFn` and mines a block.
 
@@ -65,21 +92,13 @@ const { result, events } = typedCallPublicFn({
   abi: counterAbi,
   contract: "counter",
   functionName: "increment",
-  functionArgs: [],
+  args: [],
   sender: deployer,
 });
 // Result type: { ok: boolean } | { error: uint128 }
 ```
 
-### What happens under the hood
-
-1. Looks up the function in your ABI to get argument types
-2. Converts your TypeScript values to ClarityValues
-3. Calls Clarinet SDK's `simnet.callPublicFn`
-4. Converts the result back to a TypeScript primitive
-5. Returns `{ result, events }` with typed result
-
-## Read-Only Calls
+### Read-Only Calls
 
 Use `typedCallReadOnlyFn` to query contract state. This wraps `simnet.callReadOnlyFn`.
 
@@ -91,22 +110,16 @@ const { result } = typedCallReadOnlyFn({
   abi: counterAbi,
   contract: "counter",
   functionName: "get-count",
-  functionArgs: [deployer],
+  args: [deployer],
   sender: deployer,
 });
 // Result type: uint128
 ```
 
-### What happens under the hood
-
-1. Looks up the function in your ABI to get argument and return types
-2. Converts your TypeScript values to ClarityValues
-3. Calls Clarinet SDK's `simnet.callReadOnlyFn`
-4. Converts the result back to a TypeScript primitive
-5. Returns `{ result }` with typed result
-
 ## Type Safety Benefits
 
-- **Function names** are autocomplete, enabled and validated at compile time
-- **Arguments** are typed to match the ABI, no more wrong types
-- **Return types** are inferred response types become discriminated unions
+- **`getContract` instance** allows calling functions via `contract.public.<fnName>({ args, ...options })` and `contract.read.<fnName>({ args, ...options })`
+- **Function names** are autocomplete-enabled and validated at compile time
+- **Arguments** use concise `args` with automatic literal widening (`NoInfer` & `UnionWiden`)
+- **Return types** are inferred, response types become discriminated unions
+- **Structured Error diagnostics** provide clear error messages (`AbiFunctionNotFoundError`, `AbiArgumentMismatchError`)

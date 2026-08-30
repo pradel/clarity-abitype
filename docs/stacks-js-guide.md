@@ -68,7 +68,36 @@ Then import it in your code:
 import { myTokenAbi } from "./abis/my-token";
 ```
 
-## Making Public Calls
+## Contract Abstraction with `getContract`
+
+You can create a typed contract instance using `getContract`:
+
+```ts
+import { getContract } from "clarity-abitype/stacks-js";
+
+const contract = getContract({
+  abi: myTokenAbi,
+  contractAddress: "SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR",
+  contractName: "my-token",
+  network: "mainnet",
+});
+
+// Read-only call
+const balance = await contract.read["get-balance"]({
+  args: ["SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR"],
+  senderAddress: "SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR",
+});
+
+// Create & sign transaction
+const tx = await contract.call.transfer({
+  args: [1000n, "SP2C...", "SP3K...", null],
+  senderKey: "your-private-key",
+});
+```
+
+## Standalone Function Calls
+
+### Making Public Calls
 
 Use `typedMakeContractCall` to create and sign a transaction. This function wraps `makeContractCall` from stacks.js.
 
@@ -81,7 +110,7 @@ const transaction = await typedMakeContractCall({
   contractAddress: "SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR",
   contractName: "my-token",
   functionName: "transfer",
-  functionArgs: [
+  args: [
     1000n, // amount: bigint
     "SP2C...", // sender: string
     "SP3K...", // recipient: string
@@ -94,14 +123,7 @@ const transaction = await typedMakeContractCall({
 const result = await broadcastTransaction({ transaction, network: "mainnet" });
 ```
 
-### What happens under the hood
-
-1. Looks up the function in your ABI to get argument types
-2. Converts your TypeScript values to ClarityValues based on the ABI json
-3. Calls stacks.js `makeContractCall` with the converted values
-4. Returns the signed transaction ready for broadcasting
-
-## Read-Only Calls
+### Read-Only Calls
 
 Use `typedCallReadOnlyFunction` to query contract state. This function wraps `fetchCallReadOnlyFunction` from stacks.js.
 
@@ -113,22 +135,16 @@ const balance = await typedCallReadOnlyFunction({
   contractAddress: "SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR",
   contractName: "my-token",
   functionName: "get-balance",
-  functionArgs: ["SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR"],
+  args: ["SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR"],
   senderAddress: "SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR",
 });
 // Result type: { ok: bigint } | { error: uint128 }
 ```
 
-### What happens under the hood
-
-1. Looks up the function in your ABI to get argument and return types
-2. Converts your TypeScript values to ClarityValues
-3. Calls stacks.js `fetchCallReadOnlyFunction`
-4. Converts the ClarityValue result back to a TypeScript primitive
-5. Returns the typed result
-
 ## Type Safety Benefits
 
+- **`getContract` instance** creates intuitive `.read` and `.call` method proxies
 - **Function names** are autocomplete-enabled and validated at compile time
-- **Arguments** are typed to match the ABI, no more wrong types or counts
+- **Arguments** use concise `args` with automatic literal widening (`NoInfer` & `UnionWiden`)
 - **Return types** are inferred, response types become discriminated unions
+- **Structured Error diagnostics** provide clear error messages (`AbiFunctionNotFoundError`, `AbiArgumentMismatchError`)

@@ -71,7 +71,7 @@ describe("typedCallContract", () => {
           network: "mainnet",
         }),
       ).rejects.toThrow(
-        'Function "non-existent-function" not found in ABI or is not a public function',
+        'Function "non-existent-function" not found in ABI with access "public"',
       );
     });
 
@@ -86,7 +86,7 @@ describe("typedCallContract", () => {
           network: "mainnet",
         }),
       ).rejects.toThrow(
-        'Function "get-balance" not found in ABI or is not a public function',
+        'Function "get-balance" not found in ABI with access "public"',
       );
     });
 
