@@ -55,6 +55,10 @@ describe("ClarityTypeToPrimitiveType", () => {
     assertType<ClarityTypeToPrimitiveType<"none">>(null);
   });
 
+  test("trait_reference", () => {
+    assertType<ClarityTypeToPrimitiveType<"trait_reference">>(testPrincipal);
+  });
+
   test("int128", () => {
     assertType<ClarityTypeToPrimitiveType<"int128">>(1n);
     assertType<ClarityTypeToPrimitiveType<"int128">>(BigInt(1));
@@ -1209,6 +1213,11 @@ describe("ClarityBasicTypeToPrimitiveType", () => {
   test("none", () => {
     type Result = ClarityBasicTypeToPrimitiveType<"none">;
     assertType<Result>(null);
+  });
+
+  test("trait_reference", () => {
+    type Result = ClarityBasicTypeToPrimitiveType<"trait_reference">;
+    assertType<Result>("SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR");
   });
 
   test("buffer", () => {

@@ -22,6 +22,7 @@ import type {
   ClarityResponse,
   ClarityStringAscii,
   ClarityStringUtf8,
+  ClarityTraitReference,
   ClarityTuple,
   ClarityTupleEntry,
   ClarityType,
@@ -37,6 +38,7 @@ test("Clarity Primitive Types", () => {
   assertType<ClarityBool>("bool");
   assertType<ClarityPrincipal>("principal");
   assertType<ClarityNone>("none");
+  assertType<ClarityTraitReference>("trait_reference");
 });
 
 test("ClarityBuffer", () => {
@@ -166,6 +168,7 @@ test("ClarityType", () => {
   assertType<ClarityType>("int128");
   assertType<ClarityType>("uint128");
   assertType<ClarityType>("none");
+  assertType<ClarityType>("trait_reference");
   assertType<ClarityType>({ buffer: { length: 32 } });
   assertType<ClarityType>({ "string-ascii": { length: 32 } });
   assertType<ClarityType>({ "string-utf8": { length: 32 } });

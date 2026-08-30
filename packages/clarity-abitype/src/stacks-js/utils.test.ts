@@ -25,7 +25,7 @@ import type {
   ExtractAbiFunction,
   ExtractAbiFunctionNames,
 } from "../utils.js";
-import { primitiveToCV, primitivesToCVs } from "./utils.js";
+import { cvToPrimitive, primitiveToCV, primitivesToCVs } from "./utils.js";
 
 describe("primitiveToCV", () => {
   describe("uint128", () => {
@@ -396,5 +396,140 @@ describe("typedCallReadOnlyFunction types", () => {
 
     // This would fail at compile time if types don't match
     expectTypeOf(config.functionArgs).toMatchTypeOf<readonly [string]>();
+  });
+});
+
+describe("cvToPrimitive", () => {
+  describe("uint128", () => {
+    it("converts uintCV to bigint", () => {
+      const cv = uintCV(100n);
+      expect(cvToPrimitive(cv)).toEqual(100n);
+    });
+  });
+
+  describe("int128", () => {
+    it("converts intCV to bigint", () => {
+      const cv = intCV(-100n);
+      expect(cvToPrimitive(cv)).toEqual(-100n);
+    });
+  });
+
+  describe("bool", () => {
+    it("converts trueCV to true", () => {
+      expect(cvToPrimitive(trueCV())).toBe(true);
+    });
+
+    it("converts falseCV to false", () => {
+      expect(cvToPrimitive(falseCV())).toBe(false);
+    });
+  });
+
+  describe("principal", () => {
+    it("converts standardPrincipalCV to address string", () => {
+      const addr = "SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR";
+      expect(cvToPrimitive(standardPrincipalCV(addr))).toBe(addr);
+    });
+
+    it("converts contractPrincipalCV to contract principal string", () => {
+      const cv = contractPrincipalCV(
+        "SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR",
+        "my-contract",
+      );
+      expect(cvToPrimitive(cv)).toBe(
+        "SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR.my-contract",
+      );
+    });
+  });
+
+  describe("none", () => {
+    it("converts noneCV to null", () => {
+      expect(cvToPrimitive(noneCV())).toBe(null);
+    });
+  });
+
+  describe("buffer", () => {
+    it("converts bufferCV to hex string", () => {
+      const cv = bufferCV(hexToBytes("deadbeef"));
+      expect(cvToPrimitive(cv)).toBe("0xdeadbeef");
+    });
+  });
+
+  describe("string-ascii", () => {
+    it("converts stringAsciiCV to string", () => {
+      expect(cvToPrimitive(stringAsciiCV("hello"))).toBe("hello");
+    });
+  });
+
+  describe("string-utf8", () => {
+    it("converts stringUtf8CV to string", () => {
+      expect(cvToPrimitive(stringUtf8CV("hello 世界"))).toBe("hello 世界");
+    });
+  });
+
+  describe("optional", () => {
+    it("converts someCV with uint to primitive", () => {
+      expect(cvToPrimitive(someCV(uintCV(42n)))).toEqual(42n);
+    });
+
+    it("converts noneCV in optional context to null", () => {
+      expect(cvToPrimitive(noneCV())).toBe(null);
+    });
+  });
+
+  describe("list", () => {
+    it("converts listCV of primitives to array", () => {
+      const cv = listCV([uintCV(1n), uintCV(2n), uintCV(3n)]);
+      expect(cvToPrimitive(cv)).toEqual([1n, 2n, 3n]);
+    });
+
+    it("converts empty listCV to empty array", () => {
+      expect(cvToPrimitive(listCV([]))).toEqual([]);
+    });
+  });
+
+  describe("tuple", () => {
+    it("converts tupleCV to JavaScript object", () => {
+      const cv = tupleCV({
+        amount: uintCV(100n),
+        sender: standardPrincipalCV(
+          "SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR",
+        ),
+      });
+      expect(cvToPrimitive(cv)).toEqual({
+        amount: 100n,
+        sender: "SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR",
+      });
+    });
+  });
+
+  describe("response", () => {
+    it("converts responseOkCV to { ok: value }", () => {
+      const cv = responseOkCV(uintCV(100n));
+      expect(cvToPrimitive(cv)).toEqual({ ok: 100n });
+    });
+
+    it("converts responseErrorCV to { error: value }", () => {
+      const cv = responseErrorCV(stringAsciiCV("err_unauthorized"));
+      expect(cvToPrimitive(cv)).toEqual({ error: "err_unauthorized" });
+    });
+
+    it("converts complex nested response", () => {
+      const cv = responseOkCV(
+        tupleCV({
+          items: listCV([someCV(uintCV(1n)), noneCV(), someCV(uintCV(3n))]),
+          meta: tupleCV({
+            name: stringUtf8CV("Token 🪙"),
+          }),
+        }),
+      );
+      expect(cvToPrimitive(cv)).toEqual({
+        ok: {
+          items: [1n, null, 3n],
+          meta: {
+            name: "Token 🪙",
+          },
+        },
+      });
+    });
   });
 });
