@@ -71,7 +71,7 @@ describe("typedCallContract", () => {
           network: "mainnet",
         }),
       ).rejects.toThrow(
-        'Function "non-existent-function" not found in ABI or is not a public function',
+        'Function "non-existent-function" not found in ABI with access "public"',
       );
     });
 
@@ -86,7 +86,39 @@ describe("typedCallContract", () => {
           network: "mainnet",
         }),
       ).rejects.toThrow(
-        'Function "get-balance" not found in ABI or is not a public function',
+        'Function "get-balance" not found in ABI with access "public"',
+      );
+    });
+
+    it("throws for argument count mismatch", async () => {
+      await expect(
+        typedCallContract({
+          abi: sip10Abi,
+          contract: "SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR.my-token",
+          functionName: "transfer",
+          // @ts-expect-error - testing runtime error for missing args
+          functionArgs: [100n],
+          network: "mainnet",
+        }),
+      ).rejects.toThrow(
+        'Argument count mismatch for function "transfer": expected 4, got 1.',
+      );
+    });
+
+    it("throws ContractExecutionError when request throws", async () => {
+      const mockRequest = request as ReturnType<typeof vi.fn>;
+      mockRequest.mockRejectedValueOnce(new Error("User rejected"));
+
+      await expect(
+        typedCallContract({
+          abi: sip10Abi,
+          contract: "SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR.my-token",
+          functionName: "mint",
+          functionArgs: [1000n, "SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR"],
+          network: "mainnet",
+        }),
+      ).rejects.toThrow(
+        'Execution failed for contract "SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR.my-token" function "mint".',
       );
     });
 

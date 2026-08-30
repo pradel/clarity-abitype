@@ -2,6 +2,12 @@ import { request } from "@stacks/connect";
 import type { CallContractParams } from "@stacks/connect/dist/types/methods.js";
 
 import type { ClarityAbi, ClarityAbiFunction } from "../abi.js";
+import {
+  AbiArgumentMismatchError,
+  AbiFunctionNotFoundError,
+  BaseError,
+  ContractExecutionError,
+} from "../errors.js";
 import type {
   ContractFunctionName,
   ContractFunctionArgs,
@@ -104,14 +110,22 @@ export async function typedCallContract<
 
   // Find the function in the ABI
   const abiTyped = abiParam as ClarityAbi;
-  const abiFunc = abiTyped.functions.find(
+  const abiFunc = abiTyped.functions?.find(
     (fn: ClarityAbiFunction) => fn.name === funcName && fn.access === "public",
   );
 
   if (!abiFunc) {
-    throw new Error(
-      `Function "${String(funcName)}" not found in ABI or is not a public function`,
-    );
+    throw new AbiFunctionNotFoundError(String(funcName), {
+      access: "public",
+    });
+  }
+
+  if (functionArgs.length !== abiFunc.args.length) {
+    throw new AbiArgumentMismatchError({
+      functionName: String(funcName),
+      expectedCount: abiFunc.args.length,
+      givenCount: functionArgs.length,
+    });
   }
 
   // Convert primitive args to ClarityValues
@@ -120,16 +134,24 @@ export async function typedCallContract<
     abiFunc.args,
   );
 
-  // Call the underlying @stacks/connect request
-  const response = await request("stx_callContract", {
-    ...options,
-    functionName: String(funcName),
-    functionArgs: clarityArgs,
-  });
+  try {
+    // Call the underlying @stacks/connect request
+    const response = await request("stx_callContract", {
+      ...options,
+      functionName: String(funcName),
+      functionArgs: clarityArgs,
+    });
 
-  if (!response.txid) {
-    throw new Error("Transaction was cancelled or failed to submit");
+    if (!response.txid) {
+      throw new Error("Transaction was cancelled or failed to submit");
+    }
+
+    return response.txid;
+  } catch (error) {
+    if (error instanceof BaseError) throw error;
+    throw new ContractExecutionError(error, {
+      contractName: options.contract,
+      functionName: String(funcName),
+    });
   }
-
-  return response.txid;
 }

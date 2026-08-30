@@ -65,7 +65,7 @@ describe("typedMakeContractCall", () => {
             "753b7cc01a1a2e86221266a154af739463fce51219d97e4f856cd7200c3bd2a601",
         }),
       ).rejects.toThrow(
-        'Function "non-existent-function" not found in ABI or is not a public function',
+        'Function "non-existent-function" not found in ABI with access "public"',
       );
     });
 
@@ -82,7 +82,24 @@ describe("typedMakeContractCall", () => {
             "753b7cc01a1a2e86221266a154af739463fce51219d97e4f856cd7200c3bd2a601",
         }),
       ).rejects.toThrow(
-        'Function "get-balance" not found in ABI or is not a public function',
+        'Function "get-balance" not found in ABI with access "public"',
+      );
+    });
+
+    it("throws for argument count mismatch", async () => {
+      await expect(
+        typedMakeContractCall({
+          abi: sip10Abi,
+          contractAddress: "SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR",
+          contractName: "my-token",
+          functionName: "transfer",
+          // @ts-expect-error - testing invalid function args count
+          functionArgs: [100n],
+          senderKey:
+            "753b7cc01a1a2e86221266a154af739463fce51219d97e4f856cd7200c3bd2a601",
+        }),
+      ).rejects.toThrow(
+        'Argument count mismatch for function "transfer": expected 4, got 1.',
       );
     });
 

@@ -5,6 +5,12 @@ import type {
 import { makeContractCall } from "@stacks/transactions";
 
 import type { ClarityAbi, ClarityAbiFunction } from "../abi.js";
+import {
+  AbiArgumentMismatchError,
+  AbiFunctionNotFoundError,
+  BaseError,
+  ContractExecutionError,
+} from "../errors.js";
 import type {
   ContractFunctionName,
   ContractFunctionArgs,
@@ -114,14 +120,22 @@ export async function typedMakeContractCall<
 
   // Find the function in the ABI
   const abiTyped = abiParam as ClarityAbi;
-  const abiFunc = abiTyped.functions.find(
+  const abiFunc = abiTyped.functions?.find(
     (fn: ClarityAbiFunction) => fn.name === funcName && fn.access === "public",
   );
 
   if (!abiFunc) {
-    throw new Error(
-      `Function "${String(funcName)}" not found in ABI or is not a public function`,
-    );
+    throw new AbiFunctionNotFoundError(String(funcName), {
+      access: "public",
+    });
+  }
+
+  if (functionArgs.length !== abiFunc.args.length) {
+    throw new AbiArgumentMismatchError({
+      functionName: String(funcName),
+      expectedCount: abiFunc.args.length,
+      givenCount: functionArgs.length,
+    });
   }
 
   // Convert primitive args to ClarityValues
@@ -130,13 +144,22 @@ export async function typedMakeContractCall<
     abiFunc.args,
   );
 
-  // Build and sign the transaction using stacks.js makeContractCall
-  const transaction = await makeContractCall({
-    ...options,
-    functionName: String(funcName),
-    functionArgs: clarityArgs,
-    validateWithAbi: false,
-  });
+  try {
+    // Build and sign the transaction using stacks.js makeContractCall
+    const transaction = await makeContractCall({
+      ...options,
+      functionName: String(funcName),
+      functionArgs: clarityArgs,
+      validateWithAbi: false,
+    });
 
-  return transaction;
+    return transaction;
+  } catch (error) {
+    if (error instanceof BaseError) throw error;
+    throw new ContractExecutionError(error, {
+      contractAddress: options.contractAddress,
+      contractName: options.contractName,
+      functionName: String(funcName),
+    });
+  }
 }
