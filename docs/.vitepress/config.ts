@@ -11,7 +11,9 @@ export default defineConfig({
         items: [
           { text: "Getting Started", link: "/" },
           { text: "stacks.js Usage", link: "/stacks-js-guide" },
+          { text: "stacks-connect Usage", link: "/stacks-connect-guide" },
           { text: "Clarinet SDK Usage", link: "/clarinet-guide" },
+          { text: "Error Handling", link: "/error-handling" },
         ],
       },
       {
