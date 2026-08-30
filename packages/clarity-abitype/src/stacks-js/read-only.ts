@@ -6,6 +6,12 @@ import type {
   ClarityAbiAccess,
   ClarityAbiFunction,
 } from "../abi.js";
+import {
+  AbiArgumentMismatchError,
+  AbiFunctionNotFoundError,
+  BaseError,
+  ContractExecutionError,
+} from "../errors.js";
 import type {
   ClarityAbiArgsToPrimitiveTypes,
   ClarityAbiOutputToPrimitiveType,
@@ -168,15 +174,23 @@ export async function typedCallReadOnlyFunction<
 
   // Find the function in the ABI
   const abiTyped = abiParam as ClarityAbi;
-  const abiFunc = abiTyped.functions.find(
+  const abiFunc = abiTyped.functions?.find(
     (fn: ClarityAbiFunction) =>
       fn.name === funcName && fn.access === "read_only",
   );
 
   if (!abiFunc) {
-    throw new Error(
-      `Function "${String(funcName)}" not found in ABI or is not a read_only function`,
-    );
+    throw new AbiFunctionNotFoundError(String(funcName), {
+      access: "read_only",
+    });
+  }
+
+  if (functionArgs.length !== abiFunc.args.length) {
+    throw new AbiArgumentMismatchError({
+      functionName: String(funcName),
+      expectedCount: abiFunc.args.length,
+      givenCount: functionArgs.length,
+    });
   }
 
   // Convert primitive args to ClarityValues
@@ -185,20 +199,29 @@ export async function typedCallReadOnlyFunction<
     abiFunc.args,
   );
 
-  // Call the underlying stacks.js function
-  const result = await fetchCallReadOnlyFunction({
-    contractAddress,
-    contractName,
-    functionName: String(funcName),
-    functionArgs: clarityArgs,
-    senderAddress,
-    network,
-    client,
-  });
+  try {
+    // Call the underlying stacks.js function
+    const result = await fetchCallReadOnlyFunction({
+      contractAddress,
+      contractName,
+      functionName: String(funcName),
+      functionArgs: clarityArgs,
+      senderAddress,
+      network,
+      client,
+    });
 
-  // Convert the result back to a primitive type
-  return cvToPrimitive(result) as TypedCallReadOnlyFunctionReturnType<
-    abi,
-    functionName
-  >;
+    // Convert the result back to a primitive type
+    return cvToPrimitive(result) as TypedCallReadOnlyFunctionReturnType<
+      abi,
+      functionName
+    >;
+  } catch (error) {
+    if (error instanceof BaseError) throw error;
+    throw new ContractExecutionError(error, {
+      contractAddress,
+      contractName,
+      functionName: String(funcName),
+    });
+  }
 }

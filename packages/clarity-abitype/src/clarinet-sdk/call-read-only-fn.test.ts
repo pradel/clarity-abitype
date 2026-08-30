@@ -200,7 +200,7 @@ describe("typedCallReadOnlyFn", () => {
           sender: simnet.deployer,
         }),
       ).toThrow(
-        'Function "non-existent-function" not found in ABI or is not a read_only function',
+        'Function "non-existent-function" not found in ABI with access "read_only"',
       );
     });
 
@@ -216,8 +216,43 @@ describe("typedCallReadOnlyFn", () => {
           functionName: "transfer",
           sender: simnet.deployer,
         }),
+      ).toThrow('Function "transfer" not found in ABI with access "read_only"');
+    });
+
+    it("throws for argument count mismatch", () => {
+      const simnet = createMockSimnet();
+
+      expect(() =>
+        (typedCallReadOnlyFn as Function)({
+          simnet,
+          abi: sip10Abi,
+          contract: "my-token",
+          functionName: "get-balance",
+          functionArgs: [],
+          sender: simnet.deployer,
+        }),
       ).toThrow(
-        'Function "transfer" not found in ABI or is not a read_only function',
+        'Argument count mismatch for function "get-balance": expected 1, got 0.',
+      );
+    });
+
+    it("throws ContractExecutionError when execution throws", () => {
+      const mockCallReadOnly = vi.fn().mockImplementation(() => {
+        throw new Error("Simnet failure");
+      });
+      const simnet = createMockSimnet(mockCallReadOnly);
+
+      expect(() =>
+        (typedCallReadOnlyFn as Function)({
+          simnet,
+          abi: sip10Abi,
+          contract: "my-token",
+          functionName: "get-balance",
+          functionArgs: ["SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR"],
+          sender: simnet.deployer,
+        }),
+      ).toThrow(
+        'Execution failed for contract "my-token" function "get-balance".',
       );
     });
   });
