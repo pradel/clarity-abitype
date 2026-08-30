@@ -1,8 +1,4 @@
-import type {
-  ClarityAbi,
-  ClarityAbiAccess,
-  ClarityAbiFunction,
-} from "../abi.js";
+import type { ClarityAbi, ClarityAbiFunction } from "../abi.js";
 import {
   AbiArgumentMismatchError,
   AbiFunctionNotFoundError,
@@ -10,80 +6,17 @@ import {
   ContractExecutionError,
 } from "../errors.js";
 import { primitivesToCVs, cvToPrimitive } from "../stacks-js/utils.js";
-import type { UnionWiden } from "../types.js";
+import type { UnionEvaluate, UnionWiden } from "../types.js";
 import type {
-  ClarityAbiArgsToPrimitiveTypes,
-  ClarityAbiOutputToPrimitiveType,
-  ExtractAbiFunction,
-  ExtractAbiFunctionNames,
+  ContractFunctionArgs,
+  ContractFunctionName,
+  ContractFunctionReturnType,
 } from "../utils.js";
 import type {
   Simnet,
   ParsedTransactionResult,
   TypedTransactionResult,
 } from "./types.js";
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-// Contract Function Types (Internal - not exported)
-////////////////////////////////////////////////////////////////////////////////////////////////////
-
-/**
- * Extracts the function name type for a given access level.
- * Falls back to `string` if the abi is not narrowable.
- * @internal
- */
-type SimnetContractFunctionName<
-  abi extends ClarityAbi | readonly unknown[] = ClarityAbi,
-  access extends ClarityAbiAccess = ClarityAbiAccess,
-> =
-  ExtractAbiFunctionNames<
-    abi extends ClarityAbi ? abi : ClarityAbi,
-    access
-  > extends infer functionName extends string
-    ? [functionName] extends [never]
-      ? string
-      : functionName
-    : string;
-
-/**
- * Extracts the function arguments type for a given function.
- * Falls back to `readonly unknown[]` if not inferrable.
- * @internal
- */
-type SimnetContractFunctionArgs<
-  abi extends ClarityAbi | readonly unknown[] = ClarityAbi,
-  access extends ClarityAbiAccess = ClarityAbiAccess,
-  functionName extends SimnetContractFunctionName<abi, access> =
-    SimnetContractFunctionName<abi, access>,
-> =
-  ClarityAbiArgsToPrimitiveTypes<
-    ExtractAbiFunction<
-      abi extends ClarityAbi ? abi : ClarityAbi,
-      functionName
-    >["args"]
-  > extends infer args
-    ? [args] extends [never]
-      ? readonly unknown[]
-      : args
-    : readonly unknown[];
-
-/**
- * Extracts the function return type for a given function.
- * Falls back to `unknown` if not inferrable.
- * @internal
- */
-type SimnetContractFunctionReturnType<
-  abi extends ClarityAbi | readonly unknown[] = ClarityAbi,
-  access extends ClarityAbiAccess = ClarityAbiAccess,
-  functionName extends SimnetContractFunctionName<abi, access> =
-    SimnetContractFunctionName<abi, access>,
-> = abi extends ClarityAbi
-  ? ClarityAbi extends abi
-    ? unknown
-    : ClarityAbiOutputToPrimitiveType<
-        ExtractAbiFunction<abi, functionName>["outputs"]
-      >
-  : unknown;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // Public Function Types
@@ -94,7 +27,7 @@ type SimnetContractFunctionReturnType<
  */
 export type TypedCallPublicFnFunctionName<
   abi extends ClarityAbi | readonly unknown[] = ClarityAbi,
-> = SimnetContractFunctionName<abi, "public">;
+> = ContractFunctionName<abi, "public">;
 
 /**
  * Public function arguments type.
@@ -103,7 +36,7 @@ export type TypedCallPublicFnFunctionArgs<
   abi extends ClarityAbi | readonly unknown[] = ClarityAbi,
   functionName extends TypedCallPublicFnFunctionName<abi> =
     TypedCallPublicFnFunctionName<abi>,
-> = SimnetContractFunctionArgs<abi, "public", functionName>;
+> = ContractFunctionArgs<abi, "public", functionName>;
 
 /**
  * Parameters for calling a public function with type safety.
@@ -114,30 +47,32 @@ export type TypedCallPublicFnParameters<
     TypedCallPublicFnFunctionName<abi>,
   args extends TypedCallPublicFnFunctionArgs<abi, functionName> =
     TypedCallPublicFnFunctionArgs<abi, functionName>,
-> = {
-  /** The simnet instance from @stacks/clarinet-sdk */
-  simnet: Simnet;
-  /** The contract ABI */
-  abi: abi;
-  /** The contract name (without deployer prefix) */
-  contract: string;
-  /** The function name to call */
-  functionName:
-    | TypedCallPublicFnFunctionName<abi>
-    | (functionName extends TypedCallPublicFnFunctionName<abi>
-        ? functionName
-        : never);
-  /** The sender address for the transaction */
-  sender: string;
-} & (readonly [] extends args
-  ? {
-      /** Function arguments (optional when function takes no arguments) */
-      functionArgs?: UnionWiden<args> | undefined;
-    }
-  : {
-      /** Function arguments */
-      functionArgs: UnionWiden<args>;
-    });
+> = UnionEvaluate<
+  {
+    /** The simnet instance from @stacks/clarinet-sdk */
+    simnet: Simnet;
+    /** The contract ABI */
+    abi: abi;
+    /** The contract name (without deployer prefix) */
+    contract: string;
+    /** The function name to call */
+    functionName:
+      | TypedCallPublicFnFunctionName<abi>
+      | (functionName extends TypedCallPublicFnFunctionName<abi>
+          ? functionName
+          : never);
+    /** The sender address for the transaction */
+    sender: string;
+  } & (readonly [] extends args
+    ? {
+        /** Function arguments (optional when function takes no arguments) */
+        functionArgs?: UnionWiden<args> | undefined;
+      }
+    : {
+        /** Function arguments */
+        functionArgs: UnionWiden<args>;
+      })
+>;
 
 /**
  * Return type for calling a public function.
@@ -147,7 +82,7 @@ export type TypedCallPublicFnReturnType<
   functionName extends TypedCallPublicFnFunctionName<abi> =
     TypedCallPublicFnFunctionName<abi>,
 > = TypedTransactionResult<
-  SimnetContractFunctionReturnType<abi, "public", functionName>
+  ContractFunctionReturnType<abi, "public", functionName>
 >;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

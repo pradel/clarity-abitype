@@ -11,12 +11,16 @@ import type {
   ClarityFixedArrayRange,
   ClarityFixedArraySizeLookup,
   ClarityTypeToPrimitiveType,
+  ContractFunctionArgs,
+  ContractFunctionName,
+  ContractFunctionReturnType,
   ExtractAbiDefinedTrait,
   ExtractAbiDefinedTraitNames,
   ExtractAbiDefinedTraits,
   ExtractAbiFunction,
   ExtractAbiFunctionNames,
   ExtractAbiFunctions,
+  ExtractAbiFungibleToken,
   ExtractAbiFungibleTokenNames,
   ExtractAbiFungibleTokens,
   ExtractAbiImplementedTraits,
@@ -1224,5 +1228,42 @@ describe("ClarityBasicTypeToPrimitiveType", () => {
       "string-utf8": { length: 100 };
     }>;
     assertType<Result>("hello 世界");
+  });
+});
+
+describe("ExtractAbiFungibleToken", () => {
+  test("extracts fungible token by name", () => {
+    type Result = ExtractAbiFungibleToken<typeof sip10Abi, "bridged-btc">;
+    assertType<Result>({ name: "bridged-btc" });
+  });
+});
+
+describe("ContractFunction helpers with IsNarrowable fast-paths", () => {
+  test("ContractFunctionName narrows for const ABI and falls back for dynamic ABI", () => {
+    type Narrowed = ContractFunctionName<typeof sip10Abi, "public">;
+    assertType<Narrowed>("transfer");
+
+    type Dynamic = ContractFunctionName<ClarityAbi, "public">;
+    assertType<Dynamic>("any-string");
+  });
+
+  test("ContractFunctionArgs narrows for const ABI and falls back for dynamic ABI", () => {
+    type Narrowed = ContractFunctionArgs<typeof sip10Abi, "public", "transfer">;
+    assertType<Narrowed>([100n, testPrincipal, testPrincipal, "0x1234"]);
+
+    type Dynamic = ContractFunctionArgs<ClarityAbi, "public", string>;
+    assertType<Dynamic>(["anything", 123]);
+  });
+
+  test("ContractFunctionReturnType narrows for const ABI and falls back for dynamic ABI", () => {
+    type Narrowed = ContractFunctionReturnType<
+      typeof sip10Abi,
+      "read_only",
+      "get-name"
+    >;
+    assertType<Narrowed>({ ok: "token-name" });
+
+    type Dynamic = ContractFunctionReturnType<ClarityAbi, "read_only", string>;
+    assertType<Dynamic>("anything");
   });
 });

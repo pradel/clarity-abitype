@@ -11,11 +11,8 @@ import {
   BaseError,
   ContractExecutionError,
 } from "../errors.js";
-import type { UnionWiden } from "../types.js";
-import type {
-  ContractFunctionName,
-  ContractFunctionArgs,
-} from "./read-only.js";
+import type { UnionEvaluate, UnionWiden } from "../types.js";
+import type { ContractFunctionName, ContractFunctionArgs } from "../utils.js";
 import { primitivesToCVs } from "./utils.js";
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -48,27 +45,29 @@ export type TypedMakeContractCallParameters<
     TypedContractCallFunctionName<abi>,
   args extends TypedContractCallFunctionArgs<abi, functionName> =
     TypedContractCallFunctionArgs<abi, functionName>,
-> = Omit<
-  SignedContractCallOptions,
-  "functionName" | "functionArgs" | "validateWithAbi"
-> & {
-  /** The contract ABI */
-  abi: abi;
-  /** The function name to call */
-  functionName:
-    | TypedContractCallFunctionName<abi>
-    | (functionName extends TypedContractCallFunctionName<abi>
-        ? functionName
-        : never);
-} & (readonly [] extends args
-    ? {
-        /** Function arguments (optional when function takes no arguments) */
-        functionArgs?: UnionWiden<args> | undefined;
-      }
-    : {
-        /** Function arguments */
-        functionArgs: UnionWiden<args>;
-      });
+> = UnionEvaluate<
+  Omit<
+    SignedContractCallOptions,
+    "functionName" | "functionArgs" | "validateWithAbi"
+  > & {
+    /** The contract ABI */
+    abi: abi;
+    /** The function name to call */
+    functionName:
+      | TypedContractCallFunctionName<abi>
+      | (functionName extends TypedContractCallFunctionName<abi>
+          ? functionName
+          : never);
+  } & (readonly [] extends args
+      ? {
+          /** Function arguments (optional when function takes no arguments) */
+          functionArgs?: UnionWiden<args> | undefined;
+        }
+      : {
+          /** Function arguments */
+          functionArgs: UnionWiden<args>;
+        })
+>;
 
 /**
  * Return type for typedMakeContractCall - returns the signed transaction.

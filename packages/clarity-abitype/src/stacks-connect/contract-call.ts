@@ -8,12 +8,9 @@ import {
   BaseError,
   ContractExecutionError,
 } from "../errors.js";
-import type {
-  ContractFunctionName,
-  ContractFunctionArgs,
-} from "../stacks-js/read-only.js";
 import { primitivesToCVs } from "../stacks-js/utils.js";
-import type { UnionWiden } from "../types.js";
+import type { UnionEvaluate, UnionWiden } from "../types.js";
+import type { ContractFunctionName, ContractFunctionArgs } from "../utils.js";
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // Contract Call Types
@@ -45,24 +42,26 @@ export type TypedCallContractParameters<
     TypedCallContractFunctionName<abi>,
   args extends TypedCallContractFunctionArgs<abi, functionName> =
     TypedCallContractFunctionArgs<abi, functionName>,
-> = Omit<CallContractParams, "functionName" | "functionArgs"> & {
-  /** The contract ABI */
-  abi: abi;
-  /** The function name to call */
-  functionName:
-    | TypedCallContractFunctionName<abi>
-    | (functionName extends TypedCallContractFunctionName<abi>
-        ? functionName
-        : never);
-} & (readonly [] extends args
-    ? {
-        /** Function arguments (optional when function takes no arguments) */
-        functionArgs?: UnionWiden<args> | undefined;
-      }
-    : {
-        /** Function arguments */
-        functionArgs: UnionWiden<args>;
-      });
+> = UnionEvaluate<
+  Omit<CallContractParams, "functionName" | "functionArgs"> & {
+    /** The contract ABI */
+    abi: abi;
+    /** The function name to call */
+    functionName:
+      | TypedCallContractFunctionName<abi>
+      | (functionName extends TypedCallContractFunctionName<abi>
+          ? functionName
+          : never);
+  } & (readonly [] extends args
+      ? {
+          /** Function arguments (optional when function takes no arguments) */
+          functionArgs?: UnionWiden<args> | undefined;
+        }
+      : {
+          /** Function arguments */
+          functionArgs: UnionWiden<args>;
+        })
+>;
 
 /**
  * Return type for typedCallContract - returns the transaction ID from the wallet.
