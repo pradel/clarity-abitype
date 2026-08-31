@@ -1,9 +1,9 @@
 export type { Simnet, ParsedTransactionResult } from "@stacks/clarinet-sdk";
 
 /**
- * Typed version of ParsedTransactionResult where the result is converted to a primitive type.
+ * Result of a transaction or call where the result is converted to a TypeScript primitive type.
  */
-export interface TypedTransactionResult<T> {
+export interface TransactionResult<T> {
   /** The result converted to a TypeScript primitive type */
   result: T;
   /** Events emitted during the transaction */

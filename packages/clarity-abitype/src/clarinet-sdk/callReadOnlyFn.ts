@@ -15,38 +15,38 @@ import type {
 import type {
   Simnet,
   ParsedTransactionResult,
-  TypedTransactionResult,
+  TransactionResult,
 } from "./types.js";
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-// Public Function Types
+// Read-Only Function Types
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
- * Public function name type.
+ * Read-only function name type.
  */
-export type TypedCallPublicFnFunctionName<
+export type CallReadOnlyFnFunctionName<
   abi extends ClarityAbi | readonly unknown[] = ClarityAbi,
-> = ContractFunctionName<abi, "public">;
+> = ContractFunctionName<abi, "read_only">;
 
 /**
- * Public function arguments type.
+ * Read-only function arguments type.
  */
-export type TypedCallPublicFnFunctionArgs<
+export type CallReadOnlyFnFunctionArgs<
   abi extends ClarityAbi | readonly unknown[] = ClarityAbi,
-  functionName extends TypedCallPublicFnFunctionName<abi> =
-    TypedCallPublicFnFunctionName<abi>,
-> = ContractFunctionArgs<abi, "public", functionName>;
+  functionName extends CallReadOnlyFnFunctionName<abi> =
+    CallReadOnlyFnFunctionName<abi>,
+> = ContractFunctionArgs<abi, "read_only", functionName>;
 
 /**
- * Parameters for calling a public function with type safety.
+ * Parameters for calling a read-only function with type safety.
  */
-export type TypedCallPublicFnParameters<
+export type CallReadOnlyFnParameters<
   abi extends ClarityAbi | readonly unknown[] = ClarityAbi,
-  functionName extends TypedCallPublicFnFunctionName<abi> =
-    TypedCallPublicFnFunctionName<abi>,
-  args extends TypedCallPublicFnFunctionArgs<abi, functionName> =
-    TypedCallPublicFnFunctionArgs<abi, functionName>,
+  functionName extends CallReadOnlyFnFunctionName<abi> =
+    CallReadOnlyFnFunctionName<abi>,
+  args extends CallReadOnlyFnFunctionArgs<abi, functionName> =
+    CallReadOnlyFnFunctionArgs<abi, functionName>,
 > = UnionEvaluate<
   {
     /** The simnet instance from @stacks/clarinet-sdk */
@@ -57,11 +57,11 @@ export type TypedCallPublicFnParameters<
     contract: string;
     /** The function name to call */
     functionName:
-      | TypedCallPublicFnFunctionName<abi>
-      | (functionName extends TypedCallPublicFnFunctionName<abi>
+      | CallReadOnlyFnFunctionName<abi>
+      | (functionName extends CallReadOnlyFnFunctionName<abi>
           ? functionName
           : never);
-    /** The sender address for the transaction */
+    /** The sender address for the simulated call */
     sender: string;
   } & (readonly [] extends args
     ? {
@@ -75,53 +75,51 @@ export type TypedCallPublicFnParameters<
 >;
 
 /**
- * Return type for calling a public function.
+ * Return type for calling a read-only function.
  */
-export type TypedCallPublicFnReturnType<
+export type CallReadOnlyFnReturnType<
   abi extends ClarityAbi | readonly unknown[] = ClarityAbi,
-  functionName extends TypedCallPublicFnFunctionName<abi> =
-    TypedCallPublicFnFunctionName<abi>,
-> = TypedTransactionResult<
-  ContractFunctionReturnType<abi, "public", functionName>
+  functionName extends CallReadOnlyFnFunctionName<abi> =
+    CallReadOnlyFnFunctionName<abi>,
+> = TransactionResult<
+  ContractFunctionReturnType<abi, "read_only", functionName>
 >;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-// Type-safe Public Function Call
+// Type-safe Read-Only Function Call
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
- * Type-safe wrapper around clarinet-sdk's simnet.callPublicFn.
+ * Type-safe wrapper around clarinet-sdk's simnet.callReadOnlyFn.
  *
  * Automatically converts TypeScript primitive types to ClarityValues based on the ABI,
  * and returns the result as a TypeScript primitive type.
  *
- * This function mines a block when called.
- *
  * @example
  * ```ts
- * import { typedCallPublicFn } from 'clarity-abitype/clarinet-sdk';
+ * import { callReadOnlyFn } from 'clarity-abitype/clarinet-sdk';
  *
- * const { result, events } = typedCallPublicFn({
+ * const { result } = callReadOnlyFn({
  *   simnet,
  *   abi: sip10Abi,
  *   contract: "my-token",
- *   functionName: "transfer",
- *   functionArgs: [100n, "SP2C2YFP...", "SP3K8BC0...", null],
+ *   functionName: "get-balance",
+ *   functionArgs: ["SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR"],
  *   sender: simnet.deployer,
  * });
- * // result is typed as { ok: boolean; error?: never } | { ok?: never; error: bigint }
+ * // result is typed as { ok: bigint; error?: never } | { ok?: never; error: null }
  * ```
  *
  * @param parameters - The call configuration
  * @returns The typed transaction result with primitive values
  */
-export function typedCallPublicFn<
+export function callReadOnlyFn<
   const abi extends ClarityAbi | readonly unknown[],
-  functionName extends TypedCallPublicFnFunctionName<abi>,
-  const args extends TypedCallPublicFnFunctionArgs<abi, functionName>,
+  functionName extends CallReadOnlyFnFunctionName<abi>,
+  const args extends CallReadOnlyFnFunctionArgs<abi, functionName>,
 >(
-  parameters: TypedCallPublicFnParameters<abi, functionName, args>,
-): TypedCallPublicFnReturnType<abi, functionName> {
+  parameters: CallReadOnlyFnParameters<abi, functionName, args>,
+): CallReadOnlyFnReturnType<abi, functionName> {
   const {
     simnet,
     abi: abiParam,
@@ -129,17 +127,18 @@ export function typedCallPublicFn<
     functionName: funcName,
     functionArgs = [],
     sender,
-  } = parameters as TypedCallPublicFnParameters;
+  } = parameters as CallReadOnlyFnParameters;
 
   // Find the function in the ABI
   const abiTyped = abiParam as ClarityAbi;
   const abiFunc = abiTyped.functions?.find(
-    (fn: ClarityAbiFunction) => fn.name === funcName && fn.access === "public",
+    (fn: ClarityAbiFunction) =>
+      fn.name === funcName && fn.access === "read_only",
   );
 
   if (!abiFunc) {
     throw new AbiFunctionNotFoundError(String(funcName), {
-      access: "public",
+      access: "read_only",
     });
   }
 
@@ -159,7 +158,7 @@ export function typedCallPublicFn<
 
   try {
     // Call the underlying clarinet-sdk function
-    const result: ParsedTransactionResult = simnet.callPublicFn(
+    const result: ParsedTransactionResult = simnet.callReadOnlyFn(
       contract,
       String(funcName),
       clarityArgs,
@@ -170,7 +169,7 @@ export function typedCallPublicFn<
     return {
       result: cvToPrimitive(result.result),
       events: result.events,
-    } as TypedCallPublicFnReturnType<abi, functionName>;
+    } as CallReadOnlyFnReturnType<abi, functionName>;
   } catch (error) {
     if (error instanceof BaseError) throw error;
     throw new ContractExecutionError(error, {

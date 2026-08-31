@@ -5,44 +5,44 @@ export type ResolvedRegister = {
    * TypeScript type to use for `principal` values
    * @default `${string}.${string}` | `${string}`
    */
-  addressType: Register extends { addressType: infer type }
+  AddressType: Register extends { AddressType: infer type }
     ? type
-    : DefaultRegister["addressType"];
+    : DefaultRegister["AddressType"];
   /**
    * TypeScript type to use for `int128` and `uint128` values
    * @default bigint
    */
-  bigIntType: Register extends { bigIntType: infer type }
+  BigIntType: Register extends { BigIntType: infer type }
     ? type
-    : DefaultRegister["bigIntType"];
+    : DefaultRegister["BigIntType"];
   /**
    * TypeScript type to use for `buffer` values
    * @default { inputs: `0x${string}`; outputs: `0x${string}`; }
    */
-  bytesType: Register extends {
-    bytesType: infer type extends { inputs: unknown; outputs: unknown };
+  BytesType: Register extends {
+    BytesType: infer type extends { inputs: unknown; outputs: unknown };
   }
     ? type
-    : DefaultRegister["bytesType"];
+    : DefaultRegister["BytesType"];
 
   /**
    * Lower bound for fixed list/buffer/string length
    * @default 1
    */
-  fixedArrayMinLength: Register extends {
-    fixedArrayMinLength: infer type extends number;
+  FixedArrayMinLength: Register extends {
+    FixedArrayMinLength: infer type extends number;
   }
     ? type
-    : DefaultRegister["fixedArrayMinLength"];
+    : DefaultRegister["FixedArrayMinLength"];
   /**
    * Upper bound for fixed list/buffer/string length
    * @default 99
    */
-  fixedArrayMaxLength: Register extends {
-    fixedArrayMaxLength: infer type extends number;
+  FixedArrayMaxLength: Register extends {
+    FixedArrayMaxLength: infer type extends number;
   }
     ? type
-    : DefaultRegister["fixedArrayMaxLength"];
+    : DefaultRegister["FixedArrayMaxLength"];
 
   /**
    * Maximum depth for nested list types.
@@ -51,11 +51,11 @@ export type ResolvedRegister = {
    *
    * @default false
    */
-  listMaxDepth: Register extends {
-    listMaxDepth: infer type extends number | false;
+  ListMaxDepth: Register extends {
+    ListMaxDepth: infer type extends number | false;
   }
     ? type
-    : DefaultRegister["listMaxDepth"];
+    : DefaultRegister["ListMaxDepth"];
 
   /**
    * When set, validates {@link ClarityType} strictly
@@ -65,32 +65,32 @@ export type ResolvedRegister = {
    *
    * @default false
    */
-  strictAbiType: Register extends { strictAbiType: infer type extends boolean }
+  StrictAbiType: Register extends { StrictAbiType: infer type extends boolean }
     ? type
-    : DefaultRegister["strictAbiType"];
+    : DefaultRegister["StrictAbiType"];
 };
 
 export type DefaultRegister = {
   /** Lower bound for fixed list/buffer/string length */
-  fixedArrayMinLength: 1;
+  FixedArrayMinLength: 1;
   /** Upper bound for fixed list/buffer/string length */
-  fixedArrayMaxLength: 99;
+  FixedArrayMaxLength: 99;
 
   /** TypeScript type to use for `principal` values */
-  addressType: `${string}.${string}` | `${string}`;
+  AddressType: `${string}.${string}` | `${string}`;
   /** TypeScript type to use for `buffer` values */
-  bytesType: {
+  BytesType: {
     /** TypeScript type to use for `buffer` input values */
     inputs: `0x${string}`;
     /** TypeScript type to use for `buffer` output values */
     outputs: `0x${string}`;
   };
   /** TypeScript type to use for `int128` and `uint128` values */
-  bigIntType: bigint;
+  BigIntType: bigint;
 
   /** Maximum depth for nested list types (false = unlimited) */
-  listMaxDepth: false;
+  ListMaxDepth: false;
 
   /** When set, validates {@link ClarityType} strictly */
-  strictAbiType: false;
+  StrictAbiType: false;
 };

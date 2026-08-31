@@ -1,8 +1,5 @@
 import { initSimnet } from "@stacks/clarinet-sdk";
-import {
-  typedCallReadOnlyFn,
-  typedCallPublicFn,
-} from "clarity-abitype/clarinet-sdk";
+import { callReadOnlyFn, callPublicFn } from "clarity-abitype/clarinet-sdk";
 import { expect, test } from "vite-plus/test";
 
 const counterAbi = {
@@ -58,7 +55,7 @@ test("get-count returns u0 for principals that never called count-up before", ()
   // Call the get-count read-only function.
   // The first parameter is the contract name, the second the function name, and the
   // third the function arguments as an array. The final parameter is the tx-sender.
-  const incrementResponse = typedCallReadOnlyFn({
+  const incrementResponse = callReadOnlyFn({
     simnet,
     abi: counterAbi,
     contract: "counter",
@@ -75,7 +72,7 @@ test("count-up counts up for the tx-sender", () => {
   // Get the deployer account.
   const deployer = accounts.get("deployer")!;
 
-  const response = typedCallPublicFn({
+  const response = callPublicFn({
     simnet,
     abi: counterAbi,
     contract: "counter",
@@ -87,7 +84,7 @@ test("count-up counts up for the tx-sender", () => {
   expect(response.result.ok).toBe(true);
 
   // Get the counter value.
-  const getCountResponse = typedCallReadOnlyFn({
+  const getCountResponse = callReadOnlyFn({
     simnet,
     abi: counterAbi,
     contract: "counter",
@@ -107,7 +104,7 @@ test("counters are specific to the tx-sender", () => {
   const wallet2 = accounts.get("wallet_2")!;
 
   // Wallet 1 calls count-up one time.
-  typedCallPublicFn({
+  callPublicFn({
     simnet,
     abi: counterAbi,
     contract: "counter",
@@ -116,14 +113,14 @@ test("counters are specific to the tx-sender", () => {
   });
 
   // Wallet 2 calls count-up two times.
-  typedCallPublicFn({
+  callPublicFn({
     simnet,
     abi: counterAbi,
     contract: "counter",
     functionName: "count-up",
     sender: wallet2,
   });
-  typedCallPublicFn({
+  callPublicFn({
     simnet,
     abi: counterAbi,
     contract: "counter",
@@ -132,7 +129,7 @@ test("counters are specific to the tx-sender", () => {
   });
 
   // Get and assert the counter value for deployer.
-  const deployerCount = typedCallReadOnlyFn({
+  const deployerCount = callReadOnlyFn({
     simnet,
     abi: counterAbi,
     contract: "counter",
@@ -143,7 +140,7 @@ test("counters are specific to the tx-sender", () => {
   expect(deployerCount.result).toBe(0n);
 
   // Get and assert the counter value for wallet 1.
-  const wallet1Count = typedCallReadOnlyFn({
+  const wallet1Count = callReadOnlyFn({
     simnet,
     abi: counterAbi,
     contract: "counter",
@@ -154,7 +151,7 @@ test("counters are specific to the tx-sender", () => {
   expect(wallet1Count.result).toBe(1n);
 
   // Get and assert the counter value for wallet 2.
-  const wallet2Count = typedCallReadOnlyFn({
+  const wallet2Count = callReadOnlyFn({
     simnet,
     abi: counterAbi,
     contract: "counter",

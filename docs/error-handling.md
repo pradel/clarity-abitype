@@ -13,10 +13,10 @@ import {
   ContractExecutionError,
   BaseError,
 } from "clarity-abitype";
-import { typedMakeContractCall } from "clarity-abitype/stacks-js";
+import { makeContractCall } from "clarity-abitype/stacks-js";
 
 try {
-  await typedMakeContractCall({ ... });
+  await makeContractCall({ ... });
 } catch (error) {
   if (error instanceof AbiFunctionNotFoundError) {
     // Function not found in ABI or access modifier mismatch

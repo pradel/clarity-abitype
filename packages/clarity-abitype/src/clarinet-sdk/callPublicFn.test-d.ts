@@ -3,14 +3,14 @@ import { describe, it, expectTypeOf } from "vite-plus/test";
 import { sbtcTokenAbi } from "../../tests/SM3VDXK3WZZSA84XXFKAFAF15NNZX32CTSG82JFQ4.sbtc-token.js";
 import { sip10Abi } from "../abis/json.js";
 import type {
-  TypedCallPublicFnFunctionName,
-  TypedCallPublicFnFunctionArgs,
-  TypedCallPublicFnReturnType,
-} from "./call-public-fn.js";
+  CallPublicFnFunctionName,
+  CallPublicFnFunctionArgs,
+  CallPublicFnReturnType,
+} from "./callPublicFn.js";
 
-describe("TypedCallPublicFnFunctionName", () => {
+describe("CallPublicFnFunctionName", () => {
   it("extracts public function names from sip10Abi", () => {
-    type PublicFunctions = TypedCallPublicFnFunctionName<typeof sip10Abi>;
+    type PublicFunctions = CallPublicFnFunctionName<typeof sip10Abi>;
 
     // Should include public functions
     expectTypeOf<"transfer">().toMatchTypeOf<PublicFunctions>();
@@ -31,7 +31,7 @@ describe("TypedCallPublicFnFunctionName", () => {
   });
 
   it("extracts public function names from sbtcTokenAbi", () => {
-    type PublicFunctions = TypedCallPublicFnFunctionName<typeof sbtcTokenAbi>;
+    type PublicFunctions = CallPublicFnFunctionName<typeof sbtcTokenAbi>;
 
     // Should include public functions
     expectTypeOf<"transfer">().toMatchTypeOf<PublicFunctions>();
@@ -50,40 +50,37 @@ describe("TypedCallPublicFnFunctionName", () => {
   });
 });
 
-describe("TypedCallPublicFnFunctionArgs", () => {
+describe("CallPublicFnFunctionArgs", () => {
   it("infers correct args for mint", () => {
-    type Args = TypedCallPublicFnFunctionArgs<typeof sip10Abi, "mint">;
+    type Args = CallPublicFnFunctionArgs<typeof sip10Abi, "mint">;
 
     // mint(amount: uint128, recipient: principal)
     expectTypeOf<Args>().toEqualTypeOf<readonly [bigint, string]>();
   });
 
   it("infers correct args for burn", () => {
-    type Args = TypedCallPublicFnFunctionArgs<typeof sip10Abi, "burn">;
+    type Args = CallPublicFnFunctionArgs<typeof sip10Abi, "burn">;
 
     // burn(amount: uint128, sender: principal)
     expectTypeOf<Args>().toEqualTypeOf<readonly [bigint, string]>();
   });
 
   it("infers correct args for set-name", () => {
-    type Args = TypedCallPublicFnFunctionArgs<typeof sip10Abi, "set-name">;
+    type Args = CallPublicFnFunctionArgs<typeof sip10Abi, "set-name">;
 
     // set-name(new-name: string-ascii)
     expectTypeOf<Args>().toEqualTypeOf<readonly [string]>();
   });
 
   it("infers correct args for set-decimals", () => {
-    type Args = TypedCallPublicFnFunctionArgs<typeof sip10Abi, "set-decimals">;
+    type Args = CallPublicFnFunctionArgs<typeof sip10Abi, "set-decimals">;
 
     // set-decimals(new-decimals: uint128)
     expectTypeOf<Args>().toEqualTypeOf<readonly [bigint]>();
   });
 
   it("infers correct args for protocol-mint from sbtcTokenAbi", () => {
-    type Args = TypedCallPublicFnFunctionArgs<
-      typeof sbtcTokenAbi,
-      "protocol-mint"
-    >;
+    type Args = CallPublicFnFunctionArgs<typeof sbtcTokenAbi, "protocol-mint">;
 
     // protocol-mint(amount: uint128, recipient: principal, contract-flag: buffer)
     expectTypeOf<Args>().toEqualTypeOf<
@@ -92,9 +89,9 @@ describe("TypedCallPublicFnFunctionArgs", () => {
   });
 });
 
-describe("TypedCallPublicFnReturnType", () => {
+describe("CallPublicFnReturnType", () => {
   it("infers correct result type for mint", () => {
-    type Return = TypedCallPublicFnReturnType<typeof sip10Abi, "mint">;
+    type Return = CallPublicFnReturnType<typeof sip10Abi, "mint">;
     type ResultType = Return["result"];
 
     // Response { ok: bool, error: uint128 }
@@ -104,7 +101,7 @@ describe("TypedCallPublicFnReturnType", () => {
   });
 
   it("infers correct result type for burn", () => {
-    type Return = TypedCallPublicFnReturnType<typeof sip10Abi, "burn">;
+    type Return = CallPublicFnReturnType<typeof sip10Abi, "burn">;
     type ResultType = Return["result"];
 
     // Response { ok: bool, error: uint128 }
@@ -114,7 +111,7 @@ describe("TypedCallPublicFnReturnType", () => {
   });
 
   it("events field is correctly typed", () => {
-    type Return = TypedCallPublicFnReturnType<typeof sip10Abi, "mint">;
+    type Return = CallPublicFnReturnType<typeof sip10Abi, "mint">;
     type EventsType = Return["events"];
 
     expectTypeOf<EventsType>().toEqualTypeOf<
@@ -123,12 +120,9 @@ describe("TypedCallPublicFnReturnType", () => {
   });
 });
 
-describe("TypedCallPublicFnReturnType with sbtcTokenAbi", () => {
+describe("CallPublicFnReturnType with sbtcTokenAbi", () => {
   it("infers correct result type for protocol-mint", () => {
-    type Return = TypedCallPublicFnReturnType<
-      typeof sbtcTokenAbi,
-      "protocol-mint"
-    >;
+    type Return = CallPublicFnReturnType<typeof sbtcTokenAbi, "protocol-mint">;
     type ResultType = Return["result"];
 
     expectTypeOf<ResultType>().toEqualTypeOf<
@@ -137,10 +131,7 @@ describe("TypedCallPublicFnReturnType with sbtcTokenAbi", () => {
   });
 
   it("infers correct result type for protocol-burn", () => {
-    type Return = TypedCallPublicFnReturnType<
-      typeof sbtcTokenAbi,
-      "protocol-burn"
-    >;
+    type Return = CallPublicFnReturnType<typeof sbtcTokenAbi, "protocol-burn">;
     type ResultType = Return["result"];
 
     expectTypeOf<ResultType>().toEqualTypeOf<

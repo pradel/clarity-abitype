@@ -64,12 +64,12 @@ import { myTokenAbi } from "./abis/my-token";
 
 ## Making Contract Calls
 
-Use `typedCallContract` to open the Stacks Wallet and submit a contract call transaction. This function wraps the `stx_callContract` method from @stacks/connect.
+Use `callContract` to open the Stacks Wallet and submit a contract call transaction. This function wraps the `stx_callContract` method from @stacks/connect.
 
 ```ts
-import { typedCallContract } from "clarity-abitype/stacks-connect";
+import { callContract } from "clarity-abitype/stacks-connect";
 
-const txId = await typedCallContract({
+const txId = await callContract({
   abi: myTokenAbi,
   contract: "SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR.my-token",
   functionName: "transfer",

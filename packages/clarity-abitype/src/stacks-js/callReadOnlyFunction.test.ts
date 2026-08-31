@@ -1,11 +1,11 @@
 import { describe, it, expect } from "vite-plus/test";
 
 import { sbtcTokenAbi } from "../../tests/SM3VDXK3WZZSA84XXFKAFAF15NNZX32CTSG82JFQ4.sbtc-token.js";
-import { typedCallReadOnlyFunction } from "./read-only.js";
+import { callReadOnlyFunction } from "./callReadOnlyFunction.js";
 
-describe("typedCallReadOnlyFunction", () => {
+describe("callReadOnlyFunction", () => {
   it("should call sbtc get-name and return the correct response", async () => {
-    const result = await typedCallReadOnlyFunction({
+    const result = await callReadOnlyFunction({
       abi: sbtcTokenAbi,
       contractAddress: "SM3VDXK3WZZSA84XXFKAFAF15NNZX32CTSG82JFQ4",
       contractName: "sbtc-token",
@@ -18,7 +18,7 @@ describe("typedCallReadOnlyFunction", () => {
   });
 
   it("should call sbtc get-symbol and return the correct response", async () => {
-    const result = await typedCallReadOnlyFunction({
+    const result = await callReadOnlyFunction({
       abi: sbtcTokenAbi,
       contractAddress: "SM3VDXK3WZZSA84XXFKAFAF15NNZX32CTSG82JFQ4",
       contractName: "sbtc-token",
@@ -31,7 +31,7 @@ describe("typedCallReadOnlyFunction", () => {
   });
 
   it("should call sbtc get-decimals and return the correct response", async () => {
-    const result = await typedCallReadOnlyFunction({
+    const result = await callReadOnlyFunction({
       abi: sbtcTokenAbi,
       contractAddress: "SM3VDXK3WZZSA84XXFKAFAF15NNZX32CTSG82JFQ4",
       contractName: "sbtc-token",
@@ -44,7 +44,7 @@ describe("typedCallReadOnlyFunction", () => {
   });
 
   it("should call sbtc get-balance with a principal argument", async () => {
-    const result = await typedCallReadOnlyFunction({
+    const result = await callReadOnlyFunction({
       abi: sbtcTokenAbi,
       contractAddress: "SM3VDXK3WZZSA84XXFKAFAF15NNZX32CTSG82JFQ4",
       contractName: "sbtc-token",
@@ -61,7 +61,7 @@ describe("typedCallReadOnlyFunction", () => {
 
   it("throws for non-existent function name", async () => {
     await expect(
-      typedCallReadOnlyFunction({
+      callReadOnlyFunction({
         abi: sbtcTokenAbi,
         contractAddress: "SM3VDXK3WZZSA84XXFKAFAF15NNZX32CTSG82JFQ4",
         contractName: "sbtc-token",
@@ -77,7 +77,7 @@ describe("typedCallReadOnlyFunction", () => {
 
   it("throws for public function name", async () => {
     await expect(
-      typedCallReadOnlyFunction({
+      callReadOnlyFunction({
         abi: sbtcTokenAbi,
         contractAddress: "SM3VDXK3WZZSA84XXFKAFAF15NNZX32CTSG82JFQ4",
         contractName: "sbtc-token",
@@ -93,7 +93,7 @@ describe("typedCallReadOnlyFunction", () => {
 
   it("throws for argument count mismatch", async () => {
     await expect(
-      typedCallReadOnlyFunction({
+      callReadOnlyFunction({
         abi: sbtcTokenAbi,
         contractAddress: "SM3VDXK3WZZSA84XXFKAFAF15NNZX32CTSG82JFQ4",
         contractName: "sbtc-token",

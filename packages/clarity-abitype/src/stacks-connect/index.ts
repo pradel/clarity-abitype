@@ -1,1 +1,1 @@
-export * from "./contract-call.js";
+export * from "./callContract.js";

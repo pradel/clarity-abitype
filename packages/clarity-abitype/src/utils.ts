@@ -21,7 +21,14 @@ import type {
   ClarityUInt,
 } from "./abi.js";
 import type { ResolvedRegister } from "./register.js";
-import type { Error, IsNarrowable, Pretty, Range, Tuple } from "./types.js";
+import type {
+  Error,
+  IsNarrowable,
+  Prettify,
+  Range,
+  Tuple,
+  UnionWiden,
+} from "./types.js";
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // Primitive Type Lookup Tables
@@ -35,12 +42,12 @@ import type { Error, IsNarrowable, Pretty, Range, Tuple } from "./types.js";
  * Maps Clarity type strings to their TypeScript primitive equivalents.
  */
 interface ClarityStringTypeLookup {
-  principal: ResolvedRegister["addressType"];
+  principal: ResolvedRegister["AddressType"];
   bool: boolean;
-  int128: ResolvedRegister["bigIntType"];
-  uint128: ResolvedRegister["bigIntType"];
+  int128: ResolvedRegister["BigIntType"];
+  uint128: ResolvedRegister["BigIntType"];
   none: null;
-  trait_reference: ResolvedRegister["addressType"];
+  trait_reference: ResolvedRegister["AddressType"];
 }
 
 /**
@@ -63,7 +70,7 @@ type ClarityStringTypeToPrimitive<
 type ClarityObjectTypeToPrimitive<
   T extends ClarityBuffer | ClarityStringAscii | ClarityStringUtf8,
 > = T extends ClarityBuffer
-  ? ResolvedRegister["bytesType"]["outputs"]
+  ? ResolvedRegister["BytesType"]["outputs"]
   : T extends ClarityStringAscii
     ? string
     : T extends ClarityStringUtf8
@@ -103,11 +110,11 @@ export type ClarityFixedArraySizeLookup = {
 
 /**
  * Range of valid fixed array sizes based on register configuration.
- * Uses the Range type to generate numbers from fixedArrayMinLength to fixedArrayMaxLength.
+ * Uses the Range type to generate numbers from FixedArrayMinLength to FixedArrayMaxLength.
  */
 export type ClarityFixedArrayRange = Range<
-  ResolvedRegister["fixedArrayMinLength"],
-  ResolvedRegister["fixedArrayMaxLength"]
+  ResolvedRegister["FixedArrayMinLength"],
+  ResolvedRegister["FixedArrayMaxLength"]
 >[number];
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -147,8 +154,8 @@ type ClarityListToPrimitiveType<
   depth extends readonly number[] = [],
 > =
   // Check if depth limiting is enabled and exceeded
-  ResolvedRegister["listMaxDepth"] extends number
-    ? depth["length"] extends ResolvedRegister["listMaxDepth"]
+  ResolvedRegister["ListMaxDepth"] extends number
+    ? depth["length"] extends ResolvedRegister["ListMaxDepth"]
       ? readonly unknown[]
       : ClarityListToPrimitiveTypeImpl<list, itemType, depth>
     : ClarityListToPrimitiveTypeImpl<list, itemType, depth>;
@@ -248,7 +255,7 @@ type ClarityTypeToPrimitiveTypeWithDepth<
                 depth
               >
             : // 6. Unknown type handling
-              ResolvedRegister["strictAbiType"] extends true
+              ResolvedRegister["StrictAbiType"] extends true
               ? Error<`Unknown type '${clarityType & string}'.`>
               : unknown;
 
@@ -307,7 +314,7 @@ export type ClarityAbiArgToPrimitiveTypeValue<
             arg extends { type: infer T extends ClarityResponse }
             ? ClarityResponseToPrimitiveType<T>
             : // 6. Unknown type handling
-              ResolvedRegister["strictAbiType"] extends true
+              ResolvedRegister["StrictAbiType"] extends true
               ? Error<`Unknown type '${arg["type"] & string}'.`>
               : unknown;
 
@@ -343,7 +350,7 @@ export type ClarityAbiArgToPrimitiveType<arg extends ClarityAbiArg> = {
  */
 export type ClarityAbiArgsToPrimitiveTypes<
   args extends readonly ClarityAbiArg[],
-> = Pretty<{
+> = Prettify<{
   [key in keyof args]: ClarityAbiArgToPrimitiveTypeValue<args[key]>;
 }>;
 
@@ -731,3 +738,40 @@ export type ContractFunctionReturnType<
         >
     : unknown
   : unknown;
+
+/**
+ * Generic parameters helper for contract function calls.
+ *
+ * @param abi - {@link ClarityAbi} of the contract
+ * @param access - {@link ClarityAbiAccess} access level to filter by
+ * @param functionName - Name of the function to call
+ * @param args - Arguments for the function
+ */
+export type ContractFunctionParameters<
+  abi extends ClarityAbi | readonly unknown[] = ClarityAbi,
+  access extends ClarityAbiAccess = ClarityAbiAccess,
+  functionName extends ContractFunctionName<abi, access> = ContractFunctionName<
+    abi,
+    access
+  >,
+  _args extends ContractFunctionArgs<abi, access, functionName> =
+    ContractFunctionArgs<abi, access, functionName>,
+  ///
+  allFunctionNames = ContractFunctionName<abi, access>,
+  allArgs = ContractFunctionArgs<abi, access, functionName>,
+> = {
+  /** The contract ABI */
+  abi: abi;
+  /** The function name to call */
+  functionName:
+    | allFunctionNames
+    | (functionName extends allFunctionNames ? functionName : never);
+} & (readonly [] extends allArgs
+  ? {
+      /** Function arguments (optional when function takes no arguments) */
+      functionArgs?: UnionWiden<allArgs> | undefined;
+    }
+  : {
+      /** Function arguments */
+      functionArgs: UnionWiden<allArgs>;
+    });

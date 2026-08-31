@@ -2,7 +2,7 @@ import type {
   StacksTransactionWire,
   SignedContractCallOptions,
 } from "@stacks/transactions";
-import { makeContractCall } from "@stacks/transactions";
+import { makeContractCall as makeContractCall_ } from "@stacks/transactions";
 
 import type { ClarityAbi, ClarityAbiFunction } from "../abi.js";
 import {
@@ -22,29 +22,29 @@ import { primitivesToCVs } from "./utils.js";
 /**
  * Public function name type for contract call operations.
  */
-export type TypedContractCallFunctionName<
+export type MakeContractCallFunctionName<
   abi extends ClarityAbi | readonly unknown[] = ClarityAbi,
 > = ContractFunctionName<abi, "public">;
 
 /**
  * Public function arguments type for contract call operations.
  */
-export type TypedContractCallFunctionArgs<
+export type MakeContractCallFunctionArgs<
   abi extends ClarityAbi | readonly unknown[] = ClarityAbi,
-  functionName extends TypedContractCallFunctionName<abi> =
-    TypedContractCallFunctionName<abi>,
+  functionName extends MakeContractCallFunctionName<abi> =
+    MakeContractCallFunctionName<abi>,
 > = ContractFunctionArgs<abi, "public", functionName>;
 
 /**
  * Parameters for making a typed contract call.
  * Extends SignedContractCallOptions but replaces functionName and functionArgs with typed versions.
  */
-export type TypedMakeContractCallParameters<
+export type MakeContractCallParameters<
   abi extends ClarityAbi | readonly unknown[] = ClarityAbi,
-  functionName extends TypedContractCallFunctionName<abi> =
-    TypedContractCallFunctionName<abi>,
-  args extends TypedContractCallFunctionArgs<abi, functionName> =
-    TypedContractCallFunctionArgs<abi, functionName>,
+  functionName extends MakeContractCallFunctionName<abi> =
+    MakeContractCallFunctionName<abi>,
+  args extends MakeContractCallFunctionArgs<abi, functionName> =
+    MakeContractCallFunctionArgs<abi, functionName>,
 > = UnionEvaluate<
   Omit<
     SignedContractCallOptions,
@@ -54,8 +54,8 @@ export type TypedMakeContractCallParameters<
     abi: abi;
     /** The function name to call */
     functionName:
-      | TypedContractCallFunctionName<abi>
-      | (functionName extends TypedContractCallFunctionName<abi>
+      | MakeContractCallFunctionName<abi>
+      | (functionName extends MakeContractCallFunctionName<abi>
           ? functionName
           : never);
   } & (readonly [] extends args
@@ -70,12 +70,12 @@ export type TypedMakeContractCallParameters<
 >;
 
 /**
- * Return type for typedMakeContractCall - returns the signed transaction.
+ * Return type for makeContractCall - returns the signed transaction.
  */
-export type TypedMakeContractCallReturnType = StacksTransactionWire;
+export type MakeContractCallReturnType = StacksTransactionWire;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-// Typed Make Contract Call Function
+// Make Contract Call Function
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
@@ -90,10 +90,10 @@ export type TypedMakeContractCallReturnType = StacksTransactionWire;
  *
  * @example
  * ```ts
- * import { typedMakeContractCall } from 'clarity-abitype/stacks-js';
+ * import { makeContractCall } from 'clarity-abitype/stacks-js';
  * import { broadcastTransaction } from '@stacks/transactions';
  *
- * const transaction = await typedMakeContractCall({
+ * const transaction = await makeContractCall({
  *   abi: sip10Abi,
  *   contractAddress: "SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR",
  *   contractName: "my-token",
@@ -107,22 +107,22 @@ export type TypedMakeContractCallReturnType = StacksTransactionWire;
  * const result = await broadcastTransaction({ transaction, network: "mainnet" });
  * ```
  *
- * @param parameters - {@link TypedMakeContractCallParameters}
- * @returns A signed transaction. {@link TypedMakeContractCallReturnType}
+ * @param parameters - {@link MakeContractCallParameters}
+ * @returns A signed transaction. {@link MakeContractCallReturnType}
  */
-export async function typedMakeContractCall<
+export async function makeContractCall<
   const abi extends ClarityAbi | readonly unknown[],
-  functionName extends TypedContractCallFunctionName<abi>,
-  const args extends TypedContractCallFunctionArgs<abi, functionName>,
+  functionName extends MakeContractCallFunctionName<abi>,
+  const args extends MakeContractCallFunctionArgs<abi, functionName>,
 >(
-  parameters: TypedMakeContractCallParameters<abi, functionName, args>,
-): Promise<TypedMakeContractCallReturnType> {
+  parameters: MakeContractCallParameters<abi, functionName, args>,
+): Promise<MakeContractCallReturnType> {
   const {
     abi: abiParam,
     functionName: funcName,
     functionArgs = [],
     ...options
-  } = parameters as TypedMakeContractCallParameters;
+  } = parameters as MakeContractCallParameters;
 
   // Find the function in the ABI
   const abiTyped = abiParam as ClarityAbi;
@@ -152,7 +152,7 @@ export async function typedMakeContractCall<
 
   try {
     // Build and sign the transaction using stacks.js makeContractCall
-    const transaction = await makeContractCall({
+    const transaction = await makeContractCall_({
       ...options,
       functionName: String(funcName),
       functionArgs: clarityArgs,

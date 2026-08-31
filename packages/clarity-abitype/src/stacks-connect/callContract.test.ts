@@ -10,11 +10,11 @@ import {
 
 import { sbtcTokenAbi } from "../../tests/SM3VDXK3WZZSA84XXFKAFAF15NNZX32CTSG82JFQ4.sbtc-token.js";
 import { sip10Abi } from "../abis/json.js";
-import { typedCallContract } from "./contract-call.js";
+import { callContract } from "./callContract.js";
 import type {
-  TypedCallContractFunctionName,
-  TypedCallContractFunctionArgs,
-} from "./contract-call.js";
+  CallContractFunctionName,
+  CallContractFunctionArgs,
+} from "./callContract.js";
 
 vi.mock("@stacks/connect", () => ({
   request: vi.fn(),
@@ -22,14 +22,14 @@ vi.mock("@stacks/connect", () => ({
 
 import { request } from "@stacks/connect";
 
-describe("typedCallContract", () => {
+describe("callContract", () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
   describe("type inference", () => {
     it("infers public function names correctly", () => {
-      type PublicFunctions = TypedCallContractFunctionName<typeof sip10Abi>;
+      type PublicFunctions = CallContractFunctionName<typeof sip10Abi>;
 
       expectTypeOf<"transfer">().toMatchTypeOf<PublicFunctions>();
       expectTypeOf<"mint">().toMatchTypeOf<PublicFunctions>();
@@ -41,10 +41,7 @@ describe("typedCallContract", () => {
     });
 
     it("infers function arguments correctly for transfer", () => {
-      type TransferArgs = TypedCallContractFunctionArgs<
-        typeof sip10Abi,
-        "transfer"
-      >;
+      type TransferArgs = CallContractFunctionArgs<typeof sip10Abi, "transfer">;
 
       expectTypeOf<TransferArgs>().toMatchTypeOf<
         readonly [bigint | number, string, string, string | null]
@@ -52,7 +49,7 @@ describe("typedCallContract", () => {
     });
 
     it("infers function arguments correctly for mint", () => {
-      type MintArgs = TypedCallContractFunctionArgs<typeof sip10Abi, "mint">;
+      type MintArgs = CallContractFunctionArgs<typeof sip10Abi, "mint">;
 
       expectTypeOf<MintArgs>().toMatchTypeOf<
         readonly [bigint | number, string]
@@ -63,7 +60,7 @@ describe("typedCallContract", () => {
   describe("function behavior", () => {
     it("throws for non-existent function name", async () => {
       await expect(
-        typedCallContract({
+        callContract({
           abi: sip10Abi,
           contract: "SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR.my-token",
           // @ts-expect-error - testing runtime error for non-existent function name
@@ -77,7 +74,7 @@ describe("typedCallContract", () => {
 
     it("throws for read_only function name", async () => {
       await expect(
-        typedCallContract({
+        callContract({
           abi: sip10Abi,
           contract: "SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR.my-token",
           // @ts-expect-error - testing runtime error for calling read_only function
@@ -92,7 +89,7 @@ describe("typedCallContract", () => {
 
     it("throws for argument count mismatch", async () => {
       await expect(
-        typedCallContract({
+        callContract({
           abi: sip10Abi,
           contract: "SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR.my-token",
           functionName: "transfer",
@@ -110,7 +107,7 @@ describe("typedCallContract", () => {
       mockRequest.mockRejectedValueOnce(new Error("User rejected"));
 
       await expect(
-        typedCallContract({
+        callContract({
           abi: sip10Abi,
           contract: "SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR.my-token",
           functionName: "mint",
@@ -130,7 +127,7 @@ describe("typedCallContract", () => {
 
       const recipient = "SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR";
 
-      const result = await typedCallContract({
+      const result = await callContract({
         abi: sip10Abi,
         contract: "SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR.my-token",
         functionName: "mint",
@@ -159,7 +156,7 @@ describe("typedCallContract", () => {
       const sender = "ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM";
       const recipient = "SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR";
 
-      const result = await typedCallContract({
+      const result = await callContract({
         abi: sip10Abi,
         contract: "SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR.my-token",
         functionName: "transfer",
@@ -191,7 +188,7 @@ describe("typedCallContract", () => {
 
       const postConditions = ["0xpostcondition"];
 
-      await typedCallContract({
+      await callContract({
         abi: sip10Abi,
         contract: "SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR.my-token",
         functionName: "mint",
@@ -217,7 +214,7 @@ describe("typedCallContract", () => {
       });
 
       await expect(
-        typedCallContract({
+        callContract({
           abi: sip10Abi,
           contract: "SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR.my-token",
           functionName: "mint",
@@ -238,7 +235,7 @@ describe("typedCallContract", () => {
       const recipient = "SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR";
       const contractFlag = "0x00";
 
-      const result = await typedCallContract({
+      const result = await callContract({
         abi: sbtcTokenAbi,
         contract: "SM3VDXK3WZZSA84XXFKAFAF15NNZX32CTSG82JFQ4.sbtc-token",
         functionName: "protocol-mint",
@@ -265,7 +262,7 @@ describe("typedCallContract", () => {
       const newName = "Wrapped sBTC";
       const contractFlag = "0x00";
 
-      const result = await typedCallContract({
+      const result = await callContract({
         abi: sbtcTokenAbi,
         contract: "SM3VDXK3WZZSA84XXFKAFAF15NNZX32CTSG82JFQ4.sbtc-token",
         functionName: "protocol-set-name",
@@ -302,7 +299,7 @@ describe("typedCallContract", () => {
         readonly [bigint, string, string, null]
       >();
 
-      const result = await typedCallContract(validConfig);
+      const result = await callContract(validConfig);
       expect(result).toBe("0xvalid");
     });
   });

@@ -13,11 +13,11 @@ import { describe, it, expect, vi, expectTypeOf } from "vite-plus/test";
 import { sbtcTokenAbi } from "../../tests/SM3VDXK3WZZSA84XXFKAFAF15NNZX32CTSG82JFQ4.sbtc-token.js";
 import { sip10Abi } from "../abis/json.js";
 import type { ExtractAbiFunctionNames } from "../utils.js";
-import { typedCallPublicFn } from "./call-public-fn.js";
+import { callPublicFn } from "./callPublicFn.js";
 import type {
-  TypedCallPublicFnFunctionName,
-  TypedCallPublicFnFunctionArgs,
-} from "./call-public-fn.js";
+  CallPublicFnFunctionName,
+  CallPublicFnFunctionArgs,
+} from "./callPublicFn.js";
 import type { Simnet } from "./types.js";
 
 /**
@@ -41,10 +41,10 @@ function createMockSimnet(callPublicFnMock?: Simnet["callPublicFn"]): Simnet {
   } as unknown as Simnet;
 }
 
-describe("typedCallPublicFn", () => {
+describe("callPublicFn", () => {
   describe("type inference", () => {
     it("infers public function names correctly", () => {
-      type PublicFunctions = TypedCallPublicFnFunctionName<typeof sip10Abi>;
+      type PublicFunctions = CallPublicFnFunctionName<typeof sip10Abi>;
 
       // Should include public functions
       expectTypeOf<"transfer">().toMatchTypeOf<PublicFunctions>();
@@ -58,10 +58,7 @@ describe("typedCallPublicFn", () => {
     });
 
     it("infers function arguments correctly for transfer", () => {
-      type TransferArgs = TypedCallPublicFnFunctionArgs<
-        typeof sip10Abi,
-        "transfer"
-      >;
+      type TransferArgs = CallPublicFnFunctionArgs<typeof sip10Abi, "transfer">;
 
       // transfer takes (amount: uint128, sender: principal, recipient: principal, memo: optional buffer)
       expectTypeOf<TransferArgs>().toMatchTypeOf<
@@ -70,7 +67,7 @@ describe("typedCallPublicFn", () => {
     });
 
     it("infers function arguments correctly for mint", () => {
-      type MintArgs = TypedCallPublicFnFunctionArgs<typeof sip10Abi, "mint">;
+      type MintArgs = CallPublicFnFunctionArgs<typeof sip10Abi, "mint">;
 
       // mint takes (amount: uint128, recipient: principal)
       expectTypeOf<MintArgs>().toMatchTypeOf<
@@ -104,7 +101,7 @@ describe("typedCallPublicFn", () => {
       const simnet = createMockSimnet(mockCallPublicFn);
       const recipient = "SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR";
 
-      const result = typedCallPublicFn({
+      const result = callPublicFn({
         simnet,
         abi: sip10Abi,
         contract: "my-token",
@@ -142,7 +139,7 @@ describe("typedCallPublicFn", () => {
       const sender = "ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM";
       const recipient = "SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR";
 
-      const result = typedCallPublicFn({
+      const result = callPublicFn({
         simnet,
         abi: sip10Abi,
         contract: "my-token",
@@ -177,7 +174,7 @@ describe("typedCallPublicFn", () => {
       const recipient = "SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR";
       const memo = "0xdeadbeef";
 
-      const result = typedCallPublicFn({
+      const result = callPublicFn({
         simnet,
         abi: sip10Abi,
         contract: "my-token",
@@ -196,7 +193,7 @@ describe("typedCallPublicFn", () => {
       });
       const simnet = createMockSimnet(mockCallPublicFn);
 
-      const result = typedCallPublicFn({
+      const result = callPublicFn({
         simnet,
         abi: sip10Abi,
         contract: "my-token",
@@ -229,7 +226,7 @@ describe("typedCallPublicFn", () => {
       });
       const simnet = createMockSimnet(mockCallPublicFn);
 
-      const result = typedCallPublicFn({
+      const result = callPublicFn({
         simnet,
         abi: sip10Abi,
         contract: "my-token",
@@ -247,7 +244,7 @@ describe("typedCallPublicFn", () => {
 
       expect(() =>
         // Using any to bypass type checking for runtime error test
-        (typedCallPublicFn as Function)({
+        (callPublicFn as Function)({
           simnet,
           abi: sip10Abi,
           contract: "my-token",
@@ -265,7 +262,7 @@ describe("typedCallPublicFn", () => {
 
       expect(() =>
         // Using any to bypass type checking for runtime error test
-        (typedCallPublicFn as Function)({
+        (callPublicFn as Function)({
           simnet,
           abi: sip10Abi,
           contract: "my-token",
@@ -280,7 +277,7 @@ describe("typedCallPublicFn", () => {
       const simnet = createMockSimnet();
 
       expect(() =>
-        (typedCallPublicFn as Function)({
+        (callPublicFn as Function)({
           simnet,
           abi: sip10Abi,
           contract: "my-token",
@@ -300,7 +297,7 @@ describe("typedCallPublicFn", () => {
       const simnet = createMockSimnet(mockCallPublic);
 
       expect(() =>
-        (typedCallPublicFn as Function)({
+        (callPublicFn as Function)({
           simnet,
           abi: sip10Abi,
           contract: "my-token",
@@ -329,7 +326,7 @@ describe("typedCallPublicFn", () => {
       const sender = "ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM";
       const recipient = "SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR";
 
-      const result = typedCallPublicFn({
+      const result = callPublicFn({
         simnet,
         abi: sbtcTokenAbi,
         contract: "sbtc-token",
@@ -361,7 +358,7 @@ describe("typedCallPublicFn", () => {
       const recipient = "SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR";
       const contractFlag = "0x00";
 
-      const result = typedCallPublicFn({
+      const result = callPublicFn({
         simnet,
         abi: sbtcTokenAbi,
         contract: "sbtc-token",
@@ -392,7 +389,7 @@ describe("typedCallPublicFn", () => {
       const owner = "SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR";
       const contractFlag = "0x01";
 
-      const result = typedCallPublicFn({
+      const result = callPublicFn({
         simnet,
         abi: sbtcTokenAbi,
         contract: "sbtc-token",
@@ -413,7 +410,7 @@ describe("typedCallPublicFn", () => {
       const newName = "Wrapped sBTC";
       const contractFlag = "0x00";
 
-      const result = typedCallPublicFn({
+      const result = callPublicFn({
         simnet,
         abi: sbtcTokenAbi,
         contract: "sbtc-token",
@@ -459,7 +456,7 @@ describe("typedCallPublicFn", () => {
       });
       const simnet = createMockSimnet(mockCallPublicFn);
 
-      const result = typedCallPublicFn({
+      const result = callPublicFn({
         simnet,
         abi: sip10Abi,
         contract: "my-token",
