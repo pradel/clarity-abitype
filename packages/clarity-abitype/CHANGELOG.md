@@ -1,5 +1,25 @@
 # clarity-abitype
 
+## 0.7.0
+
+### Minor Changes
+
+- [#49](https://github.com/pradel/clarity-abitype/pull/49) [`2b9acc8`](https://github.com/pradel/clarity-abitype/commit/2b9acc83ce7ece106cba0097c678d7f170651b18) Thanks [@pradel](https://github.com/pradel)! - Add custom error classes (`BaseError`, `AbiFunctionNotFoundError`, `AbiArgumentMismatchError`, `ContractExecutionError`) with formatted diagnostics and cause chaining.
+
+- [#52](https://github.com/pradel/clarity-abitype/pull/52) [`3be6d4e`](https://github.com/pradel/clarity-abitype/commit/3be6d4e70f36ecaa6619a610a17036285262abb3) Thanks [@pradel](https://github.com/pradel)! - Add support for typescript v7.
+
+- [#53](https://github.com/pradel/clarity-abitype/pull/53) [`fd47852`](https://github.com/pradel/clarity-abitype/commit/fd4785290236b30a39af8c47771d09cface14fdf) Thanks [@pradel](https://github.com/pradel)! - Align naming conventions and modernize API:
+
+  - **Register & Type Configuration**: Converted `Register` / `ResolvedRegister` / `DefaultRegister` keys to PascalCase (`AddressType`, `BigIntType`, `BytesType`, `FixedArrayMinLength`, `FixedArrayMaxLength`, `ListMaxDepth`, `StrictAbiType`).
+  - **Function and Parameter Naming**: Removed `typed*`/`Typed*` prefixes from integration functions and parameter types:
+    - `clarity-abitype/clarinet-sdk`: `callPublicFn`, `callReadOnlyFn` (and `CallPublicFnParameters`, `CallReadOnlyFnParameters`, etc.)
+    - `clarity-abitype/stacks-js`: `makeContractCall`, `callReadOnlyFunction` (and `MakeContractCallParameters`, `CallReadOnlyFunctionParameters`, etc.)
+    - `clarity-abitype/stacks-connect`: `callContract` (and `CallContractParameters`, etc.)
+  - **Utilities**: Added `ContractFunctionParameters` generic helper.
+  - **File Structure**: Renamed integration source and test files to camelCase.
+
+- [#51](https://github.com/pradel/clarity-abitype/pull/51) [`4fe56b1`](https://github.com/pradel/clarity-abitype/commit/4fe56b1b5c09e2f2b2c15060aefacd649a6120a4) Thanks [@pradel](https://github.com/pradel)! - Add core type utilities, function argument widening (`UnionWiden`), and type evaluation performance optimizations.
+
 ## 0.6.0
 
 ### Minor Changes
