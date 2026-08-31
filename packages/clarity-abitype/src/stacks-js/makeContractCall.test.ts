@@ -2,16 +2,16 @@ import { describe, it, expect, expectTypeOf } from "vite-plus/test";
 
 import { sip10Abi } from "../abis/json.js";
 import type { ExtractAbiFunctionNames } from "../utils.js";
-import { typedMakeContractCall } from "./contract-call.js";
+import { makeContractCall } from "./makeContractCall.js";
 import type {
-  TypedContractCallFunctionName,
-  TypedContractCallFunctionArgs,
-} from "./contract-call.js";
+  MakeContractCallFunctionName,
+  MakeContractCallFunctionArgs,
+} from "./makeContractCall.js";
 
-describe("typedMakeContractCall", () => {
+describe("makeContractCall", () => {
   describe("type inference", () => {
     it("infers public function names correctly", () => {
-      type PublicFunctions = TypedContractCallFunctionName<typeof sip10Abi>;
+      type PublicFunctions = MakeContractCallFunctionName<typeof sip10Abi>;
 
       // Should include public functions
       expectTypeOf<"transfer">().toMatchTypeOf<PublicFunctions>();
@@ -23,7 +23,7 @@ describe("typedMakeContractCall", () => {
     });
 
     it("infers function arguments correctly for transfer", () => {
-      type TransferArgs = TypedContractCallFunctionArgs<
+      type TransferArgs = MakeContractCallFunctionArgs<
         typeof sip10Abi,
         "transfer"
       >;
@@ -53,7 +53,7 @@ describe("typedMakeContractCall", () => {
   describe("function behavior", () => {
     it("throws for non-existent function name", async () => {
       await expect(
-        typedMakeContractCall({
+        makeContractCall({
           abi: sip10Abi,
           contractAddress: "SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR",
           contractName: "my-token",
@@ -71,7 +71,7 @@ describe("typedMakeContractCall", () => {
 
     it("throws for read_only function name", async () => {
       await expect(
-        typedMakeContractCall({
+        makeContractCall({
           abi: sip10Abi,
           contractAddress: "SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR",
           contractName: "my-token",
@@ -88,7 +88,7 @@ describe("typedMakeContractCall", () => {
 
     it("throws for argument count mismatch", async () => {
       await expect(
-        typedMakeContractCall({
+        makeContractCall({
           abi: sip10Abi,
           contractAddress: "SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR",
           contractName: "my-token",
@@ -104,7 +104,7 @@ describe("typedMakeContractCall", () => {
     });
 
     it("creates a valid transaction for transfer function", async () => {
-      const transaction = await typedMakeContractCall({
+      const transaction = await makeContractCall({
         abi: sip10Abi,
         contractAddress: "SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR",
         contractName: "my-token",
@@ -126,7 +126,7 @@ describe("typedMakeContractCall", () => {
     });
 
     it("creates a valid transaction for mint function", async () => {
-      const transaction = await typedMakeContractCall({
+      const transaction = await makeContractCall({
         abi: sip10Abi,
         contractAddress: "SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR",
         contractName: "my-token",

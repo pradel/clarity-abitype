@@ -111,7 +111,7 @@ export type ClarityBasicType =
   | ClarityStringAscii
   | ClarityStringUtf8;
 
-type ResolvedClarityType = ResolvedRegister["strictAbiType"] extends true
+type ResolvedClarityType = ResolvedRegister["StrictAbiType"] extends true
   ? ClarityType
   : ClarityType | string;
 

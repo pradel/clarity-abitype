@@ -16,13 +16,6 @@ import {
 } from "../utils.js";
 import { primitivesToCVs, cvToPrimitive } from "./utils.js";
 
-// Re-export contract function helpers for backwards compatibility
-export type {
-  ContractFunctionName,
-  ContractFunctionArgs,
-  ContractFunctionReturnType,
-};
-
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // Read-Only Function Types
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -30,7 +23,7 @@ export type {
 /**
  * Parameters for calling a read-only function with type safety.
  */
-export type TypedCallReadOnlyFunctionParameters<
+export type CallReadOnlyFunctionParameters<
   abi extends ClarityAbi | readonly unknown[] = ClarityAbi,
   functionName extends ContractFunctionName<abi, "read_only"> =
     ContractFunctionName<abi, "read_only">,
@@ -70,7 +63,7 @@ export type TypedCallReadOnlyFunctionParameters<
 /**
  * Return type for calling a read-only function.
  */
-export type TypedCallReadOnlyFunctionReturnType<
+export type CallReadOnlyFunctionReturnType<
   abi extends ClarityAbi | readonly unknown[] = ClarityAbi,
   functionName extends ContractFunctionName<abi, "read_only"> =
     ContractFunctionName<abi, "read_only">,
@@ -88,7 +81,7 @@ export type TypedCallReadOnlyFunctionReturnType<
  *
  * @example
  * ```ts
- * const result = await typedCallReadOnlyFunction({
+ * const result = await callReadOnlyFunction({
  *   abi: sip10Abi,
  *   contractAddress: "SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR",
  *   contractName: "my-token",
@@ -102,13 +95,13 @@ export type TypedCallReadOnlyFunctionReturnType<
  * @param parameters - The call configuration
  * @returns Promise resolving to the typed result
  */
-export async function typedCallReadOnlyFunction<
+export async function callReadOnlyFunction<
   const abi extends ClarityAbi | readonly unknown[],
   functionName extends ContractFunctionName<abi, "read_only">,
   const args extends ContractFunctionArgs<abi, "read_only", functionName>,
 >(
-  parameters: TypedCallReadOnlyFunctionParameters<abi, functionName, args>,
-): Promise<TypedCallReadOnlyFunctionReturnType<abi, functionName>> {
+  parameters: CallReadOnlyFunctionParameters<abi, functionName, args>,
+): Promise<CallReadOnlyFunctionReturnType<abi, functionName>> {
   const {
     abi: abiParam,
     contractAddress,
@@ -118,7 +111,7 @@ export async function typedCallReadOnlyFunction<
     senderAddress,
     network,
     client,
-  } = parameters as TypedCallReadOnlyFunctionParameters;
+  } = parameters as CallReadOnlyFunctionParameters;
 
   // Find the function in the ABI
   const abiTyped = abiParam as ClarityAbi;
@@ -160,7 +153,7 @@ export async function typedCallReadOnlyFunction<
     });
 
     // Convert the result back to a primitive type
-    return cvToPrimitive(result) as TypedCallReadOnlyFunctionReturnType<
+    return cvToPrimitive(result) as CallReadOnlyFunctionReturnType<
       abi,
       functionName
     >;

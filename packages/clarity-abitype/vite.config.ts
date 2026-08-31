@@ -4,9 +4,9 @@ export default defineConfig({
   pack: {
     entry: [
       "src/index.ts",
-      "src/clarinet-sdk/index.js",
-      "src/stacks-connect/index.js",
-      "src/stacks-js/index.js",
+      "src/clarinet-sdk/index.ts",
+      "src/stacks-connect/index.ts",
+      "src/stacks-js/index.ts",
     ],
     platform: "neutral",
     publint: true,

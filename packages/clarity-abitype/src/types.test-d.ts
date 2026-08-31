@@ -16,7 +16,7 @@ import type {
   Widen,
 } from "./types.js";
 
-describe("Type Utilities ported from viem/abitype", () => {
+describe("Type Utilities", () => {
   test("NoInfer", () => {
     function testNoInfer<T>(val: T, _cb: (x: NoInfer<T>) => void) {
       return val;

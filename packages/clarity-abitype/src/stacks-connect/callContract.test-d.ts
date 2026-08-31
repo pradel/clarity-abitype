@@ -3,13 +3,13 @@ import { describe, it, expectTypeOf } from "vite-plus/test";
 import { sbtcTokenAbi } from "../../tests/SM3VDXK3WZZSA84XXFKAFAF15NNZX32CTSG82JFQ4.sbtc-token.js";
 import { sip10Abi } from "../abis/json.js";
 import type {
-  TypedCallContractFunctionName,
-  TypedCallContractFunctionArgs,
-} from "./contract-call.js";
+  CallContractFunctionName,
+  CallContractFunctionArgs,
+} from "./callContract.js";
 
-describe("TypedCallContractFunctionName", () => {
+describe("CallContractFunctionName", () => {
   it("extracts public function names from sip10Abi", () => {
-    type PublicFunctions = TypedCallContractFunctionName<typeof sip10Abi>;
+    type PublicFunctions = CallContractFunctionName<typeof sip10Abi>;
 
     expectTypeOf<"transfer">().toMatchTypeOf<PublicFunctions>();
     expectTypeOf<"mint">().toMatchTypeOf<PublicFunctions>();
@@ -26,7 +26,7 @@ describe("TypedCallContractFunctionName", () => {
   });
 
   it("extracts public function names from sbtcTokenAbi", () => {
-    type PublicFunctions = TypedCallContractFunctionName<typeof sbtcTokenAbi>;
+    type PublicFunctions = CallContractFunctionName<typeof sbtcTokenAbi>;
 
     expectTypeOf<"transfer">().toMatchTypeOf<PublicFunctions>();
     expectTypeOf<"transfer-many">().toMatchTypeOf<PublicFunctions>();
@@ -42,9 +42,9 @@ describe("TypedCallContractFunctionName", () => {
   });
 });
 
-describe("TypedCallContractFunctionArgs", () => {
+describe("CallContractFunctionArgs", () => {
   it("infers correct args for transfer", () => {
-    type Args = TypedCallContractFunctionArgs<typeof sip10Abi, "transfer">;
+    type Args = CallContractFunctionArgs<typeof sip10Abi, "transfer">;
 
     // transfer(amount: uint128, sender: principal, recipient: principal, memo: optional buffer)
     expectTypeOf<Args>().toMatchTypeOf<
@@ -53,31 +53,28 @@ describe("TypedCallContractFunctionArgs", () => {
   });
 
   it("infers correct args for mint", () => {
-    type Args = TypedCallContractFunctionArgs<typeof sip10Abi, "mint">;
+    type Args = CallContractFunctionArgs<typeof sip10Abi, "mint">;
 
     // mint(amount: uint128, recipient: principal)
     expectTypeOf<Args>().toEqualTypeOf<readonly [bigint, string]>();
   });
 
   it("infers correct args for burn", () => {
-    type Args = TypedCallContractFunctionArgs<typeof sip10Abi, "burn">;
+    type Args = CallContractFunctionArgs<typeof sip10Abi, "burn">;
 
     // burn(amount: uint128, sender: principal)
     expectTypeOf<Args>().toEqualTypeOf<readonly [bigint, string]>();
   });
 
   it("infers correct args for set-name", () => {
-    type Args = TypedCallContractFunctionArgs<typeof sip10Abi, "set-name">;
+    type Args = CallContractFunctionArgs<typeof sip10Abi, "set-name">;
 
     // set-name(new-name: string-ascii)
     expectTypeOf<Args>().toEqualTypeOf<readonly [string]>();
   });
 
   it("infers correct args for protocol-mint from sbtcTokenAbi", () => {
-    type Args = TypedCallContractFunctionArgs<
-      typeof sbtcTokenAbi,
-      "protocol-mint"
-    >;
+    type Args = CallContractFunctionArgs<typeof sbtcTokenAbi, "protocol-mint">;
 
     // protocol-mint(amount: uint128, recipient: principal, contract-flag: buffer)
     expectTypeOf<Args>().toEqualTypeOf<
@@ -86,7 +83,7 @@ describe("TypedCallContractFunctionArgs", () => {
   });
 
   it("infers correct args for protocol-set-name from sbtcTokenAbi", () => {
-    type Args = TypedCallContractFunctionArgs<
+    type Args = CallContractFunctionArgs<
       typeof sbtcTokenAbi,
       "protocol-set-name"
     >;

@@ -3,14 +3,14 @@ import { describe, it, expectTypeOf } from "vite-plus/test";
 import { sbtcTokenAbi } from "../../tests/SM3VDXK3WZZSA84XXFKAFAF15NNZX32CTSG82JFQ4.sbtc-token.js";
 import { sip10Abi } from "../abis/json.js";
 import type {
-  TypedCallReadOnlyFnFunctionName,
-  TypedCallReadOnlyFnFunctionArgs,
-  TypedCallReadOnlyFnReturnType,
-} from "./call-read-only-fn.js";
+  CallReadOnlyFnFunctionName,
+  CallReadOnlyFnFunctionArgs,
+  CallReadOnlyFnReturnType,
+} from "./callReadOnlyFn.js";
 
-describe("TypedCallReadOnlyFnFunctionName", () => {
+describe("CallReadOnlyFnFunctionName", () => {
   it("extracts read_only function names from sip10Abi", () => {
-    type ReadOnlyFunctions = TypedCallReadOnlyFnFunctionName<typeof sip10Abi>;
+    type ReadOnlyFunctions = CallReadOnlyFnFunctionName<typeof sip10Abi>;
 
     // Should include read_only functions
     expectTypeOf<"get-balance">().toMatchTypeOf<ReadOnlyFunctions>();
@@ -30,9 +30,7 @@ describe("TypedCallReadOnlyFnFunctionName", () => {
   });
 
   it("extracts read_only function names from sbtcTokenAbi", () => {
-    type ReadOnlyFunctions = TypedCallReadOnlyFnFunctionName<
-      typeof sbtcTokenAbi
-    >;
+    type ReadOnlyFunctions = CallReadOnlyFnFunctionName<typeof sbtcTokenAbi>;
 
     // Should include read_only functions
     expectTypeOf<"get-balance">().toMatchTypeOf<ReadOnlyFunctions>();
@@ -49,30 +47,27 @@ describe("TypedCallReadOnlyFnFunctionName", () => {
   });
 });
 
-describe("TypedCallReadOnlyFnFunctionArgs", () => {
+describe("CallReadOnlyFnFunctionArgs", () => {
   it("infers correct args for get-balance (single principal)", () => {
-    type Args = TypedCallReadOnlyFnFunctionArgs<typeof sip10Abi, "get-balance">;
+    type Args = CallReadOnlyFnFunctionArgs<typeof sip10Abi, "get-balance">;
 
     expectTypeOf<Args>().toEqualTypeOf<readonly [string]>();
   });
 
   it("infers correct args for get-decimals (no args)", () => {
-    type Args = TypedCallReadOnlyFnFunctionArgs<
-      typeof sip10Abi,
-      "get-decimals"
-    >;
+    type Args = CallReadOnlyFnFunctionArgs<typeof sip10Abi, "get-decimals">;
 
     expectTypeOf<Args>().toEqualTypeOf<readonly []>();
   });
 
   it("infers correct args for get-name (no args)", () => {
-    type Args = TypedCallReadOnlyFnFunctionArgs<typeof sip10Abi, "get-name">;
+    type Args = CallReadOnlyFnFunctionArgs<typeof sip10Abi, "get-name">;
 
     expectTypeOf<Args>().toEqualTypeOf<readonly []>();
   });
 
   it("infers correct args for fixed-to-decimals (uint128)", () => {
-    type Args = TypedCallReadOnlyFnFunctionArgs<
+    type Args = CallReadOnlyFnFunctionArgs<
       typeof sip10Abi,
       "fixed-to-decimals"
     >;
@@ -81,9 +76,9 @@ describe("TypedCallReadOnlyFnFunctionArgs", () => {
   });
 });
 
-describe("TypedCallReadOnlyFnReturnType", () => {
+describe("CallReadOnlyFnReturnType", () => {
   it("infers correct result type for get-balance", () => {
-    type Return = TypedCallReadOnlyFnReturnType<typeof sip10Abi, "get-balance">;
+    type Return = CallReadOnlyFnReturnType<typeof sip10Abi, "get-balance">;
     type ResultType = Return["result"];
 
     // Response { ok: uint128, error: none }
@@ -93,10 +88,7 @@ describe("TypedCallReadOnlyFnReturnType", () => {
   });
 
   it("infers correct result type for get-decimals", () => {
-    type Return = TypedCallReadOnlyFnReturnType<
-      typeof sip10Abi,
-      "get-decimals"
-    >;
+    type Return = CallReadOnlyFnReturnType<typeof sip10Abi, "get-decimals">;
     type ResultType = Return["result"];
 
     // Response { ok: uint128, error: none }
@@ -106,7 +98,7 @@ describe("TypedCallReadOnlyFnReturnType", () => {
   });
 
   it("infers correct result type for get-name", () => {
-    type Return = TypedCallReadOnlyFnReturnType<typeof sip10Abi, "get-name">;
+    type Return = CallReadOnlyFnReturnType<typeof sip10Abi, "get-name">;
     type ResultType = Return["result"];
 
     // Response { ok: string-ascii, error: none }
@@ -116,10 +108,7 @@ describe("TypedCallReadOnlyFnReturnType", () => {
   });
 
   it("infers correct result type for get-token-uri", () => {
-    type Return = TypedCallReadOnlyFnReturnType<
-      typeof sip10Abi,
-      "get-token-uri"
-    >;
+    type Return = CallReadOnlyFnReturnType<typeof sip10Abi, "get-token-uri">;
     type ResultType = Return["result"];
 
     // Response { ok: optional string-utf8, error: none }
@@ -129,7 +118,7 @@ describe("TypedCallReadOnlyFnReturnType", () => {
   });
 
   it("infers correct result type for fixed-to-decimals", () => {
-    type Return = TypedCallReadOnlyFnReturnType<
+    type Return = CallReadOnlyFnReturnType<
       typeof sip10Abi,
       "fixed-to-decimals"
     >;
@@ -140,7 +129,7 @@ describe("TypedCallReadOnlyFnReturnType", () => {
   });
 
   it("events field is correctly typed", () => {
-    type Return = TypedCallReadOnlyFnReturnType<typeof sip10Abi, "get-balance">;
+    type Return = CallReadOnlyFnReturnType<typeof sip10Abi, "get-balance">;
     type EventsType = Return["events"];
 
     expectTypeOf<EventsType>().toEqualTypeOf<
@@ -149,12 +138,9 @@ describe("TypedCallReadOnlyFnReturnType", () => {
   });
 });
 
-describe("TypedCallReadOnlyFnReturnType with sbtcTokenAbi", () => {
+describe("CallReadOnlyFnReturnType with sbtcTokenAbi", () => {
   it("infers correct result type for get-balance", () => {
-    type Return = TypedCallReadOnlyFnReturnType<
-      typeof sbtcTokenAbi,
-      "get-balance"
-    >;
+    type Return = CallReadOnlyFnReturnType<typeof sbtcTokenAbi, "get-balance">;
     type ResultType = Return["result"];
 
     expectTypeOf<ResultType>().toEqualTypeOf<
@@ -163,10 +149,7 @@ describe("TypedCallReadOnlyFnReturnType with sbtcTokenAbi", () => {
   });
 
   it("infers correct result type for get-name", () => {
-    type Return = TypedCallReadOnlyFnReturnType<
-      typeof sbtcTokenAbi,
-      "get-name"
-    >;
+    type Return = CallReadOnlyFnReturnType<typeof sbtcTokenAbi, "get-name">;
     type ResultType = Return["result"];
 
     expectTypeOf<ResultType>().toEqualTypeOf<

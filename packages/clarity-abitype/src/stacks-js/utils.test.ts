@@ -345,7 +345,7 @@ describe("primitivesToCVs", () => {
   });
 });
 
-describe("typedCallReadOnlyFunction types", () => {
+describe("callReadOnlyFunction types", () => {
   it("infers correct argument types", () => {
     // This is a compile-time type test
     type GetBalanceArgs = ClarityAbiArgsToPrimitiveTypes<

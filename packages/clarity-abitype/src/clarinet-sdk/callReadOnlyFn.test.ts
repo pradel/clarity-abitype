@@ -9,11 +9,11 @@ import { describe, it, expect, vi, expectTypeOf } from "vite-plus/test";
 import { sbtcTokenAbi } from "../../tests/SM3VDXK3WZZSA84XXFKAFAF15NNZX32CTSG82JFQ4.sbtc-token.js";
 import { sip10Abi } from "../abis/json.js";
 import type { ExtractAbiFunctionNames } from "../utils.js";
-import { typedCallReadOnlyFn } from "./call-read-only-fn.js";
+import { callReadOnlyFn } from "./callReadOnlyFn.js";
 import type {
-  TypedCallReadOnlyFnFunctionName,
-  TypedCallReadOnlyFnFunctionArgs,
-} from "./call-read-only-fn.js";
+  CallReadOnlyFnFunctionName,
+  CallReadOnlyFnFunctionArgs,
+} from "./callReadOnlyFn.js";
 import type { Simnet } from "./types.js";
 
 /**
@@ -39,10 +39,10 @@ function createMockSimnet(
   } as unknown as Simnet;
 }
 
-describe("typedCallReadOnlyFn", () => {
+describe("callReadOnlyFn", () => {
   describe("type inference", () => {
     it("infers read_only function names correctly", () => {
-      type ReadOnlyFunctions = TypedCallReadOnlyFnFunctionName<typeof sip10Abi>;
+      type ReadOnlyFunctions = CallReadOnlyFnFunctionName<typeof sip10Abi>;
 
       // Should include read_only functions
       expectTypeOf<"get-balance">().toMatchTypeOf<ReadOnlyFunctions>();
@@ -56,7 +56,7 @@ describe("typedCallReadOnlyFn", () => {
     });
 
     it("infers function arguments correctly for get-balance", () => {
-      type GetBalanceArgs = TypedCallReadOnlyFnFunctionArgs<
+      type GetBalanceArgs = CallReadOnlyFnFunctionArgs<
         typeof sip10Abi,
         "get-balance"
       >;
@@ -66,7 +66,7 @@ describe("typedCallReadOnlyFn", () => {
     });
 
     it("infers empty arguments for get-decimals", () => {
-      type GetDecimalsArgs = TypedCallReadOnlyFnFunctionArgs<
+      type GetDecimalsArgs = CallReadOnlyFnFunctionArgs<
         typeof sip10Abi,
         "get-decimals"
       >;
@@ -100,7 +100,7 @@ describe("typedCallReadOnlyFn", () => {
       });
       const simnet = createMockSimnet(mockCallReadOnlyFn);
 
-      const result = typedCallReadOnlyFn({
+      const result = callReadOnlyFn({
         simnet,
         abi: sip10Abi,
         contract: "my-token",
@@ -126,7 +126,7 @@ describe("typedCallReadOnlyFn", () => {
       const simnet = createMockSimnet(mockCallReadOnlyFn);
       const wallet = "SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR";
 
-      const result = typedCallReadOnlyFn({
+      const result = callReadOnlyFn({
         simnet,
         abi: sip10Abi,
         contract: "my-token",
@@ -151,7 +151,7 @@ describe("typedCallReadOnlyFn", () => {
       });
       const simnet = createMockSimnet(mockCallReadOnlyFn);
 
-      const result = typedCallReadOnlyFn({
+      const result = callReadOnlyFn({
         simnet,
         abi: sip10Abi,
         contract: "my-token",
@@ -176,7 +176,7 @@ describe("typedCallReadOnlyFn", () => {
       });
       const simnet = createMockSimnet(mockCallReadOnlyFn);
 
-      const result = typedCallReadOnlyFn({
+      const result = callReadOnlyFn({
         simnet,
         abi: sip10Abi,
         contract: "my-token",
@@ -192,7 +192,7 @@ describe("typedCallReadOnlyFn", () => {
 
       expect(() =>
         // Using Function cast to bypass type checking for runtime error test
-        (typedCallReadOnlyFn as Function)({
+        (callReadOnlyFn as Function)({
           simnet,
           abi: sip10Abi,
           contract: "my-token",
@@ -209,7 +209,7 @@ describe("typedCallReadOnlyFn", () => {
 
       expect(() =>
         // Using Function cast to bypass type checking for runtime error test
-        (typedCallReadOnlyFn as Function)({
+        (callReadOnlyFn as Function)({
           simnet,
           abi: sip10Abi,
           contract: "my-token",
@@ -223,7 +223,7 @@ describe("typedCallReadOnlyFn", () => {
       const simnet = createMockSimnet();
 
       expect(() =>
-        (typedCallReadOnlyFn as Function)({
+        (callReadOnlyFn as Function)({
           simnet,
           abi: sip10Abi,
           contract: "my-token",
@@ -243,7 +243,7 @@ describe("typedCallReadOnlyFn", () => {
       const simnet = createMockSimnet(mockCallReadOnly);
 
       expect(() =>
-        (typedCallReadOnlyFn as Function)({
+        (callReadOnlyFn as Function)({
           simnet,
           abi: sip10Abi,
           contract: "my-token",
@@ -266,7 +266,7 @@ describe("typedCallReadOnlyFn", () => {
       const simnet = createMockSimnet(mockCallReadOnlyFn);
       const wallet = "SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR";
 
-      const result = typedCallReadOnlyFn({
+      const result = callReadOnlyFn({
         simnet,
         abi: sbtcTokenAbi,
         contract: "sbtc-token",
@@ -285,7 +285,7 @@ describe("typedCallReadOnlyFn", () => {
       });
       const simnet = createMockSimnet(mockCallReadOnlyFn);
 
-      const result = typedCallReadOnlyFn({
+      const result = callReadOnlyFn({
         simnet,
         abi: sbtcTokenAbi,
         contract: "sbtc-token",
@@ -303,7 +303,7 @@ describe("typedCallReadOnlyFn", () => {
       });
       const simnet = createMockSimnet(mockCallReadOnlyFn);
 
-      const result = typedCallReadOnlyFn({
+      const result = callReadOnlyFn({
         simnet,
         abi: sbtcTokenAbi,
         contract: "sbtc-token",
@@ -321,7 +321,7 @@ describe("typedCallReadOnlyFn", () => {
       });
       const simnet = createMockSimnet(mockCallReadOnlyFn);
 
-      const result = typedCallReadOnlyFn({
+      const result = callReadOnlyFn({
         simnet,
         abi: sbtcTokenAbi,
         contract: "sbtc-token",
@@ -360,7 +360,7 @@ describe("typedCallReadOnlyFn", () => {
       const simnet = createMockSimnet(mockCallReadOnlyFn);
 
       // This should compile without functionArgs
-      const result = typedCallReadOnlyFn({
+      const result = callReadOnlyFn({
         simnet,
         abi: sip10Abi,
         contract: "my-token",

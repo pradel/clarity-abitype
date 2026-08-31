@@ -91,13 +91,13 @@ export type Widen<type> =
   | (type extends null ? null : never)
   | (type extends undefined ? undefined : never)
   | (type extends boolean ? boolean : never)
-  | (type extends ResolvedRegister["bigIntType"] ? bigint : never)
+  | (type extends ResolvedRegister["BigIntType"] ? bigint : never)
   | (type extends number ? number : never)
   | (type extends string
-      ? type extends ResolvedRegister["addressType"]
-        ? ResolvedRegister["addressType"]
-        : type extends ResolvedRegister["bytesType"]["inputs"]
-          ? ResolvedRegister["bytesType"]["inputs"]
+      ? type extends ResolvedRegister["AddressType"]
+        ? ResolvedRegister["AddressType"]
+        : type extends ResolvedRegister["BytesType"]["inputs"]
+          ? ResolvedRegister["BytesType"]["inputs"]
           : string
       : never)
   | (type extends readonly [] ? readonly [] : never)

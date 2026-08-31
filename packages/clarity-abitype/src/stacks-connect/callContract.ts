@@ -19,37 +19,37 @@ import type { ContractFunctionName, ContractFunctionArgs } from "../utils.js";
 /**
  * Public function name type for contract call operations.
  */
-export type TypedCallContractFunctionName<
+export type CallContractFunctionName<
   abi extends ClarityAbi | readonly unknown[] = ClarityAbi,
 > = ContractFunctionName<abi, "public">;
 
 /**
  * Public function arguments type for contract call operations.
  */
-export type TypedCallContractFunctionArgs<
+export type CallContractFunctionArgs<
   abi extends ClarityAbi | readonly unknown[] = ClarityAbi,
-  functionName extends TypedCallContractFunctionName<abi> =
-    TypedCallContractFunctionName<abi>,
+  functionName extends CallContractFunctionName<abi> =
+    CallContractFunctionName<abi>,
 > = ContractFunctionArgs<abi, "public", functionName>;
 
 /**
  * Parameters for making a typed contract call via @stacks/connect.
  * Extends the base options but replaces functionName and functionArgs with typed versions.
  */
-export type TypedCallContractParameters<
+export type CallContractParameters<
   abi extends ClarityAbi | readonly unknown[] = ClarityAbi,
-  functionName extends TypedCallContractFunctionName<abi> =
-    TypedCallContractFunctionName<abi>,
-  args extends TypedCallContractFunctionArgs<abi, functionName> =
-    TypedCallContractFunctionArgs<abi, functionName>,
+  functionName extends CallContractFunctionName<abi> =
+    CallContractFunctionName<abi>,
+  args extends CallContractFunctionArgs<abi, functionName> =
+    CallContractFunctionArgs<abi, functionName>,
 > = UnionEvaluate<
   Omit<CallContractParams, "functionName" | "functionArgs"> & {
     /** The contract ABI */
     abi: abi;
     /** The function name to call */
     functionName:
-      | TypedCallContractFunctionName<abi>
-      | (functionName extends TypedCallContractFunctionName<abi>
+      | CallContractFunctionName<abi>
+      | (functionName extends CallContractFunctionName<abi>
           ? functionName
           : never);
   } & (readonly [] extends args
@@ -64,12 +64,12 @@ export type TypedCallContractParameters<
 >;
 
 /**
- * Return type for typedCallContract - returns the transaction ID from the wallet.
+ * Return type for callContract - returns the transaction ID from the wallet.
  */
-export type TypedCallContractReturnType = string;
+export type CallContractReturnType = string;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-// Typed Call Contract Function
+// Call Contract Function
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
@@ -80,14 +80,13 @@ export type TypedCallContractReturnType = string;
  *
  * @example
  * ```ts
- * import { typedCallContract } from 'clarity-abitype/stacks-connect';
- * import { Cl } from '@stacks/transactions';
+ * import { callContract } from 'clarity-abitype/stacks-connect';
  *
- * const result = await typedCallContract({
+ * const result = await callContract({
  *   abi: swapAbi,
  *   contract: "SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR.swap",
  *   functionName: "xbtc-to-sbtc-swap",
- *   functionArgs: [Cl.uint(amount)],
+ *   functionArgs: [amount],
  *   network: "mainnet",
  *   postConditionMode: "deny",
  *   postConditions: [userSendsXbtc, contractSendsSbtc],
@@ -97,22 +96,22 @@ export type TypedCallContractReturnType = string;
  * console.log(result);
  * ```
  *
- * @param parameters - {@link TypedCallContractParameters}
+ * @param parameters - {@link CallContractParameters}
  * @returns Promise resolving to the transaction ID
  */
-export async function typedCallContract<
+export async function callContract<
   const abi extends ClarityAbi | readonly unknown[],
-  functionName extends TypedCallContractFunctionName<abi>,
-  const args extends TypedCallContractFunctionArgs<abi, functionName>,
+  functionName extends CallContractFunctionName<abi>,
+  const args extends CallContractFunctionArgs<abi, functionName>,
 >(
-  parameters: TypedCallContractParameters<abi, functionName, args>,
-): Promise<TypedCallContractReturnType> {
+  parameters: CallContractParameters<abi, functionName, args>,
+): Promise<CallContractReturnType> {
   const {
     abi: abiParam,
     functionName: funcName,
     functionArgs = [],
     ...options
-  } = parameters as TypedCallContractParameters;
+  } = parameters as CallContractParameters;
 
   // Find the function in the ABI
   const abiTyped = abiParam as ClarityAbi;
