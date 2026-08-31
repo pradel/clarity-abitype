@@ -1,5 +1,5 @@
 import type { ResolvedRegister } from "./register.js";
-import type { Pretty } from "./types.js";
+import type { Prettify } from "./types.js";
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // Clarity Types
@@ -254,7 +254,7 @@ export type ClarityVersion = "Clarity1" | "Clarity2" | "Clarity3" | "Clarity4";
  * - Traits (implemented and defined traits)
  * - Epoch and Clarity version information
  */
-export type ClarityAbi = Pretty<{
+export type ClarityAbi = Prettify<{
   /** All functions defined in the contract */
   functions: readonly ClarityAbiFunction[];
   /** All variables (constants and data-vars) defined in the contract */

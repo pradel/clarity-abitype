@@ -1,5 +1,5 @@
 ---
-"clarity-abitype": major
+"clarity-abitype": minor
 ---
 
 Align naming conventions and modernize API:

@@ -12,6 +12,3 @@ export interface TransactionResult<T> {
     data: Record<string, unknown>;
   }[];
 }
-
-/** Alias for {@link TransactionResult} */
-export type TypedTransactionResult<T> = TransactionResult<T>;

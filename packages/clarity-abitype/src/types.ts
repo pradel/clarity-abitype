@@ -45,9 +45,6 @@ export type Merge<object1, object2> = Omit<object1, keyof object2> & object2;
  */
 export type Prettify<type> = { [key in keyof type]: type[key] } & {};
 
-/** Alias for {@link Prettify} */
-export type Pretty<type> = Prettify<type>;
-
 /**
  * Evaluates each union member with {@link Prettify}.
  */

@@ -24,7 +24,7 @@ import type { ResolvedRegister } from "./register.js";
 import type {
   Error,
   IsNarrowable,
-  Pretty,
+  Prettify,
   Range,
   Tuple,
   UnionWiden,
@@ -350,7 +350,7 @@ export type ClarityAbiArgToPrimitiveType<arg extends ClarityAbiArg> = {
  */
 export type ClarityAbiArgsToPrimitiveTypes<
   args extends readonly ClarityAbiArg[],
-> = Pretty<{
+> = Prettify<{
   [key in keyof args]: ClarityAbiArgToPrimitiveTypeValue<args[key]>;
 }>;
 
