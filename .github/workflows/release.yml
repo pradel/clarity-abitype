@@ -18,10 +18,12 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
 
       # Don't use voidzero-dev/setup-vp as for some reason the OIDC publishing is broken when using it
       - name: Install pnpm
-        uses: pnpm/action-setup@v4
+        uses: pnpm/action-setup@v6
 
       - name: Setup Node.js
         uses: actions/setup-node@v6
@@ -35,14 +37,12 @@ jobs:
       - name: Build
         run: pnpm build
 
-      - name: Create Release Pull Request
-        uses: changesets/action@v1
+      - name: Create Release Pull Request or Publish
+        uses: changesets/action@v2
         with:
-          version: pnpm run version
-          publish: pnpm run release
-          commit: "chore: release"
-          title: "chore: create new release"
+          version-script: pnpm run version
+          publish-script: pnpm run release
+          commit-message: "chore: release"
+          pr-title: "chore: create new release"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          # Use OIDC for npm authentication instead of NPM_TOKEN
-          NPM_TOKEN: "" # https://github.com/changesets/changesets/issues/1152#issuecomment-3190884868
