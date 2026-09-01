@@ -1,5 +1,11 @@
 # clarity-abitype
 
+## 0.7.1
+
+### Patch Changes
+
+- [#54](https://github.com/pradel/clarity-abitype/pull/54) [`e46f723`](https://github.com/pradel/clarity-abitype/commit/e46f723ac10ca0cb4757f6e03e79b5cff63f27e7) Thanks [@pradel](https://github.com/pradel)! - Fix CI release process.
+
 ## 0.7.0
 
 ### Minor Changes
