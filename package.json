@@ -10,7 +10,8 @@
     "prepare": "vp config",
     "changeset": "changeset",
     "version": "changeset version",
-    "release": "vp run build && cp README.md ./packages/clarity-abitype && changeset publish"
+    "release": "vp run build && cp README.md ./packages/clarity-abitype && changeset publish",
+    "repos:sync": "./scripts/sync-repos.sh"
   },
   "devDependencies": {
     "@changesets/changelog-github": "1.0.1",
