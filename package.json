@@ -13,8 +13,8 @@
     "release": "vp run build && cp README.md ./packages/clarity-abitype && changeset publish"
   },
   "devDependencies": {
-    "@changesets/changelog-github": "1.0.0",
-    "@changesets/cli": "3.0.1",
+    "@changesets/changelog-github": "1.0.1",
+    "@changesets/cli": "3.0.3",
     "vite-plus": "catalog:"
   },
   "packageManager": "pnpm@11.25.0"
