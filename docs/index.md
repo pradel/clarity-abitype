@@ -39,6 +39,7 @@ The easiest way to maintain ABI declarations is the [ABI CLI](/cli-guide), which
 
 ```bash
 npx clarity-abitype init
+# add your contracts to clarity.config.ts
 npx clarity-abitype generate
 ```
 

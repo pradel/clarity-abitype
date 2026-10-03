@@ -1,4 +1,4 @@
-import { mkdir, writeFile } from "node:fs/promises";
+import { mkdir, rm, writeFile } from "node:fs/promises";
 import { dirname, relative, resolve } from "node:path";
 
 import type { ClarityAbi } from "../../abi.js";
@@ -43,8 +43,10 @@ export async function generate(options: Generate = {}) {
   const contracts = [...config.contracts].sort((a, b) =>
     a.name.localeCompare(b.name),
   );
+  const out = resolve(process.cwd(), config.out ?? defaultConfig.out);
   if (!contracts.length) {
     logger.warn("No contracts found.");
+    await rm(out, { force: true });
     return;
   }
 
@@ -65,7 +67,6 @@ export async function generate(options: Generate = {}) {
     });
   }
 
-  const out = resolve(process.cwd(), config.out ?? defaultConfig.out);
   await mkdir(dirname(out), { recursive: true });
   await writeFile(out, formatAbis(resolved));
   logger.success(
@@ -85,15 +86,12 @@ function validateConfig(config: unknown): asserts config is Config {
     throw new Error("`out` must be a string.");
   if (!Array.isArray(contracts))
     throw new Error("`contracts` must be an array.");
-  const names = new Set<string>();
+  const exportNames = new Map<string, string>();
   for (const contract of contracts) {
     if (!contract || typeof contract !== "object")
       throw new Error("Each contract must be an object.");
     if (typeof contract.name !== "string" || !contract.name)
       throw new Error("Each contract must have a `name`.");
-    if (names.has(contract.name))
-      throw new Error(`Contract name "${contract.name}" must be unique.`);
-    names.add(contract.name);
     if (
       contract.abi === undefined &&
       (typeof contract.contract !== "string" || !contract.contract)
@@ -101,10 +99,17 @@ function validateConfig(config: unknown): asserts config is Config {
       throw new Error(
         `Contract "${contract.name}" must have a \`contract\` identifier.`,
       );
-    if (!/^[A-Za-z_$][A-Za-z0-9_$]*$/.test(`${camelCase(contract.name)}Abi`))
+    const exportName = `${camelCase(contract.name)}Abi`;
+    if (!/^[A-Za-z_$][A-Za-z0-9_$]*$/.test(exportName))
       throw new Error(
         `Cannot derive a valid export name from "${contract.name}".`,
       );
+    const existing = exportNames.get(exportName);
+    if (existing !== undefined)
+      throw new Error(
+        `Contracts "${existing}" and "${contract.name}" generate the same export "${exportName}".`,
+      );
+    exportNames.set(exportName, contract.name);
   }
 }
 
@@ -115,7 +120,9 @@ async function fetchAbi(apiUrl: string, contract: string) {
       `Invalid contract identifier "${contract}". Expected "<address>.<contract-name>".`,
     );
   const url = `${apiUrl}/v2/contracts/interface/${address}/${name}`;
-  const response = await fetch(url);
+  const response = await fetch(url, {
+    signal: AbortSignal.timeout(30_000),
+  });
   if (!response.ok)
     throw new Error(
       `Failed to fetch ABI for "${contract}" (${response.status} ${response.statusText}).`,
@@ -143,10 +150,14 @@ function formatAbis(contracts: ResolvedContract[]) {
 function getBanner({ contract, name }: ResolvedContract) {
   return [
     "////////////////////////////////////////////////////////////////////////////////////////////////////",
-    `// ${name}`,
-    `// ${contract}`,
+    `// ${sanitize(name)}`,
+    `// ${sanitize(contract)}`,
     "////////////////////////////////////////////////////////////////////////////////////////////////////",
   ].join("\n");
+}
+
+function sanitize(value: string | undefined) {
+  return String(value).replace(/[\r\n\u2028\u2029]+/g, " ");
 }
 
 function unquoteKeys(json: string) {

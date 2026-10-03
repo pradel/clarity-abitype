@@ -16,6 +16,7 @@ The quickest way to add an ABI to your project is the [ABI CLI](/cli-guide), whi
 
 ```bash
 npx clarity-abitype init
+# add your contracts to clarity.config.ts
 npx clarity-abitype generate
 ```
 

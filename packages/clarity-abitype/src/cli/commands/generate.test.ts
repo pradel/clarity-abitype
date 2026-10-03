@@ -74,6 +74,7 @@ describe("generate", () => {
 
     expect(fetch).toHaveBeenCalledWith(
       "https://api.mainnet.hiro.so/v2/contracts/interface/SM3VDXK3WZZSA84XXFKAFAF15NNZX32CTSG82JFQ4/sbtc-token",
+      { signal: expect.any(AbortSignal) },
     );
     expect(await readFile(out, "utf8")).toContain("export const sbtcTokenAbi");
   });
@@ -94,6 +95,7 @@ describe("generate", () => {
 
     expect(fetch).toHaveBeenCalledWith(
       "https://api.testnet.hiro.so/v2/contracts/interface/ST1/foo",
+      { signal: expect.any(AbortSignal) },
     );
   });
 
@@ -132,15 +134,31 @@ describe("generate", () => {
     expect(await readFile(out, "utf8")).toContain("export const fooAbi");
   });
 
-  test("warns when no contracts", async () => {
+  test("removes stale output and warns when no contracts", async () => {
     const root = await createRoot();
-    await writeConfig(root, { contracts: [], out: join(root, "generated.ts") });
+    const out = join(root, "generated.ts");
+    await writeFile(out, "stale");
+    await writeConfig(root, { contracts: [], out });
 
     await generate({ root });
 
-    await expect(readFile(join(root, "generated.ts"), "utf8")).rejects.toThrow(
-      "ENOENT",
-    );
+    await expect(readFile(out, "utf8")).rejects.toThrow("ENOENT");
+  });
+
+  test("sanitizes line terminators in banners", async () => {
+    const root = await createRoot();
+    const out = join(root, "generated.ts");
+    await writeConfig(root, {
+      out,
+      contracts: [
+        { abi: sbtcAbi, contract: "SP1.foo\n// evil", name: "foo\nbar" },
+      ],
+    });
+
+    await generate({ root });
+
+    const content = await readFile(out, "utf8");
+    expect(content).toContain("// foo bar\n// SP1.foo // evil\n/");
   });
 
   test("throws when config is missing", async () => {
@@ -172,7 +190,22 @@ describe("generate", () => {
     });
 
     await expect(generate({ root })).rejects.toThrow(
-      'Contract name "foo" must be unique.',
+      'Contracts "foo" and "foo" generate the same export "fooAbi".',
+    );
+  });
+
+  test("throws when names derive the same export", async () => {
+    const root = await createRoot();
+    await writeConfig(root, {
+      contracts: [
+        { abi: sbtcAbi, contract: "SP1.a", name: "my-token" },
+        { abi: sbtcAbi, contract: "SP1.b", name: "my_token" },
+      ],
+      out: join(root, "generated.ts"),
+    });
+
+    await expect(generate({ root })).rejects.toThrow(
+      'generate the same export "myTokenAbi"',
     );
   });
 
