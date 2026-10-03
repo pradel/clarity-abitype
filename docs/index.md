@@ -35,7 +35,14 @@ Select the guide based on your tooling:
 
 ### Getting a Contract ABI
 
-You can fetch a Clarity contract ABI from the Stacks API:
+The easiest way to maintain ABI declarations is the [ABI CLI](/cli-guide), which fetches ABIs from the Stacks API and generates a TypeScript file with `as const` for you:
+
+```bash
+npx clarity-abitype init
+npx clarity-abitype generate
+```
+
+You can also fetch a Clarity contract ABI manually from the Stacks API:
 
 ```bash
 https://api.mainnet.hiro.so/v2/contracts/interface/{contract_address}/{contract_name}
