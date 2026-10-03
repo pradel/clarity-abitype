@@ -41,8 +41,8 @@
     "@stacks/connect": "^8.2.7",
     "@stacks/network": "^7.6.0",
     "@stacks/transactions": "^7.6.0",
-    "@types/node": "^26.6.4",
-    "cac": "^7.0.0",
+    "@types/node": "26.6.4",
+    "cac": "7.0.0",
     "publint": "0.3.25",
     "typescript": "7.0.2",
     "vite-plus": "catalog:"

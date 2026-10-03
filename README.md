@@ -39,7 +39,7 @@ Works great for adding blazing fast autocomplete and type checking to functions,
 
 ## Credits
 
-clarity-abitype initial implementation is based on the amazing work of [abitype](https://github.com/wevm/abitype) by [wevm](https://github.com/wevm).
+clarity-abitype initial implementation is based on the amazing work of [abitype](https://github.com/wevm/abitype) by [wevm](https://github.com/wevm). The CLI is inspired by [@wagmi/cli](https://github.com/wevm/wagmi/tree/main/packages/cli).
 
 ## Contributing
 

@@ -88,10 +88,10 @@ importers:
         specifier: ^7.6.0
         version: 7.6.0
       '@types/node':
-        specifier: ^26.6.4
+        specifier: 26.6.4
         version: 26.6.4
       cac:
-        specifier: ^7.0.0
+        specifier: 7.0.0
         version: 7.0.0
       publint:
         specifier: 0.3.25
