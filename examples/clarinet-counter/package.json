@@ -17,6 +17,7 @@
     "clarity-abitype": "workspace:*",
     "typescript": "7.0.2",
     "vite-plus": "catalog:",
+    "vitest": "catalog:",
     "vitest-environment-clarinet": "3.0.2"
   }
 }
