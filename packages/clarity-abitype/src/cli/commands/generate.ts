@@ -1,0 +1,165 @@
+import { mkdir, rm, writeFile } from "node:fs/promises";
+import { dirname, relative, resolve } from "node:path";
+
+import type { ClarityAbi } from "../../abi.js";
+import {
+  type Config,
+  type ContractConfig,
+  defaultConfig,
+} from "../../config.js";
+import * as logger from "../logger.js";
+import { camelCase } from "../utils/camelCase.js";
+import { findConfig } from "../utils/findConfig.js";
+import { resolveConfig } from "../utils/resolveConfig.js";
+
+export type Generate = {
+  /** Path to config file */
+  config?: string;
+  /** Directory to resolve config from */
+  root?: string;
+};
+
+type ResolvedContract = ContractConfig & {
+  abi: ClarityAbi;
+  exportName: string;
+};
+
+export async function generate(options: Generate = {}) {
+  const configPath = await findConfig(options);
+  if (!configPath) {
+    if (options.config)
+      throw new Error(`Config not found at ${logger.gray(options.config)}`);
+    throw new Error(
+      "Config not found. Run `clarity-abitype init` to create one.",
+    );
+  }
+
+  logger.info(
+    `Using config ${logger.gray(relative(process.cwd(), configPath))}`,
+  );
+  const config = await resolveConfig(configPath);
+  validateConfig(config);
+
+  const contracts = [...config.contracts].sort((a, b) =>
+    a.name.localeCompare(b.name),
+  );
+  const out = resolve(process.cwd(), config.out ?? defaultConfig.out);
+  if (!contracts.length) {
+    logger.warn("No contracts found.");
+    await rm(out, { force: true });
+    return;
+  }
+
+  const apiUrl = (config.apiUrl ?? defaultConfig.apiUrl).replace(/\/+$/, "");
+  const resolved: ResolvedContract[] = [];
+  for (const contract of contracts) {
+    let abi = contract.abi;
+    if (abi)
+      logger.log(`Using provided ABI for ${logger.gray(contract.contract)}`);
+    else {
+      abi = await fetchAbi(apiUrl, contract.contract);
+      logger.log(`Fetched ${logger.gray(contract.contract)}`);
+    }
+    resolved.push({
+      ...contract,
+      abi,
+      exportName: `${camelCase(contract.name)}Abi`,
+    });
+  }
+
+  await mkdir(dirname(out), { recursive: true });
+  await writeFile(out, formatAbis(resolved));
+  logger.success(
+    `Generated ${resolved.length} ABI${resolved.length === 1 ? "" : "s"} at ${logger.gray(
+      relative(process.cwd(), out),
+    )}`,
+  );
+}
+
+function validateConfig(config: unknown): asserts config is Config {
+  if (!config || typeof config !== "object")
+    throw new Error("Config must export an object.");
+  const { apiUrl, contracts, out } = config as Config;
+  if (apiUrl !== undefined && typeof apiUrl !== "string")
+    throw new Error("`apiUrl` must be a string.");
+  if (out !== undefined && typeof out !== "string")
+    throw new Error("`out` must be a string.");
+  if (!Array.isArray(contracts))
+    throw new Error("`contracts` must be an array.");
+  const exportNames = new Map<string, string>();
+  for (const contract of contracts) {
+    if (!contract || typeof contract !== "object")
+      throw new Error("Each contract must be an object.");
+    if (typeof contract.name !== "string" || !contract.name)
+      throw new Error("Each contract must have a `name`.");
+    if (
+      contract.abi === undefined &&
+      (typeof contract.contract !== "string" || !contract.contract)
+    )
+      throw new Error(
+        `Contract "${contract.name}" must have a \`contract\` identifier.`,
+      );
+    const exportName = `${camelCase(contract.name)}Abi`;
+    if (!/^[A-Za-z_$][A-Za-z0-9_$]*$/.test(exportName))
+      throw new Error(
+        `Cannot derive a valid export name from "${contract.name}".`,
+      );
+    const existing = exportNames.get(exportName);
+    if (existing !== undefined)
+      throw new Error(
+        `Contracts "${existing}" and "${contract.name}" generate the same export "${exportName}".`,
+      );
+    exportNames.set(exportName, contract.name);
+  }
+}
+
+async function fetchAbi(apiUrl: string, contract: string) {
+  const [address, name, ...rest] = contract.split(".");
+  if (!address || !name || rest.length > 0)
+    throw new Error(
+      `Invalid contract identifier "${contract}". Expected "<address>.<contract-name>".`,
+    );
+  const url = `${apiUrl}/v2/contracts/interface/${address}/${name}`;
+  const response = await fetch(url, {
+    signal: AbortSignal.timeout(30_000),
+  });
+  if (!response.ok)
+    throw new Error(
+      `Failed to fetch ABI for "${contract}" (${response.status} ${response.statusText}).`,
+    );
+  const abi = (await response.json()) as unknown;
+  if (
+    !abi ||
+    typeof abi !== "object" ||
+    !Array.isArray((abi as ClarityAbi).functions)
+  )
+    throw new Error(`Invalid ABI returned for "${contract}".`);
+  return abi as ClarityAbi;
+}
+
+function formatAbis(contracts: ResolvedContract[]) {
+  const sections = contracts.map((contract) => {
+    const abi = unquoteKeys(JSON.stringify(contract.abi, null, 2));
+    return `${getBanner(contract)}\n\nexport const ${contract.exportName} = ${abi} as const;`;
+  });
+  return `${["// Generated by clarity-abitype. Do not edit.", ...sections].join(
+    "\n\n",
+  )}\n`;
+}
+
+function getBanner({ contract, name }: ResolvedContract) {
+  return [
+    "////////////////////////////////////////////////////////////////////////////////////////////////////",
+    `// ${sanitize(name)}`,
+    `// ${sanitize(contract)}`,
+    "////////////////////////////////////////////////////////////////////////////////////////////////////",
+  ].join("\n");
+}
+
+function sanitize(value: string | undefined) {
+  return String(value).replace(/[\r\n\u2028\u2029]+/g, " ");
+}
+
+function unquoteKeys(json: string) {
+  return json.replace(/"([A-Za-z_$][A-Za-z0-9_$]*)":/g, "$1:");
+}

@@ -12,7 +12,15 @@ npm install @stacks/connect clarity-abitype
 
 ## Downloading the ABI
 
-Fetch your contract ABI from the Hiro API:
+The quickest way to add an ABI to your project is the [ABI CLI](/cli-guide), which fetches the ABI and writes a typed `as const` declaration for you:
+
+```bash
+npx clarity-abitype init
+# add your contracts to clarity.config.ts
+npx clarity-abitype generate
+```
+
+Alternatively, fetch your contract ABI manually from the Hiro API:
 
 ```bash
 curl "https://api.mainnet.hiro.so/v2/contracts/interface/SP2C2YFP12AJZB4MABJBAJ55XECVS7E4PMMZ89YZR/my-token"

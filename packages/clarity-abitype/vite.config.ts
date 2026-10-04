@@ -5,10 +5,13 @@ export default defineConfig({
     entry: [
       "src/index.ts",
       "src/clarinet-sdk/index.ts",
+      "src/config.ts",
       "src/stacks-connect/index.ts",
       "src/stacks-js/index.ts",
+      "src/cli/index.ts",
     ],
     platform: "neutral",
+    external: [/^node:/],
     publint: true,
     exports: true,
     sourcemap: true,

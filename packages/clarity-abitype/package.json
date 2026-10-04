@@ -5,6 +5,9 @@
   "license": "MIT",
   "repository": "pradel/clarity-abitype",
   "funding": "https://github.com/sponsors/pradel",
+  "bin": {
+    "clarity-abitype": "./dist/cli/index.js"
+  },
   "files": [
     "dist",
     "src/**/*.ts",
@@ -16,6 +19,8 @@
   "exports": {
     ".": "./dist/index.js",
     "./clarinet-sdk": "./dist/clarinet-sdk/index.js",
+    "./cli": "./dist/cli/index.js",
+    "./config": "./dist/config.js",
     "./stacks-connect": "./dist/stacks-connect/index.js",
     "./stacks-js": "./dist/stacks-js/index.js",
     "./package.json": "./package.json"
@@ -29,6 +34,9 @@
     "dev": "vp pack --watch",
     "test": "vp test"
   },
+  "dependencies": {
+    "cac": "7.0.0"
+  },
   "devDependencies": {
     "@arethetypeswrong/core": "0.18.5",
     "@stacks/clarinet-sdk": "^3.24.1",
@@ -36,6 +44,7 @@
     "@stacks/connect": "^8.2.7",
     "@stacks/network": "^7.6.0",
     "@stacks/transactions": "^7.6.0",
+    "@types/node": "26.6.4",
     "publint": "0.3.25",
     "typescript": "7.0.2",
     "vite-plus": "catalog:"
