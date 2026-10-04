@@ -1,5 +1,11 @@
 # clarity-abitype
 
+## 0.8.0
+
+### Minor Changes
+
+- [#57](https://github.com/pradel/clarity-abitype/pull/57) [`ba82c80`](https://github.com/pradel/clarity-abitype/commit/ba82c8091bca130d5424d09dd97519952b08e419) Thanks [@pradel](https://github.com/pradel)! - Added `clarity-abitype` CLI with `init` and `generate` commands. `generate` reads a `clarity.config.ts` contract list, fetches ABIs from the Stacks API, and writes a TypeScript file with `as const` ABI declarations.
+
 ## 0.7.1
 
 ### Patch Changes
